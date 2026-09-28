@@ -1,5 +1,9 @@
 import { PerfumeDatasetSchema, type Perfume } from '@harumnesia/shared';
 
+import {
+  createInternationalCanonicalId,
+  createLocalCanonicalId,
+} from './id.js';
 import { normalizeIdentityText } from './normalize.js';
 
 export const EXPECTED_COUNTS = {
@@ -79,6 +83,20 @@ export function assertDatasetIntegrity(
   for (const record of records) {
     if (record.market !== record.source.sourceType) {
       throw new Error(`Market/sourceType mismatch for ${record.id}.`);
+    }
+
+    const expectedId =
+      record.market === 'local'
+        ? record.source.legacyId === null
+          ? null
+          : createLocalCanonicalId(record.source.legacyId)
+        : record.source.sourceUrl === null
+          ? null
+          : createInternationalCanonicalId(record.source.sourceUrl);
+    if (expectedId === null || record.id !== expectedId) {
+      throw new Error(
+        `Canonical ID does not match source identity for ${record.id}.`,
+      );
     }
 
     for (const notes of Object.values(record.notes)) {

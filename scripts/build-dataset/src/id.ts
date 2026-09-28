@@ -1,40 +1,33 @@
 import { createHash } from 'node:crypto';
 
-import type { Market } from '@harumnesia/shared';
+import { collapseWhitespace } from './normalize.js';
 
-import { normalizeIdentityText } from './normalize.js';
-
-export type CanonicalIdInput = {
-  market: Market;
-  brand: string;
-  name: string;
-  identity: unknown;
-};
-
-function slugify(value: string): string {
-  const slug = value
-    .normalize('NFKD')
-    .replace(/\p{M}+/gu, '')
+function normalizeLegacyId(value: string): string {
+  const normalized = collapseWhitespace(value)
     .toLocaleLowerCase('en-US')
     .replace(/[^a-z0-9]+/gu, '-')
-    .replace(/^-|-$/gu, '')
-    .slice(0, 36)
-    .replace(/-$/u, '');
+    .replace(/^-+|-+$/gu, '');
 
-  return slug || 'unknown';
+  if (normalized === '') {
+    throw new Error('Local legacy ID cannot be empty after normalization.');
+  }
+
+  return normalized;
 }
 
-export function createCanonicalId(input: CanonicalIdInput): string {
-  const hashInput = JSON.stringify({
-    market: input.market,
-    brand: normalizeIdentityText(input.brand),
-    name: normalizeIdentityText(input.name),
-    identity: input.identity,
-  });
+export function normalizeSourceUrl(value: string): string {
+  return new URL(collapseWhitespace(value)).toString();
+}
+
+export function createLocalCanonicalId(legacyId: string): string {
+  return `local-${normalizeLegacyId(legacyId)}`;
+}
+
+export function createInternationalCanonicalId(sourceUrl: string): string {
   const hash = createHash('sha256')
-    .update(hashInput, 'utf8')
+    .update(normalizeSourceUrl(sourceUrl), 'utf8')
     .digest('hex')
     .slice(0, 16);
 
-  return `${input.market}-${slugify(input.brand)}-${slugify(input.name)}-${hash}`;
+  return `international-${hash}`;
 }

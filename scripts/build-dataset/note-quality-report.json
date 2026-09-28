@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "taxonomySize": 2505,
+  "unresolvedSuspiciousTerms": [
+    "arbutus (madrona",
+    "rose (delta damascone"
+  ],
+  "checks": {
+    "leadingAmpersand": [],
+    "leadingClosingParenthesis": [],
+    "trailingOpeningParenthesis": [],
+    "unmatchedParentheses": [
+      "arbutus (madrona",
+      "rose (delta damascone"
+    ],
+    "punctuationOnly": []
+  },
+  "policy": "Potentially meaningful terms are preserved when a safe orthographic correction is not unambiguous."
+}

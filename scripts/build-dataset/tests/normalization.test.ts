@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 
-import { createCanonicalId } from '../src/id.js';
 import {
   normalizeConcentration,
   normalizeGender,
@@ -9,25 +8,6 @@ import {
   parsePrice,
   parseVolume,
 } from '../src/normalize.js';
-
-describe('canonical ID generation', () => {
-  it('is deterministic and distinguishes stable source identities', () => {
-    const input = {
-      market: 'international' as const,
-      brand: 'Maison Test',
-      name: 'Example 9am',
-      identity: { sourceUrl: 'https://example.test/perfume/1' },
-    };
-
-    expect(createCanonicalId(input)).toBe(createCanonicalId(input));
-    expect(createCanonicalId(input)).not.toBe(
-      createCanonicalId({
-        ...input,
-        identity: { sourceUrl: 'https://example.test/perfume/2' },
-      }),
-    );
-  });
-});
 
 describe('categorical normalization', () => {
   it.each([
@@ -78,5 +58,55 @@ describe('note tokenization', () => {
 
   it('removes placeholders and empty tokens', () => {
     expect(normalizeNotes(' -, , Vanilla; ')).toEqual(['vanilla']);
+  });
+
+  it('removes only leading conjunction artifacts after comma tokenization', () => {
+    expect(normalizeNotes('Cassis, Peach, & Opoponax')).toEqual([
+      'cassis',
+      'peach',
+      'opoponax',
+    ]);
+    expect(normalizeNotes('Musk & Vanilla')).toEqual(['musk & vanilla']);
+  });
+
+  it('normalizes high-confidence typos observed in source data', () => {
+    expect(
+      normalizeNotes(
+        'Blackcurant, Blackcurrent, Myyrh, Patchoulli, Cinammon, Cappucino',
+      ),
+    ).toEqual([
+      'black currant',
+      'myrrh',
+      'patchouli',
+      'cinnamon',
+      'cappuccino',
+    ]);
+    expect(
+      normalizeNotes('Blackcurannt, Myrhh, Patchouly, Sandalowood'),
+    ).toEqual(['black currant', 'myrrh', 'patchouli', 'sandalwood']);
+  });
+
+  it('does not merge distinct semantic note variants', () => {
+    expect(
+      normalizeNotes(
+        'Cedar, Cedarwood, Musk, White Musk, Vanilla, Madagascar Vanilla, Oud, Agarwood',
+      ),
+    ).toEqual([
+      'cedar',
+      'cedarwood',
+      'musk',
+      'white musk',
+      'vanilla',
+      'madagascar vanilla',
+      'oud',
+      'agarwood',
+    ]);
+  });
+
+  it('removes unambiguous orphan boundary parentheses without reconstructing fragments', () => {
+    expect(normalizeNotes('arbutus (madrona, bearberry tree)')).toEqual([
+      'arbutus (madrona',
+      'bearberry tree',
+    ]);
   });
 });

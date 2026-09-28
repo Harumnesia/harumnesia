@@ -17,9 +17,14 @@
     }
   },
   "output": {
-    "perfumesSha256": "c34b0352485827c1b0a4bfa1d04db7436f25d7de91ba09b4abc85fc78e8a7ba7",
-    "notesTaxonomySize": 2518,
-    "accordsTaxonomySize": 84
+    "perfumesSha256": "f4651860b999f5765ef31b4df968eccd1c982a7a092365d76d0846021b4f36f2",
+    "perfumesBytes": 30051556,
+    "runtimeRecommendationSha256": "b11cb9d69ddcbf65ff7753d34972586930eadc56150ff2f5174f0545997cdb24",
+    "runtimeRecommendationBytes": 9690284,
+    "runtimeRecommendationRecords": 25127,
+    "notesTaxonomySize": 2505,
+    "accordsTaxonomySize": 84,
+    "noteQualityReportSha256": "051da3926514de64a113378027687e1e9dff341d4bb4057882402f3695d8cd33"
   },
   "integrity": {
     "counts": {

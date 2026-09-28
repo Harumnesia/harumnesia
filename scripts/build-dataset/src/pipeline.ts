@@ -1,23 +1,21 @@
-import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import {
-  PerfumeDatasetSchema,
-  PerfumeSchema,
-  type Perfume,
-} from '@harumnesia/shared';
+import { PerfumeSchema, type Perfume } from '@harumnesia/shared';
 
+import {
+  createNoteQualityReport,
+  createTaxonomyDocuments,
+  serializeMinified,
+  serializePretty,
+  sha256,
+} from './artifacts.js';
 import {
   assertRequiredHeaders,
   parseDelimitedRecords,
   type CsvRecord,
 } from './csv.js';
-import {
-  analyzeDataset,
-  assertDatasetIntegrity,
-  collectTaxonomy,
-} from './integrity.js';
+import { analyzeDataset, assertDatasetIntegrity } from './integrity.js';
 import {
   INTERNATIONAL_DATASET_NAME,
   INTERNATIONAL_HEADERS,
@@ -26,21 +24,16 @@ import {
   mapInternationalRecord,
   mapLocalRecord,
 } from './mappers.js';
-import {
-  CONCENTRATION_MAPPINGS,
-  GENDER_MAPPINGS,
-  NOTE_ALIASES,
-  normalizeIdentityText,
-} from './normalize.js';
+import { normalizeIdentityText } from './normalize.js';
 import { OUTPUT_PATHS, SOURCE_PATHS } from './paths.js';
-
-function serialize(value: unknown): string {
-  return `${JSON.stringify(value, null, 2)}\n`;
-}
-
-function sha256(buffer: Uint8Array | string): string {
-  return createHash('sha256').update(buffer).digest('hex');
-}
+import {
+  projectRecommendationDataset,
+  RUNTIME_SIZE_LIMIT_BYTES,
+} from './runtime.js';
+import {
+  validateArtifactBundle,
+  type ArtifactBundleText,
+} from './validation.js';
 
 async function readUtf8Csv(
   filePath: string,
@@ -157,6 +150,8 @@ async function historicalCrossCheck(records: readonly Perfume[]) {
 export async function buildDataset(): Promise<{
   records: Perfume[];
   hash: string;
+  runtimeHash: string;
+  runtimeBytes: number;
 }> {
   const [localSource, internationalSource] = await Promise.all([
     readUtf8Csv(SOURCE_PATHS.local, ','),
@@ -189,54 +184,27 @@ export async function buildDataset(): Promise<{
     enforceSortedIds: true,
   });
 
-  const taxonomy = collectTaxonomy(records);
-  const concentrationRawValues = [
-    ...new Set(
-      records
-        .map((record) => record.concentration.raw)
-        .filter((value): value is string => value !== null),
-    ),
-  ].sort();
-  const concentrationValues = [
-    ...new Set(
-      records
-        .map((record) => record.concentration.value)
-        .filter((value): value is string => value !== null),
-    ),
-  ].sort();
-  const unresolvedConcentrations = [
-    ...new Set(
-      records
-        .filter(
-          (record) =>
-            record.concentration.raw !== null &&
-            record.concentration.value === null,
-        )
-        .map((record) => record.concentration.raw as string),
-    ),
-  ].sort();
+  const taxonomies = createTaxonomyDocuments(records);
+  const runtime = projectRecommendationDataset(records);
+  const noteQualityReport = createNoteQualityReport(records);
+  const perfumesJson = serializePretty(records);
+  const runtimeJson = serializeMinified(runtime);
+  const noteQualityJson = serializePretty(noteQualityReport);
+  const runtimeBytes = Buffer.byteLength(runtimeJson, 'utf8');
+  if (runtimeBytes >= RUNTIME_SIZE_LIMIT_BYTES) {
+    throw new Error(
+      `Runtime recommendation dataset is ${runtimeBytes} bytes; the limit is ${RUNTIME_SIZE_LIMIT_BYTES} bytes.`,
+    );
+  }
 
-  const perfumesJson = serialize(records);
   const outputs = {
     perfumes: perfumesJson,
-    notes: serialize({
-      schemaVersion: 1,
-      values: taxonomy.notes,
-      aliases: NOTE_ALIASES,
-    }),
-    accords: serialize({ schemaVersion: 1, values: taxonomy.accords }),
-    genders: serialize({
-      schemaVersion: 1,
-      values: ['men', 'women', 'unisex', 'unknown'],
-      sourceMappings: GENDER_MAPPINGS,
-    }),
-    concentrations: serialize({
-      schemaVersion: 1,
-      values: concentrationValues,
-      rawValues: concentrationRawValues,
-      sourceMappings: CONCENTRATION_MAPPINGS,
-      unresolvedRawValues: unresolvedConcentrations,
-    }),
+    runtimeRecommendation: runtimeJson,
+    notes: serializePretty(taxonomies.notes),
+    accords: serializePretty(taxonomies.accords),
+    genders: serializePretty(taxonomies.genders),
+    concentrations: serializePretty(taxonomies.concentrations),
+    noteQualityReport: noteQualityJson,
   };
 
   const report = {
@@ -259,68 +227,101 @@ export async function buildDataset(): Promise<{
     },
     output: {
       perfumesSha256: sha256(perfumesJson),
-      notesTaxonomySize: taxonomy.notes.length,
-      accordsTaxonomySize: taxonomy.accords.length,
+      perfumesBytes: Buffer.byteLength(perfumesJson, 'utf8'),
+      runtimeRecommendationSha256: sha256(runtimeJson),
+      runtimeRecommendationBytes: runtimeBytes,
+      runtimeRecommendationRecords: runtime.length,
+      notesTaxonomySize: taxonomies.notes.values.length,
+      accordsTaxonomySize: taxonomies.accords.values.length,
+      noteQualityReportSha256: sha256(noteQualityJson),
     },
     integrity: analyzeDataset(records),
     historicalCrossCheck: await historicalCrossCheck(records),
   };
+  const bundle: ArtifactBundleText = {
+    ...outputs,
+    buildReport: serializePretty(report),
+  };
+  validateArtifactBundle(bundle, { enforceExpectedCounts: true });
 
   await Promise.all([
     mkdir(path.dirname(OUTPUT_PATHS.perfumes), { recursive: true }),
+    mkdir(path.dirname(OUTPUT_PATHS.runtimeRecommendation), {
+      recursive: true,
+    }),
     mkdir(path.dirname(OUTPUT_PATHS.notes), { recursive: true }),
     mkdir(path.dirname(OUTPUT_PATHS.report), { recursive: true }),
   ]);
   await Promise.all([
     writeFile(OUTPUT_PATHS.perfumes, outputs.perfumes, 'utf8'),
+    writeFile(
+      OUTPUT_PATHS.runtimeRecommendation,
+      outputs.runtimeRecommendation,
+      'utf8',
+    ),
     writeFile(OUTPUT_PATHS.notes, outputs.notes, 'utf8'),
     writeFile(OUTPUT_PATHS.accords, outputs.accords, 'utf8'),
     writeFile(OUTPUT_PATHS.genders, outputs.genders, 'utf8'),
     writeFile(OUTPUT_PATHS.concentrations, outputs.concentrations, 'utf8'),
-    writeFile(OUTPUT_PATHS.report, serialize(report), 'utf8'),
+    writeFile(OUTPUT_PATHS.report, bundle.buildReport, 'utf8'),
+    writeFile(
+      OUTPUT_PATHS.noteQualityReport,
+      outputs.noteQualityReport,
+      'utf8',
+    ),
   ]);
 
-  return { records, hash: report.output.perfumesSha256 };
+  return {
+    records,
+    hash: report.output.perfumesSha256,
+    runtimeHash: report.output.runtimeRecommendationSha256,
+    runtimeBytes,
+  };
 }
 
 export async function validateGeneratedDataset(): Promise<{
   records: number;
   hash: string;
+  runtimeHash: string;
+  runtimeBytes: number;
 }> {
   const [
     perfumesText,
+    runtimeRecommendationText,
     notesText,
     accordsText,
     gendersText,
     concentrationsText,
+    buildReportText,
+    noteQualityReportText,
   ] = await Promise.all([
     readFile(OUTPUT_PATHS.perfumes, 'utf8'),
+    readFile(OUTPUT_PATHS.runtimeRecommendation, 'utf8'),
     readFile(OUTPUT_PATHS.notes, 'utf8'),
     readFile(OUTPUT_PATHS.accords, 'utf8'),
     readFile(OUTPUT_PATHS.genders, 'utf8'),
     readFile(OUTPUT_PATHS.concentrations, 'utf8'),
+    readFile(OUTPUT_PATHS.report, 'utf8'),
+    readFile(OUTPUT_PATHS.noteQualityReport, 'utf8'),
   ]);
-  const records = PerfumeDatasetSchema.parse(JSON.parse(perfumesText));
-  assertDatasetIntegrity(records, {
-    enforceExpectedCounts: true,
-    enforceSortedIds: true,
-  });
+  const result = validateArtifactBundle(
+    {
+      perfumes: perfumesText,
+      runtimeRecommendation: runtimeRecommendationText,
+      notes: notesText,
+      accords: accordsText,
+      genders: gendersText,
+      concentrations: concentrationsText,
+      buildReport: buildReportText,
+      noteQualityReport: noteQualityReportText,
+    },
+    { enforceExpectedCounts: true },
+  );
 
-  const taxonomy = collectTaxonomy(records);
-  const notes = JSON.parse(notesText) as { values?: unknown };
-  const accords = JSON.parse(accordsText) as { values?: unknown };
-  const genders = JSON.parse(gendersText) as { values?: unknown };
-  const concentrations = JSON.parse(concentrationsText) as { values?: unknown };
-
-  if (JSON.stringify(notes.values) !== JSON.stringify(taxonomy.notes)) {
-    throw new Error('Notes taxonomy does not match production records.');
-  }
-  if (JSON.stringify(accords.values) !== JSON.stringify(taxonomy.accords)) {
-    throw new Error('Accords taxonomy does not match production records.');
-  }
-  if (!Array.isArray(genders.values) || !Array.isArray(concentrations.values)) {
-    throw new Error('Categorical taxonomy files are malformed.');
-  }
-
-  return { records: records.length, hash: sha256(perfumesText) };
+  return {
+    records: result.records,
+    hash: result.canonicalHash,
+    runtimeHash: result.runtimeHash,
+    runtimeBytes: result.runtimeBytes,
+  };
 }

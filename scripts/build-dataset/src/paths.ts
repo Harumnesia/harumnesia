@@ -43,6 +43,12 @@ export const SOURCE_PATHS = {
 
 export const OUTPUT_PATHS = {
   perfumes: path.join(REPOSITORY_ROOT, 'data', 'perfumes.json'),
+  runtimeRecommendation: path.join(
+    REPOSITORY_ROOT,
+    'data',
+    'runtime',
+    'recommendation.json',
+  ),
   notes: path.join(REPOSITORY_ROOT, 'data', 'taxonomy', 'notes.json'),
   accords: path.join(REPOSITORY_ROOT, 'data', 'taxonomy', 'accords.json'),
   genders: path.join(REPOSITORY_ROOT, 'data', 'taxonomy', 'genders.json'),
@@ -57,5 +63,11 @@ export const OUTPUT_PATHS = {
     'scripts',
     'build-dataset',
     'build-report.json',
+  ),
+  noteQualityReport: path.join(
+    REPOSITORY_ROOT,
+    'scripts',
+    'build-dataset',
+    'note-quality-report.json',
   ),
 } as const;

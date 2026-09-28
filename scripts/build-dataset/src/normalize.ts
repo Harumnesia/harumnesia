@@ -14,13 +14,23 @@ const EMPTY_VALUES = new Set([
 const ZERO_WIDTH_CHARACTERS = /[\u200b-\u200d\ufeff]/gu;
 
 export const NOTE_ALIASES = {
+  blackcurant: 'black currant',
+  blackcurannt: 'black currant',
+  blackcurrent: 'black currant',
   blackcurrant: 'black currant',
+  cappucino: 'cappuccino',
   'cedar wood': 'cedarwood',
+  cinammon: 'cinnamon',
   drywoods: 'dry woods',
   guaiacwood: 'guaiac wood',
   'lily-of-the-valley': 'lily of the valley',
+  myrhh: 'myrrh',
+  myyrh: 'myrrh',
   'oak moss': 'oakmoss',
+  patchoulli: 'patchouli',
+  patchouly: 'patchouli',
   'sandal wood': 'sandalwood',
+  sandalowood: 'sandalwood',
   'ylang-ylang': 'ylang ylang',
 } as const;
 
@@ -98,11 +108,20 @@ export function normalizeOptionalText(value: string): string | null {
 }
 
 function normalizeTerm(value: string): string | null {
-  const normalized = collapseWhitespace(value)
+  let normalized = collapseWhitespace(value)
+    .replace(/^(?:&\s*)+/u, '')
     .replace(/^[,;:]+/u, '')
     .replace(/[.,;:]+$/u, '')
     .trim()
     .toLocaleLowerCase('en-US');
+
+  const openingParentheses = (normalized.match(/\(/gu) ?? []).length;
+  const closingParentheses = (normalized.match(/\)/gu) ?? []).length;
+  if (closingParentheses > openingParentheses) {
+    normalized = normalized.replace(/^\)+\s*/u, '').replace(/\s*\)+$/u, '');
+  } else if (openingParentheses > closingParentheses) {
+    normalized = normalized.replace(/^\(+\s*/u, '').replace(/\s*\(+$/u, '');
+  }
 
   return EMPTY_VALUES.has(normalized) ? null : normalized;
 }

@@ -1,6 +1,6 @@
 # Harumnesia V2 Dataset
 
-Dokumen ini mendefinisikan production dataset Phase 3. Dataset dibangun secara offline dan deterministik; file JSON di `data/` adalah generated artifacts, bukan file yang diedit manual.
+Dokumen ini mendefinisikan production dataset Phase 3 beserta hardening-nya. Dataset dibangun secara offline dan deterministik; file JSON di `data/` adalah generated artifacts, bukan file yang diedit manual. `data/perfumes.json` tetap menjadi full canonical source of truth, sedangkan `data/runtime/recommendation.json` adalah projection yang lebih kecil untuk recommendation runtime Phase 4.
 
 ## 1. Canonical sources
 
@@ -78,23 +78,32 @@ Gender source mappings are `Male/men → men`, `Female/women → women`, and `Un
 
 Known concentrations `EDC`, `EDP`, `EDT`, `Parfum`, and `Extrait` have explicit mappings. The observed output contains 762 EDP and 17 EDT values. All 285 `XDP` values remain `{ value: null, raw: "XDP" }`; no meaning is inferred. International records have both fields `null`.
 
-Notes are split only on the source comma delimiter, normalized to lowercase, stripped of delimiter-only leading/trailing punctuation, emptied of placeholders, and deduplicated within each stage while preserving order. The following conservative orthographic aliases are explicit and versioned in the generated taxonomy: `blackcurrant → black currant`, `cedar wood → cedarwood`, `drywoods → dry woods`, `guaiacwood → guaiac wood`, `lily-of-the-valley → lily of the valley`, `oak moss → oakmoss`, `sandal wood → sandalwood`, and `ylang-ylang → ylang ylang`. Semantic pairs such as cedar/cedarwood, musk/white musk, vanilla/madagascar vanilla, and oud/agarwood remain distinct.
+Notes are split only on the source comma delimiter, normalized to lowercase, stripped of delimiter-only leading/trailing punctuation, emptied of placeholders, and deduplicated within each stage while preserving order. Leading conjunction artifacts after comma tokenization are removed, including `& opoponax`, `& myyrh`, and repeated `& & mandarin`; internal compounds such as `musk & vanilla` are not split.
+
+The following conservative orthographic aliases are explicit and versioned in the generated taxonomy:
+
+- Existing Phase 3 aliases: `blackcurrant → black currant`, `cedar wood → cedarwood`, `drywoods → dry woods`, `guaiacwood → guaiac wood`, `lily-of-the-valley → lily of the valley`, `oak moss → oakmoss`, `sandal wood → sandalwood`, and `ylang-ylang → ylang ylang`.
+- Added during hardening after occurrence review: `blackcurant`, `blackcurannt`, and `blackcurrent → black currant`; `myrhh` and `myyrh → myrrh`; `patchoulli` and `patchouly → patchouli`; `cinammon → cinnamon`; `cappucino → cappuccino`; and `sandalowood → sandalwood`.
+
+`asphault` was reviewed but not added because it does not occur in the source. Semantic pairs such as cedar/cedarwood, musk/white musk, vanilla/madagascar vanilla, and oud/agarwood remain distinct. Ambiguous orthographic/language variants such as cardamon/cardamome are also preserved.
+
+Obvious orphan boundary parentheses are removed when unambiguous. The pipeline does not reconstruct meaning across comma boundaries. `scripts/build-dataset/note-quality-report.json` therefore preserves and reports `arbutus (madrona` and `rose (delta damascone` as unresolved fragments.
 
 Accords are trimmed, lowercased, deduplicated, and kept in source rank order. No alias or local accord inference is applied. Occasion mapping is limited to observed `Day → day`, `Night → night`, and `Versatile → versatile`; unexpected nonempty values fail the build.
 
 Generated taxonomy files are:
 
-- `data/taxonomy/notes.json`: 2.518 normalized observed note terms and the explicit note alias map.
+- `data/taxonomy/notes.json`: 2.505 normalized observed note terms and the explicit note alias map.
 - `data/taxonomy/accords.json`: 84 normalized observed accord terms.
 - `data/taxonomy/genders.json`: canonical enum and source mappings.
 - `data/taxonomy/concentrations.json`: observed normalized/raw values, safe mappings, and unresolved raw values.
 
-## 4. Canonical ID algorithm
+## 4. Entity-stable canonical ID algorithm
 
-The format is `<market>-<brand-slug>-<name-slug>-<16-hex-hash>`. The suffix is the first 16 hexadecimal characters of SHA-256 over a stable JSON identity object.
+The original Phase 3 content-derived IDs were replaced during hardening because changes to mutable metadata such as price, notes, image, name, brand, or volume must not change entity identity. Backward compatibility mapping is intentionally unnecessary because no production consumer used the earlier IDs.
 
-- Local hash input contains source type, normalized brand/name, concentration, gender, image, raw staged notes after whitespace cleanup, occasion, price, and volume. It excludes row number, array index, timestamp, and `HRMN-*`; the latter is provenance only.
-- International hash input contains source type, normalized brand/name, and the unique source URL.
+- Local format is `local-<normalized-legacy-id>`, for example `HRMN-0001 → local-hrmn-0001`. Only `source.legacyId` determines the ID.
+- International format is `international-<16-hex-hash>`. The suffix is `SHA-256(normalized sourceUrl).slice(0, 16)`. Only the source URL determines the ID.
 
 Records are sorted lexicographically by canonical ID before serialization. JSON uses two-space indentation and a final newline. Identical source bytes and code therefore produce byte-stable output.
 
@@ -104,7 +113,30 @@ No record is removed or merged automatically. Duplicate normalized brand+name is
 
 Current output has 210 duplicate normalized brand+name groups and 225 extra records in those groups. It has zero duplicate IDs, zero source-identity conflicts, and zero exact canonical payload groups. These records remain in `data/perfumes.json` for future reviewed entity resolution.
 
-## 6. Build and validation pipeline
+## 6. Canonical and runtime datasets
+
+`data/perfumes.json` retains all canonical metadata, including provenance, raw notes, asymmetric fields, source URL, legacy ID, image, perfumer, country, year, and rating. Its generated size after hardening is 30.051.556 bytes.
+
+`data/runtime/recommendation.json` is a deterministic minified projection generated only from validated canonical records. It never reads V1 CSV directly and does not repeat source normalization. Each runtime item contains:
+
+```ts
+type RecommendationPerfume = {
+  id: string;
+  name: string;
+  brand: string;
+  market: 'local' | 'international';
+  gender: 'men' | 'women' | 'unisex' | 'unknown';
+  concentration: string | null;
+  price: { amount: number; currency: string } | null;
+  notes: { top: string[]; middle: string[]; base: string[] };
+  accords: string[];
+  occasion: string[];
+};
+```
+
+The runtime file contains all 25.127 canonical IDs in identical order and is 9.690.284 bytes (9,241375 MiB), below the hard limit of 20 MiB. Raw/provenance/display-irrelevant metadata is intentionally omitted; this projection does not implement filtering, similarity, scoring, or ranking.
+
+## 7. Build and validation pipeline
 
 Run from the V2 repository root:
 
@@ -113,11 +145,19 @@ pnpm dataset:build
 pnpm dataset:validate
 ```
 
-`dataset:build` reads and verifies source headers, decodes each source explicitly, maps source-specific fields, normalizes values, validates every record, runs integrity checks, sorts output, writes production JSON/taxonomies, and writes `scripts/build-dataset/build-report.json`. `dataset:validate` works from generated V2 artifacts only; it validates schema, counts, ordering, identity uniqueness, and taxonomy agreement, so CI does not require the V1 sibling repository.
+`dataset:build` reads and verifies source headers, decodes each source explicitly, maps source-specific fields, normalizes values, validates every record, runs integrity checks, sorts output, writes canonical JSON/taxonomies, projects the runtime dataset from canonical records, and writes deterministic build/note-quality reports.
+
+`dataset:validate` works from generated V2 artifacts only, so CI does not require the V1 sibling repository. It authoritatively validates:
+
+- canonical and runtime schemas, counts, ordering, unique IDs, and exact canonical-to-runtime projection;
+- every taxonomy `schemaVersion`, value list, aliases/source mappings, raw values, and unresolved concentration values;
+- the note-quality report against the actual notes taxonomy;
+- canonical/runtime file hashes and byte sizes against `build-report.json`;
+- report totals, market counts, unique IDs, taxonomy sizes, duplicate IDs, source identity conflicts, and all other integrity statistics against actual canonical data.
 
 The production build fails for malformed source rows, missing required headers/values, unsupported occasion values, invalid URLs/schema, out-of-range rating/year, nonpositive price/volume, duplicate IDs/source identities, empty note tokens, taxonomy drift, unexpected counts, or unstable ordering.
 
-## 7. Integrity statistics
+## 8. Integrity statistics
 
 | Metric                                     |          Result |
 | ------------------------------------------ | --------------: |
@@ -134,11 +174,11 @@ The production build fails for malformed source rows, missing required headers/v
 
 The deterministic machine-readable version of these figures is in `scripts/build-dataset/build-report.json`.
 
-## 8. Historical cross-check
+## 9. Historical cross-check
 
 Each historical merged file has 25.127 rows, matching canonical coverage. All 1.064 local legacy IDs and names match the canonical local source. In the historical clean merged file, all 1.064 local rows show identical top/middle/base stages; 1.063 of those rows conflict with the canonical staged source because one original record genuinely has identical stages. Canonical source values win. The lossy cosine projection and order-derived international `FRGN-*` IDs are not reproduced.
 
-## 9. Known limitations and unresolved issues
+## 10. Known limitations and unresolved issues
 
 - Same brand+name groups are not yet classified as duplicate, size variant, reformulation, release, or gender edition.
 - `XDP` meaning remains unresolved by design.
@@ -149,4 +189,5 @@ Each historical merged file has 25.127 rows, matching canonical coverage. All 1.
 - External local image URLs are not availability-checked or migrated, and international source URLs are provenance pages rather than image URLs.
 - Data licensing, Fragrantica attribution requirements, and durable image usage rights require separate project review.
 - Taxonomy aliases are intentionally narrow. Further semantic aliasing requires reviewed evidence and a versioned migration.
+- Two comma/parenthesis fragments remain unresolved in the note-quality report because reconstructing them would require semantic assumptions.
 - Phase 3 does not perform recommendation scoring, feature weighting, or UI work.

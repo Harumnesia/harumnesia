@@ -1,14 +1,16 @@
 import type { Perfume } from '@harumnesia/shared';
 
 import type { CsvRecord } from './csv.js';
-import { createCanonicalId } from './id.js';
+import {
+  createInternationalCanonicalId,
+  createLocalCanonicalId,
+} from './id.js';
 import {
   collapseWhitespace,
   normalizeAccords,
   normalizeConcentration,
   normalizeDisplayText,
   normalizeGender,
-  normalizeIdentityText,
   normalizeNotes,
   normalizeOccasion,
   normalizeOptionalText,
@@ -92,25 +94,8 @@ export function mapLocalRecord(record: CsvRecord): Perfume {
   const image = normalizeOptionalText(value(record, 'image'));
   const legacyId = requiredText(record, 'ID_Perfume');
 
-  const identity = {
-    brand: normalizeIdentityText(rawBrand),
-    concentration:
-      collapseWhitespace(rawConcentration).toLocaleUpperCase('en-US'),
-    gender,
-    image,
-    name: normalizeIdentityText(rawName),
-    notes: {
-      base: collapseWhitespace(rawBase),
-      middle: collapseWhitespace(rawMiddle),
-      top: collapseWhitespace(rawTop),
-    },
-    occasion,
-    priceAmount,
-    volumeValue,
-  };
-
   return {
-    id: createCanonicalId({ market: 'local', brand, name, identity }),
+    id: createLocalCanonicalId(legacyId),
     name,
     brand,
     market: 'local',
@@ -157,12 +142,7 @@ export function mapInternationalRecord(record: CsvRecord): Perfume {
   const rawBase = value(record, 'Base');
 
   return {
-    id: createCanonicalId({
-      market: 'international',
-      brand,
-      name,
-      identity: { sourceUrl },
-    }),
+    id: createInternationalCanonicalId(sourceUrl),
     name,
     brand,
     market: 'international',
