@@ -1,0 +1,10 @@
+node_modules
+dist
+coverage
+pnpm-lock.yaml
+
+# Preserve the existing source-of-truth documents verbatim.
+README.md
+AGENTS.md
+docs/v1-context.md
+docs/v2-plan.md
