@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "values": [
+    "men",
+    "women",
+    "unisex",
+    "unknown"
+  ],
+  "sourceMappings": {
+    "female": "women",
+    "male": "men",
+    "men": "men",
+    "unisex": "unisex",
+    "women": "women"
+  }
+}

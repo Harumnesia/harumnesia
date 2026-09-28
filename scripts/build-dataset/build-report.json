@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "sources": {
+    "local": {
+      "dataset": "Dataset_Harumnesia_clean.csv",
+      "encoding": "UTF-8",
+      "delimiter": ",",
+      "records": 1064,
+      "sha256": "509deadf3946f4f8583ae11532f251295b80eaea939024d24d02eed1a27acc17"
+    },
+    "international": {
+      "dataset": "fra_cleaned.csv",
+      "encoding": "Windows-1252",
+      "delimiter": ";",
+      "records": 24063,
+      "sha256": "6cfc07226db77f94528d02a9e8cce2825fd0a14fff89b918a8ecc40d933a4d6f"
+    }
+  },
+  "output": {
+    "perfumesSha256": "c34b0352485827c1b0a4bfa1d04db7436f25d7de91ba09b4abc85fc78e8a7ba7",
+    "notesTaxonomySize": 2518,
+    "accordsTaxonomySize": 84
+  },
+  "integrity": {
+    "counts": {
+      "total": 25127,
+      "uniqueCanonicalIds": 25127,
+      "local": 1064,
+      "international": 24063,
+      "missingName": 0,
+      "missingBrand": 0
+    },
+    "distributions": {
+      "gender": {
+        "men": 5146,
+        "unisex": 8250,
+        "women": 11731
+      },
+      "concentrationNormalized": {
+        "EDP": 762,
+        "EDT": 17,
+        "none": 24348
+      },
+      "concentrationRaw": {
+        "EDP": 762,
+        "EDT": 17,
+        "none": 24063,
+        "XDP": 285
+      }
+    },
+    "stagedNotes": {
+      "anyStage": {
+        "with": 25127,
+        "without": 0,
+        "percentage": 100
+      },
+      "allStages": {
+        "with": 25093,
+        "without": 34,
+        "percentage": 99.86
+      },
+      "missingTop": 2,
+      "missingMiddle": 24,
+      "missingBase": 27,
+      "emptyTokens": 0
+    },
+    "availability": {
+      "accords": {
+        "with": 24063,
+        "without": 1064,
+        "percentage": 95.77
+      },
+      "image": {
+        "with": 1064,
+        "without": 24063,
+        "percentage": 4.23
+      },
+      "price": {
+        "with": 1064,
+        "without": 24063,
+        "percentage": 4.23
+      },
+      "volume": {
+        "with": 1064,
+        "without": 24063,
+        "percentage": 4.23
+      }
+    },
+    "duplicates": {
+      "exactCanonicalPayload": {
+        "groups": 0,
+        "extraRecords": 0
+      },
+      "normalizedBrandAndName": {
+        "groups": 210,
+        "extraRecords": 225
+      },
+      "canonicalIds": 0,
+      "sourceIdentities": 0
+    },
+    "invalidNumericFields": 0
+  },
+  "historicalCrossCheck": {
+    "referenceRecordCounts": {
+      "cleanCombined": 25127,
+      "legacyCombined": 25127,
+      "finalCosine": 25127
+    },
+    "canonicalCoverageMatchesHistoricalTotal": true,
+    "localLegacyIdsMatched": 1064,
+    "localNamesMatched": 1064,
+    "cleanCombinedLocalRowsWithIdenticalStages": 1064,
+    "cleanCombinedLocalRowsDifferingFromCanonicalStages": 1063,
+    "canonicalSourceWins": true,
+    "discrepancies": [
+      "The clean combined file overwrites local middle/base stages and is not used as canonical input.",
+      "The final cosine file collapses staged notes and omits canonical metadata.",
+      "Historical FRGN IDs depend on merge ordering and are not reused as canonical IDs."
+    ]
+  }
+}

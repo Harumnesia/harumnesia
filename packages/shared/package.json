@@ -16,6 +16,9 @@
   "files": [
     "dist"
   ],
+  "dependencies": {
+    "zod": "^4.6.5"
+  },
   "scripts": {
     "build": "tsc --project tsconfig.json"
   }

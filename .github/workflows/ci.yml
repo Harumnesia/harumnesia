@@ -34,6 +34,9 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Validate generated dataset
+        run: pnpm dataset:validate
+
       - name: Test
         run: pnpm test
 

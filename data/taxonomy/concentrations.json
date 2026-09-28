@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "values": [
+    "EDP",
+    "EDT"
+  ],
+  "rawValues": [
+    "EDP",
+    "EDT",
+    "XDP"
+  ],
+  "sourceMappings": {
+    "EDC": "EDC",
+    "EDP": "EDP",
+    "EDT": "EDT",
+    "EXTRAIT": "Extrait",
+    "EXTRAIT DE PARFUM": "Extrait",
+    "PARFUM": "Parfum"
+  },
+  "unresolvedRawValues": [
+    "XDP"
+  ]
+}
