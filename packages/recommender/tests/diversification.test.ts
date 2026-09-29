@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   createRecommender,
+  DEFAULT_MMR_LAMBDA,
   type RecommendationRequestInput,
 } from '../src/index.js';
 import { getDiversificationPoolSize } from '../src/diversification.js';
@@ -10,6 +11,22 @@ import type { RecommendationPerfume } from '@harumnesia/shared';
 import { fixtureDataset, missingnessDataset } from './fixtures.js';
 
 describe('deterministic ranking and MMR diversification', () => {
+  it('uses the Phase 5 selected MMR default', () => {
+    const request: RecommendationRequestInput = {
+      preferences: { notes: ['vanilla', 'bergamot'] },
+      limit: 5,
+    };
+    const defaultResult = createRecommender(fixtureDataset).recommend(request);
+    const explicitResult = createRecommender(fixtureDataset, {
+      mmrLambda: 0.8,
+    }).recommend(request);
+
+    expect(DEFAULT_MMR_LAMBDA).toBe(0.8);
+    expect(defaultResult.results.map(({ id }) => id)).toEqual(
+      explicitResult.results.map(({ id }) => id),
+    );
+  });
+
   it.each([
     { candidateCount: 6, limit: 5, expected: 6 },
     { candidateCount: 40, limit: 20, expected: 40 },

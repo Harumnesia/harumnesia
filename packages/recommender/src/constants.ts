@@ -11,7 +11,7 @@ export const DEFAULT_SCORING_WEIGHTS: Readonly<ScoringWeights> = Object.freeze({
   concentration: 0.05,
 });
 
-export const DEFAULT_MMR_LAMBDA = 0.85;
+export const DEFAULT_MMR_LAMBDA = 0.8;
 export const MIN_DIVERSIFICATION_POOL = 50;
 export const DIVERSIFICATION_POOL_MULTIPLIER = 10;
 

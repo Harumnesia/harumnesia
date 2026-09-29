@@ -5,6 +5,7 @@ export default defineConfig({
     include: [
       'packages/*/tests/**/*.test.ts',
       'scripts/build-dataset/tests/**/*.test.ts',
+      'scripts/recommender/tests/**/*.test.ts',
     ],
   },
 });

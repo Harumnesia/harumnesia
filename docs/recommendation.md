@@ -146,8 +146,8 @@ Default terpusat di `src/constants.ts`:
 
 Weights dapat dioverride melalui opsi `createRecommender(dataset, { weights })`.
 Konfigurasi custom harus menghasilkan total weight yang positif dan finite.
-Initial weights ini adalah engineering defaults, bukan nilai yang telah
-dioptimalkan secara empiris.
+Weights ini dipertahankan setelah offline engineering evaluation Phase 5, tetapi
+bukan nilai yang telah dioptimalkan terhadap human relevance atau kepuasan user.
 
 ## 10. Missingness-aware weighted scoring
 
@@ -200,11 +200,12 @@ lebih dulu, lalu setiap tahap memilih:
 mmr = lambda * relevance - (1 - lambda) * maxRedundancyToSelected
 ```
 
-Default `lambda` adalah 0.85. Redundancy memakai notes cosine berbobot 0.80 dan
+Default `lambda` adalah 0.80, dipilih melalui offline engineering evaluation
+Phase 5 terhadap baseline 0.85. Redundancy memakai notes cosine berbobot 0.80 dan
 accords cosine berbobot 0.20, lalu dinormalisasi hanya atas channel yang tersedia
 pada kedua kandidat. Tie-break MMR memakai canonical ID ascending. Tidak ada
-same-brand cap atau brand penalty. Lambda dan channel weights adalah engineering
-defaults, bukan nilai empirically optimized.
+same-brand cap atau brand penalty. Channel weights tetap engineering defaults;
+lambda yang dipilih berdasarkan proxy metrics belum membuktikan kepuasan user.
 
 ## 14. Explanation
 
@@ -243,13 +244,15 @@ CI yang flaky.
 - Tidak ada LLM preference extraction.
 - Tidak ada personalization/history atau collaborative filtering.
 - Rating tidak digunakan sebagai signal.
-- Belum ada empirical weight atau MMR tuning.
+- Weight belum dituning secara online; MMR hanya dievaluasi dengan offline proxy
+  metrics tanpa human relevance labels.
 - Browser performance akan divalidasi lebih lanjut saat frontend integration.
 
-## 18. Phase 5 evaluation items
+## 18. Phase 5 evaluation outcome
 
-Phase 5 perlu mengukur ranking relevance, coverage distribution, cross-market
-behavior, redundancy/diversity, sensitivity terhadap weights dan lambda,
-representative query sets, serta browser memory/latency. Evaluasi tersebut yang
-akan menentukan perubahan parameter; Phase 4 tidak mengklaim hasilnya baik,
-akurat, atau optimal.
+Phase 5 menjalankan 159 deterministic offline queries terhadap lima weight
+configuration dan lima MMR lambda. Baseline weights dipertahankan; default lambda
+berubah dari 0.85 ke 0.80 berdasarkan explicit-feature proxy dan diversity
+trade-off. Metodologi, hasil per segment, serta limitations tersedia di
+[`evaluation.md`](evaluation.md). Hasil offline tersebut tidak membuktikan
+recommendation accuracy atau user satisfaction.

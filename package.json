@@ -18,7 +18,8 @@
     "test": "vitest run",
     "dataset:build": "pnpm --filter @harumnesia/shared build && tsx scripts/build-dataset/src/cli.ts build",
     "dataset:validate": "pnpm --filter @harumnesia/shared build && tsx scripts/build-dataset/src/cli.ts validate",
-    "recommender:smoke": "tsx scripts/recommender/smoke.ts"
+    "recommender:smoke": "tsx scripts/recommender/smoke.ts",
+    "recommender:evaluate": "tsx scripts/recommender/evaluate.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
