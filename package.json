@@ -17,7 +17,8 @@
     "typecheck": "tsc --project tsconfig.json",
     "test": "vitest run",
     "dataset:build": "pnpm --filter @harumnesia/shared build && tsx scripts/build-dataset/src/cli.ts build",
-    "dataset:validate": "pnpm --filter @harumnesia/shared build && tsx scripts/build-dataset/src/cli.ts validate"
+    "dataset:validate": "pnpm --filter @harumnesia/shared build && tsx scripts/build-dataset/src/cli.ts validate",
+    "recommender:smoke": "tsx scripts/recommender/smoke.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
