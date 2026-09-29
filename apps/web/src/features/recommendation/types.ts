@@ -51,10 +51,29 @@ export type RecommendationViewModel = {
   visualTone: FragranceVisualTone;
 };
 
+export type PerfumeDetailViewModel = {
+  id: string;
+  name: string;
+  brand: string;
+  marketLabel: string;
+  genderLabel: string;
+  concentration: string | null;
+  priceLabel: string | null;
+  notes: {
+    top: string[];
+    middle: string[];
+    base: string[];
+  };
+  accords: string[];
+  occasions: string[];
+  visualTone: FragranceVisualTone;
+};
+
 export interface RecommendationService {
   recommend(
     request: RecommendationRequestInput,
   ): Promise<RecommendationViewModel[]>;
+  getPerfume(id: string): Promise<PerfumeDetailViewModel | null>;
 }
 
 export type SubmissionStatus = 'idle' | 'submitting' | 'success' | 'error';

@@ -18,4 +18,26 @@ describe('mock recommendation service', () => {
     first.pop();
     expect(await service.recommend({ limit: 5 })).toHaveLength(5);
   });
+
+  it('returns a detail view model for a known fixture id', async () => {
+    const detail = await new MockRecommendationService().getPerfume(
+      'fixture-senja-ubud',
+    );
+    expect(detail).toMatchObject({
+      id: 'fixture-senja-ubud',
+      name: 'Senja di Ubud',
+      marketLabel: 'Local',
+      notes: {
+        top: ['bergamot', 'citrus'],
+        middle: ['jasmine'],
+        base: ['sandalwood', 'amber'],
+      },
+    });
+  });
+
+  it('returns null for an unknown detail id', async () => {
+    expect(
+      await new MockRecommendationService().getPerfume('not-a-fixture'),
+    ).toBeNull();
+  });
 });

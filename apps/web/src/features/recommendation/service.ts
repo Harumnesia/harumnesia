@@ -1,7 +1,12 @@
 import type { RecommendationRequestInput } from '@harumnesia/recommender';
 
-import { MOCK_RECOMMENDATIONS } from '../../fixtures/perfumes.js';
+import {
+  FIXTURE_PERFUMES,
+  MOCK_RECOMMENDATIONS,
+  toPerfumeDetailViewModel,
+} from '../../fixtures/perfumes.js';
 import type {
+  PerfumeDetailViewModel,
   RecommendationService,
   RecommendationViewModel,
 } from './types.js';
@@ -27,6 +32,12 @@ export class MockRecommendationService implements RecommendationService {
       occasions: [...result.occasions],
       reasons: [...result.reasons],
     }));
+  }
+
+  async getPerfume(id: string): Promise<PerfumeDetailViewModel | null> {
+    await Promise.resolve();
+    const perfume = FIXTURE_PERFUMES.find((item) => item.id === id);
+    return perfume ? toPerfumeDetailViewModel(perfume) : null;
   }
 }
 

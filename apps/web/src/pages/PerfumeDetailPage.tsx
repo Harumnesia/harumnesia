@@ -1,17 +1,18 @@
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { PageTitle } from '../components/PageTitle.js';
 import { FragranceArtwork } from '../components/perfume/FragranceArtwork.js';
-import {
-  findFixturePerfume,
-  toRecommendationViewModel,
-} from '../fixtures/perfumes.js';
+import type { PerfumeDetailViewModel } from '../features/recommendation/types.js';
+import { useRecommendationExperience } from '../features/recommendation/useRecommendationExperience.js';
 
-function NotePyramid({
-  notes,
-}: {
-  notes: { top: string[]; middle: string[]; base: string[] };
-}) {
+type DetailState =
+  | { status: 'loading' }
+  | { status: 'success'; perfume: PerfumeDetailViewModel }
+  | { status: 'not-found' }
+  | { status: 'error' };
+
+function NotePyramid({ notes }: Pick<PerfumeDetailViewModel, 'notes'>) {
   const layers = [
     ['Top', notes.top],
     ['Middle', notes.middle],
@@ -30,19 +31,58 @@ function NotePyramid({
   );
 }
 
-export function PerfumeDetailPage() {
-  const { id } = useParams();
-  const perfume = findFixturePerfume(id);
+function PerfumeDetailLookup({ id }: { id: string | undefined }) {
+  const { getPerfume } = useRecommendationExperience();
+  const [retryCount, setRetryCount] = useState(0);
+  const [state, setState] = useState<DetailState>(
+    id ? { status: 'loading' } : { status: 'not-found' },
+  );
 
-  if (!perfume) {
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!id) {
+      return;
+    }
+
+    void getPerfume(id)
+      .then((perfume) => {
+        if (cancelled) return;
+        setState(
+          perfume ? { status: 'success', perfume } : { status: 'not-found' },
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setState({ status: 'error' });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [getPerfume, id, retryCount]);
+
+  if (state.status === 'loading') {
+    return (
+      <section className="empty-state section-shell section-shell--narrow">
+        <PageTitle title="Loading fragrance" />
+        <p className="eyebrow">Following the scent trail</p>
+        <h1>Finding that fragrance…</h1>
+        <p className="lede" role="status">
+          Preparing its notes and details.
+        </p>
+      </section>
+    );
+  }
+
+  if (state.status === 'not-found') {
     return (
       <section className="empty-state section-shell section-shell--narrow">
         <PageTitle title="Fragrance not found" />
         <p className="eyebrow">Lost on the scent trail</p>
         <h1>We could not find that fragrance.</h1>
         <p className="lede">
-          The link may be outdated, or this fragrance is not part of the preview
-          collection.
+          The link may be outdated, or this fragrance is not currently
+          available.
         </p>
         <Link className="button" to="/results">
           Browse the edit
@@ -51,7 +91,35 @@ export function PerfumeDetailPage() {
     );
   }
 
-  const view = toRecommendationViewModel(perfume, 1, []);
+  if (state.status === 'error') {
+    return (
+      <section className="empty-state section-shell section-shell--narrow">
+        <PageTitle title="Unable to load fragrance" />
+        <p className="eyebrow">The scent trail was interrupted</p>
+        <h1>We could not load that fragrance.</h1>
+        <p className="lede" role="alert">
+          Please try again. Your recommendations are still available.
+        </p>
+        <div className="button-row">
+          <button
+            className="button"
+            onClick={() => {
+              setState({ status: 'loading' });
+              setRetryCount((count) => count + 1);
+            }}
+            type="button"
+          >
+            Try again
+          </button>
+          <Link className="text-link" to="/results">
+            Back to recommendations
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
+  const { perfume } = state;
 
   return (
     <>
@@ -61,17 +129,17 @@ export function PerfumeDetailPage() {
           <Link className="text-link" to="/results">
             <span aria-hidden="true">←</span> Back to recommendations
           </Link>
-          <FragranceArtwork tone={view.visualTone} />
+          <FragranceArtwork tone={perfume.visualTone} />
         </div>
         <div className="detail__content">
           <p className="eyebrow">{perfume.brand}</p>
           <h1>{perfume.name}</h1>
           <p className="metadata">
-            {view.marketLabel} · {view.genderLabel}
+            {perfume.marketLabel} · {perfume.genderLabel}
             {perfume.concentration ? ` · ${perfume.concentration}` : ''}
           </p>
-          {view.priceLabel ? (
-            <p className="detail__price">{view.priceLabel}</p>
+          {perfume.priceLabel ? (
+            <p className="detail__price">{perfume.priceLabel}</p>
           ) : null}
           <p className="detail__intro">
             Explore the structure of this fragrance through its listed notes and
@@ -99,7 +167,7 @@ export function PerfumeDetailPage() {
             </section>
           ) : null}
 
-          {perfume.occasion.length > 0 ? (
+          {perfume.occasions.length > 0 ? (
             <section
               aria-labelledby="occasions-heading"
               className="detail-section"
@@ -107,7 +175,7 @@ export function PerfumeDetailPage() {
               <p className="eyebrow">Best suited</p>
               <h2 id="occasions-heading">Occasions</h2>
               <ul className="tag-list">
-                {perfume.occasion.map((occasion) => (
+                {perfume.occasions.map((occasion) => (
                   <li key={occasion}>{occasion}</li>
                 ))}
               </ul>
@@ -117,4 +185,9 @@ export function PerfumeDetailPage() {
       </article>
     </>
   );
+}
+
+export function PerfumeDetailPage() {
+  const { id } = useParams();
+  return <PerfumeDetailLookup id={id} key={id ?? 'missing'} />;
 }

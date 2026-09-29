@@ -6,7 +6,10 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 
 import { AppRoutes } from './App.js';
-import type { RecommendationService } from './features/recommendation/types.js';
+import type {
+  PerfumeDetailViewModel,
+  RecommendationService,
+} from './features/recommendation/types.js';
 
 afterEach(cleanup);
 
@@ -72,6 +75,7 @@ describe('frontend routes and states', () => {
   it('renders a useful empty-result state', async () => {
     const emptyService: RecommendationService = {
       recommend: async () => [],
+      getPerfume: async () => null,
     };
     const user = userEvent.setup();
     renderRoute('/discover', emptyService);
@@ -89,6 +93,7 @@ describe('frontend routes and states', () => {
       recommend: async () => {
         throw new Error('fixture failure');
       },
+      getPerfume: async () => null,
     };
     const user = userEvent.setup();
     renderRoute('/discover', errorService);
@@ -112,10 +117,10 @@ describe('frontend routes and states', () => {
     expect(container.textContent).not.toMatch(/mmr|similarity score/i);
   });
 
-  it('renders a valid fragrance detail route and note pyramid', () => {
+  it('renders a valid fragrance detail route and note pyramid', async () => {
     renderRoute('/perfume/fixture-senja-ubud');
     expect(
-      screen.getByRole('heading', { name: 'Senja di Ubud', level: 1 }),
+      await screen.findByRole('heading', { name: 'Senja di Ubud', level: 1 }),
     ).not.toBeNull();
     expect(
       screen.getByRole('heading', { name: 'The note pyramid' }),
@@ -123,16 +128,81 @@ describe('frontend routes and states', () => {
     expect(screen.getByText('bergamot · citrus')).not.toBeNull();
   });
 
-  it('omits unavailable detail metadata instead of showing broken values', () => {
+  it('omits unavailable detail metadata instead of showing broken values', async () => {
     const { container } = renderRoute('/perfume/fixture-vanilla-archive');
+    await screen.findByRole('heading', { name: 'Vanilla Archive', level: 1 });
     expect(container.textContent).not.toMatch(/null|undefined/i);
     expect(screen.queryByRole('heading', { name: 'Occasions' })).toBeNull();
   });
 
-  it('handles an invalid fragrance id', () => {
+  it('renders a non-fixture detail supplied by the service', async () => {
+    const customDetail: PerfumeDetailViewModel = {
+      id: 'local-hrmn-0001',
+      name: 'Production Bloom',
+      brand: 'Future Service',
+      marketLabel: 'Local',
+      genderLabel: 'Unisex',
+      concentration: 'EDP',
+      priceLabel: 'Rp 450.000',
+      notes: {
+        top: ['bergamot'],
+        middle: ['jasmine'],
+        base: ['sandalwood'],
+      },
+      accords: [],
+      occasions: ['day'],
+      visualTone: 'citrus',
+    };
+    const customService: RecommendationService = {
+      recommend: async () => [],
+      getPerfume: async (id) => (id === customDetail.id ? customDetail : null),
+    };
+
+    renderRoute('/perfume/local-hrmn-0001', customService);
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Production Bloom',
+        level: 1,
+      }),
+    ).not.toBeNull();
+    expect(screen.getByText('Future Service')).not.toBeNull();
+  });
+
+  it('renders the detail loading state while service lookup is pending', () => {
+    const pendingService: RecommendationService = {
+      recommend: async () => [],
+      getPerfume: () => new Promise(() => undefined),
+    };
+
+    renderRoute('/perfume/local-pending', pendingService);
+
+    expect(screen.getByRole('status').textContent).toMatch(/preparing/i);
+    expect(
+      screen.getByRole('heading', { name: /finding that fragrance/i }),
+    ).not.toBeNull();
+  });
+
+  it('renders a recoverable detail service error', async () => {
+    const errorService: RecommendationService = {
+      recommend: async () => [],
+      getPerfume: async () => {
+        throw new Error('lookup failed');
+      },
+    };
+
+    renderRoute('/perfume/local-error', errorService);
+
+    expect(
+      await screen.findByRole('heading', { name: /could not load/i }),
+    ).not.toBeNull();
+    expect(screen.getByRole('button', { name: 'Try again' })).not.toBeNull();
+  });
+
+  it('handles an invalid fragrance id', async () => {
     renderRoute('/perfume/not-real');
     expect(
-      screen.getByRole('heading', { name: /could not find/i }),
+      await screen.findByRole('heading', { name: /could not find/i }),
     ).not.toBeNull();
     expect(
       screen.getByRole('link', { name: 'Browse the edit' }),

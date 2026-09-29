@@ -1,4 +1,6 @@
-import { useId, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
+
+export const MAX_VISIBLE_OPTIONS = 10;
 
 export function TagSelector({
   label,
@@ -16,13 +18,19 @@ export function TagSelector({
   const inputId = useId();
   const hintId = useId();
   const [query, setQuery] = useState('');
-  const available = options.filter(
-    (option) =>
-      !selected.includes(option) &&
-      option
-        .toLocaleLowerCase('en-US')
-        .includes(query.toLocaleLowerCase('en-US')),
+  const normalizedQuery = query.trim().toLocaleLowerCase('en-US');
+  const matches = useMemo(
+    () =>
+      normalizedQuery
+        ? options.filter(
+            (option) =>
+              !selected.includes(option) &&
+              option.toLocaleLowerCase('en-US').includes(normalizedQuery),
+          )
+        : [],
+    [normalizedQuery, options, selected],
   );
+  const visibleOptions = matches.slice(0, MAX_VISIBLE_OPTIONS);
 
   function add(value: string) {
     if (!selected.includes(value)) onChange([...selected, value]);
@@ -59,25 +67,31 @@ export function TagSelector({
         id={inputId}
         onChange={(event) => setQuery(event.target.value)}
         onKeyDown={(event) => {
-          if (event.key === 'Enter' && available[0]) {
+          if (event.key === 'Enter' && visibleOptions[0]) {
             event.preventDefault();
-            add(available[0]);
+            add(visibleOptions[0]);
           }
         }}
         placeholder="Type to filter, then press Enter"
         value={query}
       />
-      {available.length > 0 ? (
+      {visibleOptions.length > 0 ? (
         <div className="option-list" aria-label={`${label} options`}>
-          {available.map((option) => (
+          {visibleOptions.map((option) => (
             <button key={option} onClick={() => add(option)} type="button">
               + {option}
             </button>
           ))}
         </div>
-      ) : (
+      ) : normalizedQuery ? (
         <p className="field-hint">No matching options.</p>
-      )}
+      ) : null}
+      {matches.length > MAX_VISIBLE_OPTIONS ? (
+        <p className="field-hint">
+          Showing the first {MAX_VISIBLE_OPTIONS} matches. Keep typing to narrow
+          the list.
+        </p>
+      ) : null}
     </div>
   );
 }

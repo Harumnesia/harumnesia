@@ -2,6 +2,7 @@ import type { RecommendationPerfume } from '@harumnesia/shared';
 
 import type {
   FragranceVisualTone,
+  PerfumeDetailViewModel,
   RecommendationViewModel,
 } from '../features/recommendation/types.js';
 
@@ -194,20 +195,27 @@ function label(value: string): string {
   return value.charAt(0).toLocaleUpperCase('en-US') + value.slice(1);
 }
 
-export function toRecommendationViewModel(
-  perfume: RecommendationPerfume,
-  rank: number,
-  reasons: readonly string[],
-): RecommendationViewModel {
+function toDisplayFields(perfume: RecommendationPerfume) {
   return {
     id: perfume.id,
-    rank,
     name: perfume.name,
     brand: perfume.brand,
     marketLabel: label(perfume.market),
     genderLabel: label(perfume.gender),
     concentration: perfume.concentration,
     priceLabel: formatPrice(perfume),
+    visualTone: VISUAL_TONES[perfume.id] ?? ('iris' as const),
+  };
+}
+
+export function toRecommendationViewModel(
+  perfume: RecommendationPerfume,
+  rank: number,
+  reasons: readonly string[],
+): RecommendationViewModel {
+  return {
+    ...toDisplayFields(perfume),
+    rank,
     keyNotes: [
       ...new Set([
         ...perfume.notes.top,
@@ -218,7 +226,21 @@ export function toRecommendationViewModel(
     accords: [...perfume.accords],
     occasions: [...perfume.occasion],
     reasons: [...reasons],
-    visualTone: VISUAL_TONES[perfume.id] ?? 'iris',
+  };
+}
+
+export function toPerfumeDetailViewModel(
+  perfume: RecommendationPerfume,
+): PerfumeDetailViewModel {
+  return {
+    ...toDisplayFields(perfume),
+    notes: {
+      top: [...perfume.notes.top],
+      middle: [...perfume.notes.middle],
+      base: [...perfume.notes.base],
+    },
+    accords: [...perfume.accords],
+    occasions: [...perfume.occasion],
   };
 }
 
@@ -267,9 +289,3 @@ export const MOCK_RECOMMENDATIONS: RecommendationViewModel[] = RESULT_IDS.map(
     );
   },
 );
-
-export function findFixturePerfume(
-  id: string | undefined,
-): RecommendationPerfume | undefined {
-  return FIXTURE_PERFUMES.find((perfume) => perfume.id === id);
-}

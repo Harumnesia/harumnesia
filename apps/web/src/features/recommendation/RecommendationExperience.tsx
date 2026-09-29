@@ -1,4 +1,4 @@
-import { type PropsWithChildren, useMemo, useState } from 'react';
+import { type PropsWithChildren, useCallback, useMemo, useState } from 'react';
 
 import {
   RecommendationExperienceContext,
@@ -31,31 +31,42 @@ export function RecommendationExperienceProvider({
   );
   const [error, setError] = useState<string | null>(null);
 
+  const getPerfume = useCallback(
+    (id: string) => service.getPerfume(id),
+    [service],
+  );
+
+  const submit = useCallback(
+    async (form: DiscoveryFormState) => {
+      setLastForm(form);
+      setStatus('submitting');
+      setError(null);
+      try {
+        const nextResults = await service.recommend(
+          toRecommendationRequest(form),
+        );
+        setResults(nextResults);
+        setStatus('success');
+        return true;
+      } catch {
+        setStatus('error');
+        setError('We could not prepare recommendations. Please try again.');
+        return false;
+      }
+    },
+    [service],
+  );
+
   const value = useMemo<RecommendationExperienceValue>(
     () => ({
       status,
       results,
       lastForm,
       error,
-      async submit(form) {
-        setLastForm(form);
-        setStatus('submitting');
-        setError(null);
-        try {
-          const nextResults = await service.recommend(
-            toRecommendationRequest(form),
-          );
-          setResults(nextResults);
-          setStatus('success');
-          return true;
-        } catch {
-          setStatus('error');
-          setError('We could not prepare recommendations. Please try again.');
-          return false;
-        }
-      },
+      getPerfume,
+      submit,
     }),
-    [error, lastForm, results, service, status],
+    [error, getPerfume, lastForm, results, status, submit],
   );
 
   return (
