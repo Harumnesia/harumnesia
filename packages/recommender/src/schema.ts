@@ -132,8 +132,10 @@ export function resolveRecommenderOptions(options: unknown) {
     (total, weight) => total + weight,
     0,
   );
-  if (totalWeight <= 0) {
-    throw new Error('At least one recommendation weight must be positive.');
+  if (!Number.isFinite(totalWeight) || totalWeight <= 0) {
+    throw new Error(
+      'Recommendation weights must have a positive finite total.',
+    );
   }
 
   return {

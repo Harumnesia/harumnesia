@@ -145,6 +145,7 @@ Default terpusat di `src/constants.ts`:
 | Concentration match |   0.05 |
 
 Weights dapat dioverride melalui opsi `createRecommender(dataset, { weights })`.
+Konfigurasi custom harus menghasilkan total weight yang positif dan finite.
 Initial weights ini adalah engineering defaults, bukan nilai yang telah
 dioptimalkan secara empiris.
 

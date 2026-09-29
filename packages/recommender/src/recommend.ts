@@ -3,7 +3,10 @@ import type { RecommendationPerfume } from '@harumnesia/shared';
 import { buildMatch, buildReasons } from './explain.js';
 import { filterCandidates } from './filter.js';
 import { createRecommenderIndex } from './indexer.js';
-import { diversifyCandidates } from './diversification.js';
+import {
+  diversifyCandidates,
+  getDiversificationPoolSize,
+} from './diversification.js';
 import {
   RecommendationRequestSchema,
   resolveRecommenderOptions,
@@ -90,9 +93,9 @@ export function createRecommender(
         diagnostics: {
           totalPerfumes: index.candidates.length,
           survivingCandidates: filtered.length,
-          diversificationPoolSize: Math.min(
+          diversificationPoolSize: getDiversificationPoolSize(
             scored.length,
-            Math.max(50, normalizedRequest.limit * 10),
+            normalizedRequest.limit,
           ),
           requestedWeight: prepared.requestedWeight,
           ignoredPreferences: {

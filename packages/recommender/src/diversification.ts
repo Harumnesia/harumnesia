@@ -17,6 +17,16 @@ type RankedCandidate = {
   preDiversificationRank: number;
 };
 
+export function getDiversificationPoolSize(
+  candidateCount: number,
+  limit: number,
+): number {
+  return Math.min(
+    candidateCount,
+    Math.max(MIN_DIVERSIFICATION_POOL, limit * DIVERSIFICATION_POOL_MULTIPLIER),
+  );
+}
+
 function candidateSimilarity(
   left: ScoredCandidate,
   right: ScoredCandidate,
@@ -74,10 +84,7 @@ export function diversifyCandidates(
   notesIdf: ReadonlyMap<string, number>,
   accordsIdf: ReadonlyMap<string, number>,
 ): DiversifiedCandidate[] {
-  const poolSize = Math.min(
-    sortedCandidates.length,
-    Math.max(MIN_DIVERSIFICATION_POOL, limit * DIVERSIFICATION_POOL_MULTIPLIER),
-  );
+  const poolSize = getDiversificationPoolSize(sortedCandidates.length, limit);
   const remaining: RankedCandidate[] = sortedCandidates
     .slice(0, poolSize)
     .map((candidate, index) => ({

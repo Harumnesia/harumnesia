@@ -4,11 +4,52 @@ import {
   createRecommender,
   type RecommendationRequestInput,
 } from '../src/index.js';
+import { getDiversificationPoolSize } from '../src/diversification.js';
 import type { RecommendationPerfume } from '@harumnesia/shared';
 
 import { fixtureDataset, missingnessDataset } from './fixtures.js';
 
 describe('deterministic ranking and MMR diversification', () => {
+  it.each([
+    { candidateCount: 6, limit: 5, expected: 6 },
+    { candidateCount: 40, limit: 20, expected: 40 },
+    { candidateCount: 250, limit: 5, expected: 50 },
+    { candidateCount: 250, limit: 20, expected: 200 },
+  ])(
+    'uses a $expected-item pool for $candidateCount candidates and limit $limit',
+    ({ candidateCount, limit, expected }) => {
+      expect(getDiversificationPoolSize(candidateCount, limit)).toBe(expected);
+    },
+  );
+
+  it('reports the same diversification pool calculation for small and large candidate sets', () => {
+    const largeDataset: RecommendationPerfume[] = Array.from(
+      { length: 250 },
+      (_, index) => ({
+        ...fixtureDataset[index % fixtureDataset.length]!,
+        id: `generated-${index.toString().padStart(3, '0')}`,
+      }),
+    );
+    const cases = [
+      { dataset: fixtureDataset, limit: undefined },
+      { dataset: fixtureDataset, limit: 20 },
+      { dataset: largeDataset, limit: undefined },
+      { dataset: largeDataset, limit: 20 },
+    ];
+
+    for (const testCase of cases) {
+      const recommender = createRecommender(testCase.dataset);
+      const response = recommender.recommend(
+        testCase.limit === undefined ? {} : { limit: testCase.limit },
+      );
+      const effectiveLimit = testCase.limit ?? 5;
+
+      expect(response.diagnostics.diversificationPoolSize).toBe(
+        getDiversificationPoolSize(testCase.dataset.length, effectiveLimit),
+      );
+    }
+  });
+
   it('is deterministic across calls and engine instances', () => {
     const request: RecommendationRequestInput = {
       preferences: { notes: ['vanilla', 'bergamot'], accords: ['woody'] },
@@ -128,7 +169,7 @@ describe('deterministic ranking and MMR diversification', () => {
     expect(twin?.preDiversificationRank).toBe(2);
   });
 
-  it('validates MMR and weight options', () => {
+  it('validates MMR and rejects non-positive total weight', () => {
     expect(() =>
       createRecommender(fixtureDataset, { mmrLambda: 1.1 }),
     ).toThrow();
@@ -142,6 +183,33 @@ describe('deterministic ranking and MMR diversification', () => {
           concentration: 0,
         },
       }),
-    ).toThrow('At least one recommendation weight must be positive');
+    ).toThrow('Recommendation weights must have a positive finite total');
+  });
+
+  it('rejects finite individual weights whose total overflows', () => {
+    expect(() =>
+      createRecommender(fixtureDataset, {
+        weights: {
+          notes: Number.MAX_VALUE,
+          accords: Number.MAX_VALUE,
+        },
+      }),
+    ).toThrow('Recommendation weights must have a positive finite total');
+  });
+
+  it('accepts normal finite custom weights', () => {
+    const recommender = createRecommender(fixtureDataset, {
+      weights: {
+        notes: 0.7,
+        accords: 0.3,
+        gender: 0,
+        occasion: 0,
+        concentration: 0,
+      },
+    });
+
+    expect(() =>
+      recommender.recommend({ preferences: { notes: ['vanilla'] } }),
+    ).not.toThrow();
   });
 });
