@@ -3,13 +3,28 @@ import { Link } from 'react-router-dom';
 import { PageTitle } from '../components/PageTitle.js';
 import { PerfumeCard } from '../components/perfume/PerfumeCard.js';
 import { useRecommendationExperience } from '../features/recommendation/useRecommendationExperience.js';
-import { MOCK_RECOMMENDATIONS } from '../fixtures/perfumes.js';
 
 export function ResultsPage() {
   const { results } = useRecommendationExperience();
-  const displayedResults = results ?? MOCK_RECOMMENDATIONS;
 
-  if (displayedResults.length === 0) {
+  if (results === null) {
+    return (
+      <section className="empty-state section-shell section-shell--narrow">
+        <PageTitle title="Start a fragrance discovery" />
+        <p className="eyebrow">No recommendation session yet</p>
+        <h1>Start with your fragrance preferences.</h1>
+        <p className="lede">
+          Choose the notes, accords, and context you enjoy to prepare a real
+          recommendation edit.
+        </p>
+        <Link className="button" to="/discover">
+          Start discovery
+        </Link>
+      </section>
+    );
+  }
+
+  if (results.length === 0) {
     return (
       <section className="empty-state section-shell section-shell--narrow">
         <PageTitle title="No matches yet" />
@@ -31,17 +46,12 @@ export function ResultsPage() {
       <PageTitle title="Your fragrance edit" />
       <section className="page-intro section-shell">
         <p className="eyebrow">Your considered edit</p>
-        <h1>{displayedResults.length} fragrances, chosen with intention.</h1>
+        <h1>{results.length} fragrances, chosen with intention.</h1>
         <p className="lede">
           Each match reflects a different part of your scent profile. The
           reasons below explain the connection—without exposing technical
           scores.
         </p>
-        {results === null ? (
-          <p className="preview-notice" role="status">
-            Preview edit shown. Start a discovery to apply your own choices.
-          </p>
-        ) : null}
         <Link className="text-link" to="/discover">
           <span aria-hidden="true">←</span> Refine your choices
         </Link>
@@ -50,7 +60,7 @@ export function ResultsPage() {
         className="results-list section-shell"
         aria-label="Recommended fragrances"
       >
-        {displayedResults.map((perfume) => (
+        {results.map((perfume) => (
           <PerfumeCard key={perfume.id} perfume={perfume} showReasons />
         ))}
       </section>

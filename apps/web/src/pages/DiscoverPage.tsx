@@ -1,23 +1,24 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ChoiceGroup } from '../components/discovery/ChoiceGroup.js';
 import { TagSelector } from '../components/discovery/TagSelector.js';
 import { PageTitle } from '../components/PageTitle.js';
 import { validateDiscoveryForm } from '../features/recommendation/form.js';
+import { loadProductionTaxonomy } from '../features/recommendation/taxonomy.js';
 import { useRecommendationExperience } from '../features/recommendation/useRecommendationExperience.js';
 import {
   INITIAL_DISCOVERY_FORM,
   type DiscoveryFormState,
+  type DiscoveryTaxonomy,
+  type DiscoveryTaxonomyLoader,
   type MarketChoice,
 } from '../features/recommendation/types.js';
-import {
-  ACCORD_OPTIONS,
-  CONCENTRATION_OPTIONS,
-  GENDER_OPTIONS,
-  NOTE_OPTIONS,
-  OCCASION_OPTIONS,
-} from '../fixtures/taxonomy.js';
+
+type TaxonomyState =
+  | { status: 'loading' }
+  | { status: 'success'; taxonomy: DiscoveryTaxonomy }
+  | { status: 'error' };
 
 function cloneInitialForm(): DiscoveryFormState {
   return {
@@ -34,13 +35,35 @@ function cloneInitialForm(): DiscoveryFormState {
   };
 }
 
-export function DiscoverPage() {
+export function DiscoverPage({
+  loadTaxonomy = loadProductionTaxonomy,
+}: {
+  loadTaxonomy?: DiscoveryTaxonomyLoader;
+}) {
   const navigate = useNavigate();
   const { status, error, submit, lastForm } = useRecommendationExperience();
   const [form, setForm] = useState<DiscoveryFormState>(() =>
     lastForm === INITIAL_DISCOVERY_FORM ? cloneInitialForm() : lastForm,
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [taxonomyRetry, setTaxonomyRetry] = useState(0);
+  const [taxonomyState, setTaxonomyState] = useState<TaxonomyState>({
+    status: 'loading',
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadTaxonomy()
+      .then((taxonomy) => {
+        if (!cancelled) setTaxonomyState({ status: 'success', taxonomy });
+      })
+      .catch(() => {
+        if (!cancelled) setTaxonomyState({ status: 'error' });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [loadTaxonomy, taxonomyRetry]);
 
   function update<K extends keyof DiscoveryFormState>(
     key: K,
@@ -56,6 +79,44 @@ export function DiscoverPage() {
     if (Object.keys(nextErrors).length > 0) return;
     if (await submit(form)) navigate('/results');
   }
+
+  if (taxonomyState.status === 'loading') {
+    return (
+      <section className="empty-state section-shell section-shell--narrow">
+        <PageTitle title="Loading discovery" />
+        <p className="eyebrow">Preparing discovery</p>
+        <h1>Loading fragrance vocabulary…</h1>
+        <p className="lede" role="status">
+          Gathering the notes and accords you can explore.
+        </p>
+      </section>
+    );
+  }
+
+  if (taxonomyState.status === 'error') {
+    return (
+      <section className="empty-state section-shell section-shell--narrow">
+        <PageTitle title="Unable to load discovery" />
+        <p className="eyebrow">Discovery was interrupted</p>
+        <h1>We could not load the fragrance vocabulary.</h1>
+        <p className="lede" role="alert">
+          Please try again before choosing your preferences.
+        </p>
+        <button
+          className="button"
+          onClick={() => {
+            setTaxonomyState({ status: 'loading' });
+            setTaxonomyRetry((retry) => retry + 1);
+          }}
+          type="button"
+        >
+          Try again
+        </button>
+      </section>
+    );
+  }
+
+  const { taxonomy } = taxonomyState;
 
   return (
     <>
@@ -87,14 +148,14 @@ export function DiscoverPage() {
             hint="Try a material you already love, such as bergamot or sandalwood."
             label="Preferred notes"
             onChange={(values) => update('preferredNotes', values)}
-            options={NOTE_OPTIONS}
+            options={taxonomy.notes}
             selected={form.preferredNotes}
           />
           <TagSelector
             hint="Accords describe an overall impression, such as fresh or woody."
             label="Preferred accords"
             onChange={(values) => update('preferredAccords', values)}
-            options={ACCORD_OPTIONS}
+            options={taxonomy.accords}
             selected={form.preferredAccords}
           />
         </section>
@@ -108,7 +169,7 @@ export function DiscoverPage() {
             </div>
           </div>
           <ChoiceGroup
-            choices={GENDER_OPTIONS}
+            choices={taxonomy.genders}
             legend="Preferred expression"
             onChange={(values) =>
               update(
@@ -119,13 +180,13 @@ export function DiscoverPage() {
             selected={form.preferredGenders}
           />
           <ChoiceGroup
-            choices={OCCASION_OPTIONS}
+            choices={taxonomy.occasions}
             legend="Preferred occasion"
             onChange={(values) => update('preferredOccasions', values)}
             selected={form.preferredOccasions}
           />
           <ChoiceGroup
-            choices={CONCENTRATION_OPTIONS}
+            choices={taxonomy.concentrations}
             legend="Preferred concentration"
             onChange={(values) => update('preferredConcentrations', values)}
             selected={form.preferredConcentrations}
@@ -210,7 +271,7 @@ export function DiscoverPage() {
             </div>
 
             <ChoiceGroup
-              choices={GENDER_OPTIONS}
+              choices={taxonomy.genders}
               legend="Only these expressions"
               onChange={(values) =>
                 update(
@@ -221,13 +282,13 @@ export function DiscoverPage() {
               selected={form.strictGenders}
             />
             <ChoiceGroup
-              choices={OCCASION_OPTIONS}
+              choices={taxonomy.occasions}
               legend="Only these occasions"
               onChange={(values) => update('strictOccasions', values)}
               selected={form.strictOccasions}
             />
             <ChoiceGroup
-              choices={CONCENTRATION_OPTIONS}
+              choices={taxonomy.concentrations}
               legend="Only these concentrations"
               onChange={(values) => update('strictConcentrations', values)}
               selected={form.strictConcentrations}
@@ -236,7 +297,7 @@ export function DiscoverPage() {
               hint="Any fragrance containing these notes will be excluded."
               label="Excluded notes"
               onChange={(values) => update('excludedNotes', values)}
-              options={NOTE_OPTIONS}
+              options={taxonomy.notes}
               selected={form.excludedNotes}
             />
           </div>
@@ -248,14 +309,14 @@ export function DiscoverPage() {
           </p>
         ) : null}
         <div className="submit-row">
-          <p>Your choices stay in this browser preview.</p>
+          <p>Your choices are processed in this browser session.</p>
           <button
             className="button"
             disabled={status === 'submitting'}
             type="submit"
           >
             {status === 'submitting'
-              ? 'Preparing your edit…'
+              ? 'Preparing your fragrance recommendations…'
               : 'Show my recommendations'}
           </button>
         </div>

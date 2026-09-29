@@ -6,9 +6,11 @@ import { FragranceArtwork } from './FragranceArtwork.js';
 export function PerfumeCard({
   perfume,
   showReasons = false,
+  linkToDetail = true,
 }: {
   perfume: RecommendationViewModel;
   showReasons?: boolean;
+  linkToDetail?: boolean;
 }) {
   return (
     <article className="perfume-card">
@@ -55,9 +57,13 @@ export function PerfumeCard({
             </ul>
           </div>
         ) : null}
-        <Link className="text-link" to={`/perfume/${perfume.id}`}>
-          Explore fragrance <span aria-hidden="true">→</span>
-        </Link>
+        {linkToDetail ? (
+          <Link className="text-link" to={`/perfume/${perfume.id}`}>
+            Explore fragrance <span aria-hidden="true">→</span>
+          </Link>
+        ) : (
+          <span className="text-link">Editorial sample</span>
+        )}
       </div>
     </article>
   );

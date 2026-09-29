@@ -2,6 +2,19 @@ import type { RecommendationRequestInput } from '@harumnesia/recommender';
 
 export type MarketChoice = 'all' | 'local' | 'international';
 
+export type DiscoveryTaxonomy = {
+  notes: string[];
+  accords: string[];
+  genders: Array<{
+    value: 'men' | 'women' | 'unisex';
+    label: string;
+  }>;
+  occasions: string[];
+  concentrations: string[];
+};
+
+export type DiscoveryTaxonomyLoader = () => Promise<DiscoveryTaxonomy>;
+
 export type DiscoveryFormState = {
   preferredNotes: string[];
   preferredAccords: string[];

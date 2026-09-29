@@ -3,13 +3,13 @@ import type { RecommendationRequestInput } from '@harumnesia/recommender';
 import {
   FIXTURE_PERFUMES,
   MOCK_RECOMMENDATIONS,
-  toPerfumeDetailViewModel,
 } from '../../fixtures/perfumes.js';
 import type {
   PerfumeDetailViewModel,
   RecommendationService,
   RecommendationViewModel,
 } from './types.js';
+import { toPerfumeDetailViewModel } from './view-model.js';
 
 export class MockRecommendationService implements RecommendationService {
   readonly #results: readonly RecommendationViewModel[];

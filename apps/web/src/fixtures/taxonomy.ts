@@ -32,3 +32,11 @@ export const GENDER_OPTIONS = [
   { value: 'women', label: 'Women' },
   { value: 'unisex', label: 'Unisex' },
 ] as const;
+
+export const FIXTURE_DISCOVERY_TAXONOMY = {
+  notes: [...NOTE_OPTIONS],
+  accords: [...ACCORD_OPTIONS],
+  genders: GENDER_OPTIONS.map((gender) => ({ ...gender })),
+  occasions: [...OCCASION_OPTIONS],
+  concentrations: [...CONCENTRATION_OPTIONS],
+};

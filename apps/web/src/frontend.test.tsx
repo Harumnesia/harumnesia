@@ -6,17 +6,25 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 
 import { AppRoutes } from './App.js';
+import { mockRecommendationService } from './features/recommendation/service.js';
 import type {
   PerfumeDetailViewModel,
   RecommendationService,
 } from './features/recommendation/types.js';
+import { FIXTURE_DISCOVERY_TAXONOMY } from './fixtures/taxonomy.js';
 
 afterEach(cleanup);
 
-function renderRoute(path: string, service?: RecommendationService) {
+const loadFixtureTaxonomy = async () => FIXTURE_DISCOVERY_TAXONOMY;
+
+function renderRoute(
+  path: string,
+  service: RecommendationService = mockRecommendationService,
+  taxonomyLoader = loadFixtureTaxonomy,
+) {
   return render(
     <MemoryRouter initialEntries={[path]}>
-      <AppRoutes {...(service ? { service } : {})} />
+      <AppRoutes service={service} taxonomyLoader={taxonomyLoader} />
     </MemoryRouter>,
   );
 }
@@ -41,10 +49,10 @@ describe('frontend routes and states', () => {
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
   });
 
-  it('renders a semantic, labelled discovery form', () => {
+  it('renders a semantic, labelled discovery form', async () => {
     renderRoute('/discover');
     expect(
-      screen.getByRole('heading', { name: /what would you like/i }),
+      await screen.findByRole('heading', { name: /what would you like/i }),
     ).not.toBeNull();
     expect(screen.getByLabelText('Preferred notes')).not.toBeNull();
     expect(screen.getByText('Advanced filters')).not.toBeNull();
@@ -53,7 +61,8 @@ describe('frontend routes and states', () => {
   it('adds and removes controlled note selections', async () => {
     const user = userEvent.setup();
     renderRoute('/discover');
-    const noteSelector = screen.getByLabelText('Preferred notes').parentElement;
+    const noteSelector = (await screen.findByLabelText('Preferred notes'))
+      .parentElement;
     if (!noteSelector) throw new Error('Missing note selector');
     await user.type(within(noteSelector).getByRole('textbox'), 'amb{Enter}');
     expect(screen.getByRole('button', { name: 'Remove amber' })).not.toBeNull();
@@ -65,7 +74,7 @@ describe('frontend routes and states', () => {
     const user = userEvent.setup();
     renderRoute('/discover');
     await user.click(
-      screen.getByRole('button', { name: /show my recommendations/i }),
+      await screen.findByRole('button', { name: /show my recommendations/i }),
     );
     expect(
       await screen.findByRole('heading', { name: /5 fragrances/i }),
@@ -80,7 +89,7 @@ describe('frontend routes and states', () => {
     const user = userEvent.setup();
     renderRoute('/discover', emptyService);
     await user.click(
-      screen.getByRole('button', { name: /show my recommendations/i }),
+      await screen.findByRole('button', { name: /show my recommendations/i }),
     );
     expect(
       await screen.findByRole('heading', { name: /no fragrances met/i }),
@@ -98,21 +107,30 @@ describe('frontend routes and states', () => {
     const user = userEvent.setup();
     renderRoute('/discover', errorService);
     await user.click(
-      screen.getByRole('button', { name: /show my recommendations/i }),
+      await screen.findByRole('button', { name: /show my recommendations/i }),
     );
     expect(await screen.findByRole('alert')).not.toBeNull();
   });
 
-  it('supports direct results navigation with an explicit preview state', () => {
+  it('does not present fixtures as results on direct navigation', () => {
     renderRoute('/results');
-    expect(screen.getByRole('status').textContent).toMatch(/preview edit/i);
-    expect(screen.getAllByText('Why it fits')).toHaveLength(5);
+    expect(
+      screen.getByRole('heading', { name: /start with your fragrance/i }),
+    ).not.toBeNull();
+    expect(screen.queryByText('Why it fits')).toBeNull();
+    expect(
+      screen.getByRole('link', { name: 'Start discovery' }),
+    ).not.toBeNull();
   });
 
-  it('renders human-readable match reasons without technical scores', () => {
-    const { container } = renderRoute('/results');
+  it('renders human-readable match reasons without technical scores', async () => {
+    const user = userEvent.setup();
+    const { container } = renderRoute('/discover');
+    await user.click(
+      await screen.findByRole('button', { name: /show my recommendations/i }),
+    );
     expect(
-      screen.getByText(/matches preferred notes: bergamot, amber/i),
+      await screen.findByText(/matches preferred notes: bergamot, amber/i),
     ).not.toBeNull();
     expect(container.textContent).not.toMatch(/mmr|similarity score/i);
   });
@@ -215,5 +233,18 @@ describe('frontend routes and states', () => {
       screen.getByRole('heading', { name: /page has faded away/i }),
     ).not.toBeNull();
     expect(screen.getByRole('link', { name: 'Return home' })).not.toBeNull();
+  });
+
+  it('renders taxonomy loading and recoverable error states', async () => {
+    const failingLoader = async () => {
+      throw new Error('taxonomy unavailable');
+    };
+    renderRoute('/discover', mockRecommendationService, failingLoader);
+
+    expect(screen.getByRole('status').textContent).toMatch(/gathering/i);
+    expect(
+      await screen.findByRole('heading', { name: /could not load/i }),
+    ).not.toBeNull();
+    expect(screen.getByRole('button', { name: 'Try again' })).not.toBeNull();
   });
 });

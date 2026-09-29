@@ -101,7 +101,11 @@ export function LandingPage() {
         </div>
         <div className="card-grid">
           {MOCK_RECOMMENDATIONS.slice(0, 3).map((perfume) => (
-            <PerfumeCard key={perfume.id} perfume={perfume} />
+            <PerfumeCard
+              key={perfume.id}
+              linkToDetail={false}
+              perfume={perfume}
+            />
           ))}
         </div>
       </section>

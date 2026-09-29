@@ -1,10 +1,7 @@
 import type { RecommendationPerfume } from '@harumnesia/shared';
 
-import type {
-  FragranceVisualTone,
-  PerfumeDetailViewModel,
-  RecommendationViewModel,
-} from '../features/recommendation/types.js';
+import type { RecommendationViewModel } from '../features/recommendation/types.js';
+import { toRecommendationPreviewViewModel } from '../features/recommendation/view-model.js';
 
 export const FIXTURE_PERFUMES: RecommendationPerfume[] = [
   {
@@ -169,81 +166,6 @@ export const FIXTURE_PERFUMES: RecommendationPerfume[] = [
   },
 ];
 
-const VISUAL_TONES: Record<string, FragranceVisualTone> = {
-  'fixture-senja-ubud': 'amber',
-  'fixture-hujan-pagi': 'citrus',
-  'fixture-kembang-putih': 'rose',
-  'fixture-kayu-laut': 'forest',
-  'fixture-vanilla-archive': 'iris',
-  'fixture-cedar-atlas': 'forest',
-  'fixture-iris-paper': 'iris',
-  'fixture-amber-line': 'amber',
-  'fixture-citrus-study': 'citrus',
-  'fixture-rose-after-dark': 'rose',
-};
-
-function formatPrice(perfume: RecommendationPerfume): string | null {
-  if (!perfume.price) return null;
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: perfume.price.currency,
-    maximumFractionDigits: 0,
-  }).format(perfume.price.amount);
-}
-
-function label(value: string): string {
-  return value.charAt(0).toLocaleUpperCase('en-US') + value.slice(1);
-}
-
-function toDisplayFields(perfume: RecommendationPerfume) {
-  return {
-    id: perfume.id,
-    name: perfume.name,
-    brand: perfume.brand,
-    marketLabel: label(perfume.market),
-    genderLabel: label(perfume.gender),
-    concentration: perfume.concentration,
-    priceLabel: formatPrice(perfume),
-    visualTone: VISUAL_TONES[perfume.id] ?? ('iris' as const),
-  };
-}
-
-export function toRecommendationViewModel(
-  perfume: RecommendationPerfume,
-  rank: number,
-  reasons: readonly string[],
-): RecommendationViewModel {
-  return {
-    ...toDisplayFields(perfume),
-    rank,
-    keyNotes: [
-      ...new Set([
-        ...perfume.notes.top,
-        ...perfume.notes.middle,
-        ...perfume.notes.base,
-      ]),
-    ].slice(0, 5),
-    accords: [...perfume.accords],
-    occasions: [...perfume.occasion],
-    reasons: [...reasons],
-  };
-}
-
-export function toPerfumeDetailViewModel(
-  perfume: RecommendationPerfume,
-): PerfumeDetailViewModel {
-  return {
-    ...toDisplayFields(perfume),
-    notes: {
-      top: [...perfume.notes.top],
-      middle: [...perfume.notes.middle],
-      base: [...perfume.notes.base],
-    },
-    accords: [...perfume.accords],
-    occasions: [...perfume.occasion],
-  };
-}
-
 const RESULT_REASONS: Record<string, string[]> = {
   'fixture-senja-ubud': [
     'Matches preferred notes: bergamot, amber',
@@ -282,7 +204,7 @@ export const MOCK_RECOMMENDATIONS: RecommendationViewModel[] = RESULT_IDS.map(
   (id, index) => {
     const perfume = FIXTURE_PERFUMES.find((item) => item.id === id);
     if (!perfume) throw new Error(`Missing mock perfume: ${id}`);
-    return toRecommendationViewModel(
+    return toRecommendationPreviewViewModel(
       perfume,
       index + 1,
       RESULT_REASONS[id] ?? [],

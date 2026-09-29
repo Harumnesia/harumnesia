@@ -5,7 +5,7 @@ import {
   type RecommendationExperienceValue,
 } from './context.js';
 import { toRecommendationRequest } from './form.js';
-import { mockRecommendationService } from './service.js';
+import { productionRecommendationService } from './runtime/production-service.js';
 import {
   INITIAL_DISCOVERY_FORM,
   type DiscoveryFormState,
@@ -20,7 +20,7 @@ type ProviderProps = PropsWithChildren<{
 
 export function RecommendationExperienceProvider({
   children,
-  service = mockRecommendationService,
+  service = productionRecommendationService,
 }: ProviderProps) {
   const [status, setStatus] = useState<SubmissionStatus>('idle');
   const [results, setResults] = useState<RecommendationViewModel[] | null>(

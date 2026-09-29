@@ -1,15 +1,15 @@
 # Frontend V2
 
-## 1. Phase 6 scope
+## 1. Current scope
 
-Phase 6 provides the browser-facing Harumnesia experience: routing, responsive
-layout, an accessible discovery form, mock recommendations, result explanations,
-perfume details, and error/empty states. It intentionally stops at a frontend
-integration boundary.
+Phase 6 established the browser-facing experience: routing, responsive layout,
+an accessible discovery form, result explanations, perfume details, and
+error/empty states. Phase 7 now connects that experience to the validated
+25,127-record production dataset and `@harumnesia/recommender` through a dedicated
+Web Worker.
 
-Phase 6 does **not** load the production 25,127-record runtime recommendation
-dataset. It does not construct a recommender index, call an API, or duplicate the
-recommendation algorithm in the browser.
+The frontend still has no API, persistence, authentication, analytics, or final
+perfume imagery. Recommendation state lasts for the current SPA session only.
 
 ## 2. Design direction
 
@@ -23,10 +23,10 @@ color, type, spacing, radius, borders, container width, and transition tokens.
 
 | Route          | Purpose                                    | Refresh/direct-navigation behavior                                      |
 | -------------- | ------------------------------------------ | ----------------------------------------------------------------------- |
-| `/`            | Product introduction and sample fragrances | Fully independent                                                       |
-| `/discover`    | Preferences and optional strict filters    | Starts with the session's last form or an empty form                    |
-| `/results`     | Top-five recommendation presentation       | Uses an explicitly labelled fixture preview if no session result exists |
-| `/perfume/:id` | Service-backed perfume detail              | Resolves asynchronously through `RecommendationService.getPerfume()`    |
+| `/`            | Product introduction and editorial samples | Does not initialize or fetch the production runtime                     |
+| `/discover`    | Preferences and optional strict filters    | Loads generated taxonomy; starts with the last form or an empty form    |
+| `/results`     | Production Top-five results                | Shows an explicit no-session state when opened directly                 |
+| `/perfume/:id` | Production perfume detail                  | Resolves lazily through `RecommendationService.getPerfume()` and worker |
 | `*`            | Unknown-route recovery                     | Offers links home and to discovery                                      |
 
 An unknown perfume ID has its own useful not-found state and does not crash the
@@ -54,9 +54,11 @@ firm market, budget, expression, occasion, concentration, and exclusion controls
 out of the initial mobile experience. Budget is an IDR integer with optional
 presets and clear handling for fragrances whose price is not listed.
 
-The note and accord controls use small canonical fixture taxonomies. Values cannot
-be empty or duplicated, and they can be added with a pointer or keyboard and
-removed by a labelled button.
+The note and accord controls use asynchronously loaded generated taxonomies.
+Values cannot be empty or duplicated, and they can be added with a pointer or
+keyboard and removed by a labelled button. Loading, failure, and explicit retry
+states prevent a taxonomy failure from crashing or silently substituting fixture
+values.
 
 `TagSelector` accepts a larger taxonomy without rendering it into the DOM. An
 empty query shows no suggestions. A non-empty query performs case-insensitive
@@ -85,7 +87,7 @@ price choice, and applies a five-result limit. Basic budget validation occurs
 before service submission; package-level validation remains the future final
 authority.
 
-## 8. Mock service boundary
+## 8. Production service boundary
 
 `RecommendationService` exposes two frontend-facing methods:
 
@@ -94,11 +96,15 @@ recommend(request: RecommendationRequestInput): Promise<RecommendationViewModel[
 getPerfume(id: string): Promise<PerfumeDetailViewModel | null>
 ```
 
-`MockRecommendationService` implements that contract with a small fixture-backed
-Top-5 response and fixture-backed detail lookup. Both operations are asynchronous
-without an artificial delay, and mapped results use defensive array copies. The
-provider accepts another service, which makes loading, empty, success, not-found,
-and error behavior testable.
+The normal provider uses `ProductionRecommendationService`. Its lazy worker client
+loads the separate runtime asset, initializes one recommender, correlates typed
+requests by ID, and maps only display-safe output back to React. A shared
+initialization Promise deduplicates concurrent work. Fatal initialization failures
+clear the worker so an explicit retry can start a fresh initialization.
+
+`MockRecommendationService` remains behind the same contract for unit/UI tests
+and controlled states. It is not the default application service and does not
+power production discover, result, or detail flows.
 
 `PerfumeDetailPage` never imports or searches fixture data. It requests the route
 ID through the context's service operation and handles loading, success,
@@ -108,15 +114,16 @@ unmounted request from updating page state.
 ## 9. View models
 
 `RecommendationViewModel` contains only result-card fields: identity, rank,
-display labels, optional price/concentration, selected metadata, reasons, and a
-placeholder visual tone. `PerfumeDetailViewModel` independently preserves staged
+display labels, currency-aware price text, optional concentration, selected
+metadata, deterministic reasons, and a decorative visual tone derived stably
+from the perfume ID. `PerfumeDetailViewModel` independently preserves staged
 top/middle/base notes plus optional display metadata, accords, occasions, and its
 visual tone. Neither model exposes recommender scores, components, diagnostics,
 coverage, MMR values, or pre-diversification rank.
 
-The ten source fixtures satisfy `RecommendationPerfume` and deliberately cover
-local/international, known/unknown price and concentration, local occasions,
-international accords, multiple genders, and varied note pyramids.
+Generic pure helpers perform production and fixture mapping. The ten source
+fixtures remain useful test/editorial inputs but are not a production mapping
+dependency.
 
 ## 10. Responsive strategy
 
@@ -152,58 +159,62 @@ Testing Library, and user-event for behavior and semantics. Coverage includes:
 - preference/filter separation, market, budget, price policy, concentration, and
   validation mapping;
 - mock service output and defensive collections;
+- production view-model mapping and deterministic tones;
+- worker request correlation, initialization deduplication, and failed-init retry;
+- production service recommendation/detail mapping and unknown-ID handling;
+- generated taxonomy counts and exclusion of `unknown` gender and `XDP`;
 - landing, mobile-navigation, and discovery form semantics;
 - controlled add/remove behavior;
 - successful submission/navigation, empty results, and service errors;
-- direct result preview, deterministic reason copy, and no technical scores;
+- direct result no-session state, deterministic reason copy, and no technical scores;
 - valid detail data, graceful missing metadata, invalid IDs, and unknown routes.
 - custom non-fixture service details, detail loading and service error states;
 - mock detail success/not-found behavior;
-- a synthetic 2,505-term taxonomy, empty-query behavior, ten-item suggestion cap,
+- a generated/synthetic 2,505-term taxonomy, empty-query behavior, ten-item suggestion cap,
   substring filtering, Enter selection, and selected-option exclusion.
+
+The full-data integration smoke initializes the actual 25,127 records, exercises
+three representative requests, verifies real unique Top 5 IDs and deterministic
+repeats, checks finite internal scores/reasons, and resolves both local and
+international details.
 
 ## 14. Production build size
 
-Measured with `pnpm build` on the Phase 6 implementation:
+Measured with `pnpm build` after production integration:
 
-| Output       |       Raw |     Gzip |
-| ------------ | --------: | -------: |
-| `index.html` |   0.51 kB |  0.31 kB |
-| CSS          |  12.78 kB |  3.62 kB |
-| JavaScript   | 287.22 kB | 89.52 kB |
+| Output                          |         Raw |        Gzip |
+| ------------------------------- | ----------: | ----------: |
+| Main JavaScript                 |   292.18 kB |    90.07 kB |
+| Worker JavaScript               |   101.39 kB |    27.85 kB |
+| Runtime JSON                    | 9,690.28 kB | 1,705.69 kB |
+| Notes taxonomy                  |    49.10 kB |    12.00 kB |
+| Other three taxonomies combined |     1.84 kB |     0.78 kB |
 
-The application currently uses one JavaScript route bundle. Route-level lazy
-loading was not added because the page set and local fixtures are small; it can be
-reconsidered if Phase 7 materially increases route weight.
+The dataset and worker are separate hashed assets. The main JavaScript did not
+absorb the approximately 9.24 MiB raw runtime. Route-level component splitting
+was not introduced because it was not necessary to establish this boundary.
 
-## 15. Phase 7 integration seam
+## 15. Production integration behavior
 
-Phase 7 can provide a real `RecommendationService` to
-`RecommendationExperienceProvider` without changing pages or presentational
-components. The real adapter should:
+The worker and runtime initialize on the first recommendation or direct detail
+lookup, never at app bootstrap. A discover submission uses the public request
+adapter and displays the real Top 5 with engine reasons. Repeated submissions and
+in-session detail lookup reuse the same worker/index. Development-only Performance
+API measures make fetch, parse, index, rank, and lookup duration inspectable
+without exposing them in product UI.
 
-1. load the production runtime data at an explicitly chosen boundary;
-2. construct or connect to the production recommender exactly once;
-3. pass the existing adapter's `RecommendationRequestInput` to the public package;
-4. map `RecommendationResult` plus its perfume and deterministic `reasons` into
-   `RecommendationViewModel`;
-5. resolve any production perfume ID into `PerfumeDetailViewModel` through
-   `getPerfume()`;
-6. preserve existing loading, empty, not-found, and error behavior.
-
-The production data-loading decision belongs in the real service adapter, not in
-the form or page components.
+See [Production Integration](./integration.md) for worker protocol, network,
+performance, memory, caching, and deployment-boundary details.
 
 ## 16. Known limitations
 
-- Mock results are deterministic and do not change with submitted choices; the
-  request is still built and passed across the service boundary for Phase 7.
-- Direct `/results` navigation uses a clearly labelled preview rather than persisted
-  recommendations.
-- The mock service can resolve only the ten fixture details; the page itself is no
-  longer fixture-bound.
-- Taxonomies are deliberately small UI fixtures and need a production taxonomy
-  source in Phase 7. Filtering remains an in-memory substring scan, while rendered
+- Refreshing or directly opening `/results` cannot restore a prior in-memory
+  session; persistence is intentionally deferred.
+- Each tab/document session owns a worker and index. Cross-tab sharing is not
+  implemented.
+- The runtime payload remains 9.24 MiB raw and requires mobile-class validation
+  before deployment, although desktop browser measurements are viable.
+- Taxonomy filtering remains an in-memory substring scan while rendered
   suggestions stay capped at ten.
 - Artwork is intentionally abstract and temporary; final product assets are Phase
   8 work.
