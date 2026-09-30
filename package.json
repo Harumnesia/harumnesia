@@ -18,6 +18,8 @@
     "test": "vitest run",
     "dataset:build": "pnpm --filter @harumnesia/shared build && tsx scripts/build-dataset/src/cli.ts build",
     "dataset:validate": "pnpm --filter @harumnesia/shared build && tsx scripts/build-dataset/src/cli.ts validate",
+    "assets:audit": "pnpm --filter @harumnesia/shared build && tsx scripts/assets/audit-images.ts",
+    "assets:inventory": "tsx scripts/assets/inventory-build.ts",
     "recommender:smoke": "tsx scripts/recommender/smoke.ts",
     "integration:smoke": "tsx scripts/recommender/integration-smoke.ts",
     "recommender:evaluate": "tsx scripts/recommender/evaluate.ts"

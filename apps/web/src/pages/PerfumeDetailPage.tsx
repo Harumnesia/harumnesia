@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { PageTitle } from '../components/PageTitle.js';
-import { FragranceArtwork } from '../components/perfume/FragranceArtwork.js';
+import { PerfumeVisual } from '../components/perfume/PerfumeVisual.js';
 import type { PerfumeDetailViewModel } from '../features/recommendation/types.js';
 import { useRecommendationExperience } from '../features/recommendation/useRecommendationExperience.js';
 
@@ -129,7 +129,12 @@ function PerfumeDetailLookup({ id }: { id: string | undefined }) {
           <Link className="text-link" to="/results">
             <span aria-hidden="true">←</span> Back to recommendations
           </Link>
-          <FragranceArtwork tone={perfume.visualTone} />
+          <PerfumeVisual
+            perfumeId={perfume.id}
+            perfumeName={perfume.name}
+            sizes="(min-width: 48rem) 38vw, 100vw"
+            tone={perfume.visualTone}
+          />
         </div>
         <div className="detail__content">
           <p className="eyebrow">{perfume.brand}</p>

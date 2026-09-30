@@ -40,9 +40,13 @@ application.
   filtering, Enter-key selection, and removable selections.
 - `ChoiceGroup` supplies semantic multi-select fieldsets for canonical choices.
 - `PerfumeCard` renders display-safe metadata, key notes, optional accords and
-  occasions, deterministic reasons, and detail navigation.
-- `FragranceArtwork` provides a small CSS-only placeholder without third-party
-  image assets.
+  occasions, deterministic reasons, detail navigation, and delegates imagery to
+  `PerfumeVisual`.
+- `PerfumeVisual` resolves a canonical ID against the rights-cleared local asset
+  manifest, renders responsive sources when available, and otherwise delegates
+  to `FragranceArtwork`.
+- `FragranceArtwork` provides the deterministic CSS-only fallback without
+  third-party image assets.
 - Page components own route-level copy and composition rather than one large app
   component.
 
@@ -143,12 +147,16 @@ titles, text equivalents for the note pyramid, non-color selection cues, and a
 reduced-motion media query. Custom tag selection remains keyboard operable; native
 checkboxes and radios retain focus semantics behind their styled labels.
 
-## 12. Placeholder asset strategy
+## 12. Image asset strategy
 
-Phase 6 uses decorative, `aria-hidden` CSS compositions with flat geometric forms.
-There are no scraped, hotlinked, copied V1, or uncertain-license perfume images.
-Final optimized image assets and image delivery belong to Phase 8; the visual
-component is isolated so that addition will not affect recommendation state.
+Phase 8 keeps decorative, `aria-hidden` CSS compositions as the safe fallback.
+The production image manifest intentionally has zero entries because no current
+image has established redistribution rights. Result cards and production details
+share `PerfumeVisual`, which accepts only validated local canonical-ID paths,
+emits responsive `<picture>` markup for approved entries, and falls back after a
+load failure. Canonical external references never become DOM image sources. See
+[Asset Optimization and Image Delivery](./assets.md) for the audit, provenance,
+delivery, and onboarding rules.
 
 ## 13. Testing
 
@@ -216,5 +224,5 @@ performance, memory, caching, and deployment-boundary details.
   before deployment, although desktop browser measurements are viable.
 - Taxonomy filtering remains an in-memory substring scan while rendered
   suggestions stay capped at ten.
-- Artwork is intentionally abstract and temporary; final product assets are Phase
-  8 work.
+- Artwork remains intentionally abstract until rights-cleared product assets are
+  reviewed and added through the Phase 8 manifest boundary.

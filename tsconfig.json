@@ -17,6 +17,7 @@
     "packages/*/tests",
     "scripts/build-dataset/src",
     "scripts/build-dataset/tests",
+    "scripts/assets",
     "scripts/recommender",
     "vitest.config.ts"
   ]

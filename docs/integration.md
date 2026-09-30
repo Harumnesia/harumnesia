@@ -210,12 +210,14 @@ mobile-device validation remains appropriate before production deployment.
 - Taxonomy search is bounded substring matching, not fuzzy search.
 - Landing artwork and editorial samples are still temporary.
 
-## 19. Phase 8 boundary
+## 19. Phase 8 asset boundary
 
-Phase 8 may optimize images and other static assets, evaluate runtime payload
-partitioning or compression, and revisit route/bundle delivery based on evidence.
-It must preserve the production contracts and must not silently retune the
-recommender. No Phase 8 asset work is included here.
+Phase 8 adds a presentation-only image manifest keyed by the canonical ID. It is
+not part of the runtime dataset, worker protocol, recommendation result, or detail
+record. `PerfumeVisual` accepts only validated local static paths and falls back
+to deterministic CSS artwork for all current records because no rights-cleared
+production image exists. The landing/discover runtime-fetch behavior and worker
+sizes remain unchanged. See [Asset Optimization and Image Delivery](./assets.md).
 
 ## 20. Phase 9 deployment considerations
 

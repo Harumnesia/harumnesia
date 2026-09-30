@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "canonical": "data/perfumes.json",
+    "runtime": "data/runtime/recommendation.json"
+  },
+  "policy": "An external image reference is provenance information, not redistribution permission or a production asset.",
+  "totals": {
+    "records": 25127,
+    "withImage": 1064,
+    "withoutImage": 24063
+  },
+  "markets": {
+    "local": {
+      "records": 1064,
+      "withImage": 1064,
+      "withoutImage": 0
+    },
+    "international": {
+      "records": 24063,
+      "withImage": 0,
+      "withoutImage": 24063
+    }
+  },
+  "references": {
+    "uniqueUrls": 1060,
+    "duplicateUrlGroups": 4,
+    "duplicateReferences": 4,
+    "protocols": [
+      {
+        "value": "https",
+        "count": 1060
+      }
+    ],
+    "hostnames": [
+      {
+        "value": "images.tokopedia.net",
+        "count": 952
+      },
+      {
+        "value": "down-id.img.susercontent.com",
+        "count": 52
+      },
+      {
+        "value": "madeforhmns.com",
+        "count": 13
+      },
+      {
+        "value": "layrfragrance.com",
+        "count": 12
+      },
+      {
+        "value": "onixfragrance.co.id",
+        "count": 10
+      },
+      {
+        "value": "d2kchovjbwl1tk.cloudfront.net",
+        "count": 9
+      },
+      {
+        "value": "fimgs.net",
+        "count": 4
+      },
+      {
+        "value": "images.soco.id",
+        "count": 3
+      },
+      {
+        "value": "s3.ap-southeast-1.amazonaws.com",
+        "count": 3
+      },
+      {
+        "value": "images.hintofyou.com",
+        "count": 2
+      }
+    ],
+    "apparentExtensions": [
+      {
+        "value": "jpg",
+        "count": 426
+      },
+      {
+        "value": "webp",
+        "count": 308
+      },
+      {
+        "value": "jpeg",
+        "count": 183
+      },
+      {
+        "value": "png",
+        "count": 133
+      },
+      {
+        "value": "(none)",
+        "count": 10
+      }
+    ],
+    "malformedUrls": [],
+    "duplicateGroups": [
+      {
+        "url": "https://d2kchovjbwl1tk.cloudfront.net/vendor/9033/product/df40a500-ac87-4ffa-8555-c2bafbbaaa88_1718332791222_resized2048-jpg.webp",
+        "perfumeIds": [
+          "local-hrmn-0691",
+          "local-hrmn-0692"
+        ]
+      },
+      {
+        "url": "https://images.tokopedia.net/img/cache/500-square/hDjmkQ/2023/11/22/a9baad77-7d4e-4ad9-afb1-840fe92da7a4.jpg.webp?ect=4g",
+        "perfumeIds": [
+          "local-hrmn-0138",
+          "local-hrmn-0139"
+        ]
+      },
+      {
+        "url": "https://images.tokopedia.net/img/cache/900/VqbcmM/2024/4/1/51de7eb5-a723-48f8-85aa-c4422c80c4d5.png",
+        "perfumeIds": [
+          "local-hrmn-0650",
+          "local-hrmn-0651"
+        ]
+      },
+      {
+        "url": "https://onixfragrance.co.id/cdn/shop/files/Artboard_9.jpg?v=1743341069",
+        "perfumeIds": [
+          "local-hrmn-0058",
+          "local-hrmn-0061"
+        ]
+      }
+    ]
+  },
+  "runtimeCoverage": {
+    "runtimeRecords": 25127,
+    "runtimeRecordsWithCanonicalImageReference": 1064,
+    "runtimeRecordsWithoutCanonicalImageReference": 24063,
+    "runtimeIdsMissingFromCanonical": [],
+    "canonicalIdsMissingFromRuntime": []
+  }
+}

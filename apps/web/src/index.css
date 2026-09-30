@@ -351,6 +351,23 @@ h3 {
   width: 10rem;
   height: 10rem;
 }
+.perfume-visual {
+  display: block;
+  min-height: 25rem;
+  background: var(--paper-deep);
+}
+.perfume-visual--compact {
+  min-height: 17rem;
+}
+.perfume-visual img {
+  width: 100%;
+  height: auto;
+  min-height: inherit;
+  display: block;
+  aspect-ratio: 4 / 5;
+  background: var(--paper-deep);
+  object-fit: contain;
+}
 
 .steps,
 .featured {
@@ -866,7 +883,8 @@ h3 {
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
-  .results-list .perfume-card:first-child .fragrance-art {
+  .results-list .perfume-card:first-child .fragrance-art,
+  .results-list .perfume-card:first-child .perfume-visual {
     height: 100%;
   }
 }

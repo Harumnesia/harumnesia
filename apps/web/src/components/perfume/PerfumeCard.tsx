@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import type { RecommendationViewModel } from '../../features/recommendation/types.js';
-import { FragranceArtwork } from './FragranceArtwork.js';
+import { PerfumeVisual } from './PerfumeVisual.js';
 
 export function PerfumeCard({
   perfume,
@@ -20,7 +20,12 @@ export function PerfumeCard({
             {String(perfume.rank).padStart(2, '0')}
           </span>
         ) : null}
-        <FragranceArtwork compact tone={perfume.visualTone} />
+        <PerfumeVisual
+          compact
+          perfumeId={perfume.id}
+          perfumeName={perfume.name}
+          tone={perfume.visualTone}
+        />
       </div>
       <div className="perfume-card__body">
         <p className="eyebrow">{perfume.brand}</p>

@@ -5,9 +5,11 @@ pnpm-lock.yaml
 scripts/audit-dataset/audit-results.json
 scripts/build-dataset/build-report.json
 scripts/build-dataset/note-quality-report.json
+scripts/assets/*.json
 data/perfumes.json
 data/runtime/*.json
 data/taxonomy/*.json
+apps/web/public/*.svg
 
 # Preserve the existing source-of-truth documents verbatim.
 README.md

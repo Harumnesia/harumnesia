@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "buildDirectory": "apps/web/dist",
+  "assets": {
+    "indexHtml": [
+      {
+        "path": "index.html",
+        "rawBytes": 582,
+        "gzipBytes": 350
+      }
+    ],
+    "mainJavaScript": [
+      {
+        "path": "assets/index-rEhVpvBg.js",
+        "rawBytes": 295344,
+        "gzipBytes": 90964
+      }
+    ],
+    "workerJavaScript": [
+      {
+        "path": "assets/recommendation.worker-BvcEeEfz.js",
+        "rawBytes": 101388,
+        "gzipBytes": 27801
+      }
+    ],
+    "css": [
+      {
+        "path": "assets/index-Dt7IKPzM.css",
+        "rawBytes": 13101,
+        "gzipBytes": 3660
+      }
+    ],
+    "runtimeJson": [
+      {
+        "path": "assets/recommendation-DrxAxm9e.json",
+        "rawBytes": 9690284,
+        "gzipBytes": 1688965
+      }
+    ],
+    "taxonomyAssets": [
+      {
+        "path": "assets/accords-B-OO0qaF.json",
+        "rawBytes": 1287,
+        "gzipBytes": 463
+      },
+      {
+        "path": "assets/concentrations-CA9FGxXO.json",
+        "rawBytes": 327,
+        "gzipBytes": 179
+      },
+      {
+        "path": "assets/genders-Ci_yYv9B.json",
+        "rawBytes": 228,
+        "gzipBytes": 139
+      },
+      {
+        "path": "assets/notes-DAlW9CRz.json",
+        "rawBytes": 49096,
+        "gzipBytes": 11996
+      }
+    ],
+    "brandAssets": [
+      {
+        "path": "favicon.svg",
+        "rawBytes": 261,
+        "gzipBytes": 194
+      }
+    ],
+    "perfumeImageAssets": []
+  },
+  "deliveryGroups": {
+    "criticalInitial": {
+      "files": [
+        {
+          "path": "index.html",
+          "rawBytes": 582,
+          "gzipBytes": 350
+        },
+        {
+          "path": "assets/index-rEhVpvBg.js",
+          "rawBytes": 295344,
+          "gzipBytes": 90964
+        },
+        {
+          "path": "assets/index-Dt7IKPzM.css",
+          "rawBytes": 13101,
+          "gzipBytes": 3660
+        },
+        {
+          "path": "favicon.svg",
+          "rawBytes": 261,
+          "gzipBytes": 194
+        }
+      ],
+      "rawBytes": 309288,
+      "gzipBytes": 95168
+    },
+    "lazyOrRouteTriggered": {
+      "files": [
+        {
+          "path": "assets/recommendation.worker-BvcEeEfz.js",
+          "rawBytes": 101388,
+          "gzipBytes": 27801
+        },
+        {
+          "path": "assets/recommendation-DrxAxm9e.json",
+          "rawBytes": 9690284,
+          "gzipBytes": 1688965
+        },
+        {
+          "path": "assets/accords-B-OO0qaF.json",
+          "rawBytes": 1287,
+          "gzipBytes": 463
+        },
+        {
+          "path": "assets/concentrations-CA9FGxXO.json",
+          "rawBytes": 327,
+          "gzipBytes": 179
+        },
+        {
+          "path": "assets/genders-Ci_yYv9B.json",
+          "rawBytes": 228,
+          "gzipBytes": 139
+        },
+        {
+          "path": "assets/notes-DAlW9CRz.json",
+          "rawBytes": 49096,
+          "gzipBytes": 11996
+        }
+      ],
+      "rawBytes": 9842610,
+      "gzipBytes": 1729543
+    }
+  },
+  "perfumeImages": {
+    "approvedEntries": 0,
+    "emittedFiles": 0,
+    "rawBytes": 0,
+    "gzipBytes": 0
+  },
+  "imageManifestSourceBytes": 5163,
+  "totalEmitted": {
+    "files": 10,
+    "rawBytes": 10151898,
+    "gzipBytes": 1824711
+  }
+}
