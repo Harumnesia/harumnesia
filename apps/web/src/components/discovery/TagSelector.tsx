@@ -19,17 +19,20 @@ export function TagSelector({
   const hintId = useId();
   const [query, setQuery] = useState('');
   const normalizedQuery = query.trim().toLocaleLowerCase('en-US');
-  const matches = useMemo(
-    () =>
-      normalizedQuery
-        ? options.filter(
-            (option) =>
-              !selected.includes(option) &&
-              option.toLocaleLowerCase('en-US').includes(normalizedQuery),
-          )
-        : [],
-    [normalizedQuery, options, selected],
-  );
+  const matches = useMemo(() => {
+    if (!normalizedQuery) return [];
+    const matching = options.filter(
+      (option) =>
+        !selected.includes(option) &&
+        option.toLocaleLowerCase('en-US').includes(normalizedQuery),
+    );
+    const exact = matching.find(
+      (option) => option.toLocaleLowerCase('en-US') === normalizedQuery,
+    );
+    return exact
+      ? [exact, ...matching.filter((option) => option !== exact)]
+      : matching;
+  }, [normalizedQuery, options, selected]);
   const visibleOptions = matches.slice(0, MAX_VISIBLE_OPTIONS);
 
   function add(value: string) {

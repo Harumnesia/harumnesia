@@ -6,14 +6,14 @@
       {
         "path": "index.html",
         "rawBytes": 582,
-        "gzipBytes": 351
+        "gzipBytes": 349
       }
     ],
     "mainJavaScript": [
       {
-        "path": "assets/index-B7sDHMYo.js",
-        "rawBytes": 297752,
-        "gzipBytes": 91706
+        "path": "assets/index-DyvQbf7c.js",
+        "rawBytes": 297853,
+        "gzipBytes": 91739
       }
     ],
     "workerJavaScript": [
@@ -74,12 +74,12 @@
         {
           "path": "index.html",
           "rawBytes": 582,
-          "gzipBytes": 351
+          "gzipBytes": 349
         },
         {
-          "path": "assets/index-B7sDHMYo.js",
-          "rawBytes": 297752,
-          "gzipBytes": 91706
+          "path": "assets/index-DyvQbf7c.js",
+          "rawBytes": 297853,
+          "gzipBytes": 91739
         },
         {
           "path": "assets/index-C9ic33wN.css",
@@ -92,8 +92,8 @@
           "gzipBytes": 194
         }
       ],
-      "rawBytes": 325367,
-      "gzipBytes": 98312
+      "rawBytes": 325468,
+      "gzipBytes": 98343
     },
     "lazyOrRouteTriggered": {
       "files": [
@@ -141,7 +141,7 @@
   "imageManifestSourceBytes": 5163,
   "totalEmitted": {
     "files": 10,
-    "rawBytes": 10167977,
-    "gzipBytes": 1827855
+    "rawBytes": 10168078,
+    "gzipBytes": 1827886
   }
 }

@@ -3,7 +3,7 @@
 ## Status
 
 - Project: Harumnesia V2
-- Status: Phase 9 production candidate; Cloudflare deployment pending
+- Status: Phase 9 complete; Phase 10 Cloudflare deployment current
 - Repository: `Harumnesia/harumnesia`
 - Architecture: Monorepo
 - Deployment Target: Cloudflare
@@ -797,17 +797,24 @@ Optimize:
 Implement the five canonical Stitch screens and consolidate CSS while preserving
 the Phase 7 runtime, data, recommendation behavior, and asset rights boundary.
 
-### Phase 9 — Production Readiness / Pre-Deployment (current)
+### Phase 9 — Production Readiness / Pre-Deployment (complete)
 
 Audit the clean build, generated data, recommender, routes, lazy loading, worker,
 performance, memory, accessibility, security, CI, documentation, and rights
 boundary. Record evidence and a GO / NO-GO decision before infrastructure work.
 
-### Phase 10 — Cloudflare Deployment & Production Release (pending)
+### Phase 10 — Cloudflare Deployment & Production Release (current)
 
-Deploy the audited build according to [deployment contract](./deployment.md).
-Validate routing, caching, MIME, compression, assets, and recommendations in
-preview and production. This phase has not started.
+Phase 10A has established the Git-integrated Cloudflare Pages project and
+verified the `*.pages.dev` deployment against the
+[deployment record](./deployment.md). Routing, caching, MIME, compression,
+assets, lazy worker/runtime loading, and the local and international
+recommendation scenarios passed. The Git-deployed selector hides exact
+`vanilla` behind ten partial matches. The cross-market browser scenario passes
+on a separate Pages preview containing an uncommitted fix; Phase 10A closure
+awaits the reviewed commit and a new Git-triggered production smoke. Phase 10B
+handles the custom domain and production cutover only after Phase 10A closes;
+DNS and the custom domain remain unchanged.
 
 ### Phase 10H — Production Verification / Release Hardening (pending)
 

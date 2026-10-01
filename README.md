@@ -12,7 +12,7 @@ Perfume images use a canonical-ID local asset manifest. Its approved count is cu
 
 ## Run locally
 
-Use Node.js **22.12 or later** and pnpm **10.30.3** from this repository root:
+Use Node.js **22.22.2 or later** and pnpm **10.30.3** from this repository root:
 
 ```sh
 pnpm install --frozen-lockfile

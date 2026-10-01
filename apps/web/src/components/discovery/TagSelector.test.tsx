@@ -12,14 +12,18 @@ const LARGE_TAXONOMY = Array.from(
   (_, index) => `note-${String(index).padStart(4, '0')}`,
 );
 
-function TagSelectorHarness() {
+function TagSelectorHarness({
+  options = LARGE_TAXONOMY,
+}: {
+  options?: string[];
+}) {
   const [selected, setSelected] = useState<string[]>([]);
   return (
     <TagSelector
       hint="Choose a canonical note."
       label="Production notes"
       onChange={setSelected}
-      options={LARGE_TAXONOMY}
+      options={options}
       selected={selected}
     />
   );
@@ -65,5 +69,26 @@ describe('TagSelector production taxonomy behavior', () => {
     expect(screen.getAllByRole('button', { name: /^\+ note-/ })).toHaveLength(
       MAX_VISIBLE_OPTIONS,
     );
+  });
+
+  it('shows an exact note ahead of earlier partial matches', async () => {
+    const user = userEvent.setup();
+    const options = [
+      ...Array.from(
+        { length: MAX_VISIBLE_OPTIONS },
+        (_, index) => `other vanilla ${index}`,
+      ),
+      'vanilla',
+    ];
+    render(<TagSelectorHarness options={options} />);
+
+    await user.type(screen.getByRole('textbox'), 'vanilla');
+    expect(
+      screen.getAllByRole('button', { name: /^\+ / })[0]?.textContent,
+    ).toBe('+ vanilla');
+    await user.keyboard('{Enter}');
+    expect(
+      screen.getByRole('button', { name: 'Remove vanilla' }),
+    ).not.toBeNull();
   });
 });
