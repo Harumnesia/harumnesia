@@ -12,6 +12,7 @@
   --color-muted: #5c5554;
   --color-olive: #4a5240;
   --color-ochre: #a37f1c;
+  --color-ochre-text: #806117;
   --color-line: #d1c3c8;
   --font-display: 'Bodoni MT', Didot, 'Times New Roman', Georgia, serif;
   --font-body: Arial, 'Helvetica Neue', system-ui, sans-serif;
@@ -354,7 +355,7 @@ p {
 }
 
 .site-nav > a:not(.button):hover {
-  color: var(--color-ochre);
+  color: var(--color-ochre-text);
 }
 
 .button {
@@ -513,7 +514,7 @@ p {
 }
 
 .hero__art > p span {
-  color: var(--color-ochre);
+  color: var(--color-ochre-text);
 }
 
 .fragrance-art {
@@ -744,7 +745,7 @@ p {
 }
 
 .step-grid span {
-  color: var(--color-ochre);
+  color: var(--color-ochre-text);
   font-family: var(--font-display);
   font-size: 1.1rem;
   font-weight: 400;
@@ -1057,7 +1058,7 @@ p {
 }
 
 .page-intro__aside .eyebrow {
-  color: var(--color-ochre);
+  color: var(--color-ochre-text);
 }
 
 .discovery-form {
@@ -1668,7 +1669,7 @@ p {
 }
 
 .note-pyramid__index {
-  color: var(--color-ochre);
+  color: var(--color-ochre-text);
   font-family: var(--font-display);
   font-size: 1.35rem;
 }

@@ -148,8 +148,9 @@ pnpm assets:inventory
 ```
 
 The inventory is written to `scripts/assets/asset-inventory-report.json` and
-separates initial shell files from route/action-triggered files. The current
-build measured:
+separates initial shell files from route/action-triggered files. The historical
+Phase 8 build measured the following; see [Phase 9 readiness](./production-readiness.md)
+for the current candidate:
 
 | Output                 |  Before raw |   After raw | Delta raw |
 | ---------------------- | ----------: | ----------: | --------: |
@@ -203,10 +204,11 @@ responsive variants, place them in the canonical-ID directory, add one manifest
 entry, and run tests/build/inventory. A missing provenance record must stop the
 onboarding rather than silently fall back to an unverified claim.
 
-## 16. Phase 9 delivery considerations
+## 16. Phase 10 delivery considerations
 
-Phase 9 should verify correct AVIF/WebP MIME types, Brotli/Gzip support, SPA route
-fallback, and immutable caching for hashed build assets. Public canonical-ID image
-paths need an intentional cache policy because their names are not content-hashed.
-No Cloudflare configuration, cache rule, redirect/header file, or deployment
-workflow is implemented in Phase 8.
+Phase 9 audits the production candidate locally. Phase 10 must verify correct
+AVIF/WebP MIME types if rights-cleared images are later added, Brotli/Gzip support,
+SPA route fallback, and immutable caching for hashed build assets. Public
+canonical-ID image paths need an intentional cache policy because their names are
+not content-hashed. No Cloudflare configuration, cache rule, redirect/header
+file, or deployment workflow is implemented yet. See [deployment contract](./deployment.md).

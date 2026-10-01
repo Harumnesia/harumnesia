@@ -4,7 +4,7 @@
 
 Phase 6 established the browser-facing experience: routing, responsive layout,
 an accessible discovery form, result explanations, perfume details, and
-error/empty states. Phase 7 now connects that experience to the validated
+error/empty states. Phase 7 connected that experience to the validated
 25,127-record production dataset and `@harumnesia/recommender` through a dedicated
 Web Worker.
 

@@ -16,7 +16,7 @@ The screenshot, generated HTML, and screen metadata for each screen were retriev
 
 ## Tokens, type, and spacing
 
-The shared tokens live in `apps/web/src/index.css`. The important color values are parchment `#fcf9f4`, inset paper `#f6f3ee`, deep plum `#240f1b`, body ink `#161616`, herbal olive `#4a5240`, and restrained ochre `#a37f1c` (Stitch's accessible on-surface ochre). Hairlines use `#d1c3c8`. State errors use a dark red with a light paper fill.
+The shared tokens live in `apps/web/src/index.css`. The important color values are parchment `#fcf9f4`, inset paper `#f6f3ee`, deep plum `#240f1b`, body ink `#161616`, herbal olive `#4a5240`, and restrained ochre `#a37f1c` for accents. Phase 9 uses darker `#806117` for small ochre text so it reaches at least 4.5:1 on the paper surfaces. Hairlines use `#d1c3c8`. State errors use a dark red with a light paper fill.
 
 The stylesheet has one authoritative `:root` with `--color-*`, `--font-*`, `--text-*`, `--space-*`, `--measure-*`, `--line-*`, `--motion-*`, and `--layer-*` tokens. Components refer directly to these tokens; the earlier `--paper`, `--plum`, `--serif`, and related aliases have been removed. Shared structural rules and the Direction A+ treatments are consolidated into one selector set, followed by tablet, desktop, narrow-screen, and reduced-motion queries.
 

@@ -12,21 +12,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 10.30.3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Check formatting
+        run: pnpm format:check
 
       - name: Lint
         run: pnpm lint
@@ -37,8 +42,17 @@ jobs:
       - name: Validate generated dataset
         run: pnpm dataset:validate
 
+      - name: Audit assets
+        run: pnpm assets:audit
+
       - name: Test
         run: pnpm test
+
+      - name: Smoke test recommender
+        run: pnpm recommender:smoke
+
+      - name: Smoke test integration
+        run: pnpm integration:smoke
 
       - name: Build
         run: pnpm build

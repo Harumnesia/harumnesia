@@ -3,11 +3,16 @@
 ## Status
 
 - Project: Harumnesia V2
-- Status: Planning / Re-engineering
+- Status: Phase 9 production candidate; Cloudflare deployment pending
 - Repository: `Harumnesia/harumnesia`
 - Architecture: Monorepo
 - Deployment Target: Cloudflare
 - Previous Version: Harumnesia V1 Capstone
+
+Phases 0–8.5 and mini-hardening are complete. The active implementation is a
+client-side React SPA with a dedicated recommendation Web Worker and validated
+25,127-record static dataset. See [production readiness](./production-readiness.md)
+for the Phase 9 decision and [deployment contract](./deployment.md) for Phase 10.
 
 ---
 
@@ -787,18 +792,32 @@ Optimize:
 
 ---
 
-### Phase 9 — Cloudflare Deployment
+### Phase 8.5 — Canonical visual implementation and mini-hardening (complete)
 
-Deploy V2 through Cloudflare.
+Implement the five canonical Stitch screens and consolidate CSS while preserving
+the Phase 7 runtime, data, recommendation behavior, and asset rights boundary.
 
-Validate:
+### Phase 9 — Production Readiness / Pre-Deployment (current)
 
-- build
-- routing
-- caching
-- asset loading
-- recommendation behavior
-- production configuration
+Audit the clean build, generated data, recommender, routes, lazy loading, worker,
+performance, memory, accessibility, security, CI, documentation, and rights
+boundary. Record evidence and a GO / NO-GO decision before infrastructure work.
+
+### Phase 10 — Cloudflare Deployment & Production Release (pending)
+
+Deploy the audited build according to [deployment contract](./deployment.md).
+Validate routing, caching, MIME, compression, assets, and recommendations in
+preview and production. This phase has not started.
+
+### Phase 10H — Production Verification / Release Hardening (pending)
+
+Verify the released site on the production domain and representative real devices,
+monitor failures and performance, and resolve release-specific issues.
+
+The roadmap formerly placed Cloudflare deployment in Phase 9. The Phase 9
+readiness gate now separates application validation from Phase 10 infrastructure
+and release work. Historical architecture and implementation decisions above
+remain as originally scoped.
 
 ---
 
@@ -915,9 +934,13 @@ Frontend
     ↓
 Integration
     ↓
-Asset Optimization
+    Asset Optimization
+    ↓
+Production Readiness / Pre-Deployment
     ↓
 Cloudflare Deployment
+    ↓
+Production Verification / Release Hardening
     ↓
 Optional Backend Features
 ```
@@ -934,7 +957,7 @@ For the initial version of Harumnesia V2:
 Monorepo                     YES
 React + Vite                 YES
 TypeScript                   YES
-Cloudflare                   YES
+Cloudflare target            YES (deployment pending Phase 10)
 Static JSON                  YES
 Static perfume assets        YES
 

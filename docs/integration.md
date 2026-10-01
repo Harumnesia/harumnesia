@@ -219,10 +219,13 @@ to deterministic CSS artwork for all current records because no rights-cleared
 production image exists. The landing/discover runtime-fetch behavior and worker
 sizes remain unchanged. See [Asset Optimization and Image Delivery](./assets.md).
 
-## 20. Phase 9 deployment considerations
+## 20. Phase 9 readiness and Phase 10 deployment considerations
 
-Cloudflare deployment should configure SPA route fallback, immutable caching for
-hashed assets, suitable compression and cache headers for the runtime JSON, and
-correct worker/taxonomy MIME delivery. Deployment validation should repeat direct
-route, cache, network, responsiveness, and representative mobile-device checks.
-No Cloudflare service or production deployment was added in Phase 7.
+Phase 9 audits the production build locally. The Phase 7 bundle and browser
+measurements above are historical baselines; current measurements are in
+[production readiness](./production-readiness.md). Phase 10 Cloudflare deployment
+must provide SPA route fallback, immutable caching for hashed assets, suitable
+compression and cache headers for runtime JSON, and correct worker/taxonomy MIME
+delivery. Deployment validation should repeat direct route, cache, network,
+responsiveness, and representative real-device checks. No Cloudflare service or
+production deployment has been added.
