@@ -28,15 +28,22 @@ export function PerfumeCard({
         />
       </div>
       <div className="perfume-card__body">
-        <p className="eyebrow">{perfume.brand}</p>
+        <p className="eyebrow">
+          {showReasons ? 'Curated fragrance / ' : 'Editorial sample / '}
+          {perfume.brand}
+        </p>
         <h2>{perfume.name}</h2>
         <p className="metadata">
           {perfume.marketLabel} · {perfume.genderLabel}
           {perfume.concentration ? ` · ${perfume.concentration}` : ''}
         </p>
         {perfume.priceLabel ? (
-          <p className="price">{perfume.priceLabel}</p>
+          <p className="price">
+            <span>Listed price</span>
+            {perfume.priceLabel}
+          </p>
         ) : null}
+        <p className="card-fact card-fact--label">Key notes</p>
         <ul className="tag-list" aria-label="Key notes">
           {perfume.keyNotes.slice(0, 4).map((note) => (
             <li key={note}>{note}</li>

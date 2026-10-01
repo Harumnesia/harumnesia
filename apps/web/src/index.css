@@ -894,3 +894,1169 @@ h3 {
     scroll-behavior: auto;
   }
 }
+
+/* Phase 8.5 — the canonical curatorial monograph */
+:root {
+  color: #1c1c19;
+  background: #fcf9f4;
+  font-family: Arial, 'Helvetica Neue', system-ui, sans-serif;
+  --color-paper: #fcf9f4;
+  --color-paper-inset: #f6f3ee;
+  --color-paper-deep: #ebe8e3;
+  --color-plum: #240f1b;
+  --color-ink: #161616;
+  --color-muted: #5c5554;
+  --color-olive: #4a5240;
+  --color-ochre: #a37f1c;
+  --color-line: #d1c3c8;
+  --font-display: 'Bodoni MT', Didot, 'Times New Roman', Georgia, serif;
+  --font-body: Arial, 'Helvetica Neue', system-ui, sans-serif;
+  --text-label: 0.69rem;
+  --text-body: 0.94rem;
+  --text-display: clamp(3.5rem, 6vw, 6.7rem);
+  --space-section: clamp(4.5rem, 8vw, 8rem);
+  --measure-page: 78rem;
+  --measure-copy: 42rem;
+  --line-hair: 1px solid var(--color-line);
+  --motion-quiet: 220ms ease;
+  --layer-header: 20;
+  --paper: var(--color-paper);
+  --paper-deep: var(--color-paper-deep);
+  --ink: var(--color-ink);
+  --muted: var(--color-muted);
+  --line: var(--color-line);
+  --plum: var(--color-plum);
+  --plum-dark: var(--color-plum);
+  --olive: var(--color-olive);
+  --cream: #fff;
+  --serif: var(--font-display);
+  --container: var(--measure-page);
+  --transition: var(--motion-quiet);
+}
+body {
+  color: var(--color-ink);
+  background: var(--color-paper);
+  font-family: var(--font-body);
+}
+:focus-visible,
+.choice input:focus-visible + span {
+  outline-color: var(--color-ochre);
+}
+h1,
+h2,
+h3 {
+  color: var(--color-plum);
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+}
+h1 {
+  line-height: 0.99;
+}
+h2 {
+  line-height: 1.08;
+}
+p {
+  line-height: 1.65;
+}
+.site-header {
+  background: rgb(252 249 244 / 96%);
+  border-bottom: var(--line-hair);
+}
+.site-header__inner {
+  min-height: 5.25rem;
+}
+.menu-toggle {
+  min-height: 2.75rem;
+}
+.wordmark {
+  color: var(--color-plum);
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  font-weight: 500;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
+}
+.site-nav > a:not(.button) {
+  color: var(--color-ink);
+  font-size: var(--text-label);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.site-nav > a.active:not(.button) {
+  color: var(--color-plum);
+  text-decoration: underline;
+  text-decoration-color: var(--color-ochre);
+  text-underline-offset: 0.7rem;
+}
+.site-nav > a:not(.button):hover {
+  color: var(--color-ochre);
+}
+.button {
+  min-height: 2.9rem;
+  padding: 0.85rem 1.35rem;
+  border-color: var(--color-plum);
+  background: var(--color-plum);
+  font-size: var(--text-label);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  line-height: 1.4;
+  text-align: center;
+  text-transform: uppercase;
+}
+.button:hover {
+  background: #493244;
+  border-color: #493244;
+}
+.button--small {
+  min-height: 2.45rem;
+}
+.button--light {
+  color: var(--color-plum);
+  background: var(--color-paper);
+}
+.button--light:hover {
+  color: #fff;
+}
+.text-link {
+  color: var(--color-plum);
+  font-size: var(--text-label);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  text-decoration-color: var(--color-ochre);
+}
+.eyebrow,
+.folio-label {
+  margin-bottom: 1rem;
+  color: var(--color-olive);
+  font-size: var(--text-label);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+.folio-label {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.folio-label::after {
+  width: min(5rem, 14vw);
+  height: 1px;
+  background: var(--color-ochre);
+  content: '';
+}
+.lede {
+  color: var(--color-muted);
+  font-size: clamp(1rem, 1.5vw, 1.13rem);
+  line-height: 1.75;
+}
+.hero {
+  min-height: 40rem;
+  gap: clamp(2rem, 6vw, 7rem);
+  padding-block: clamp(4.5rem, 7vw, 7rem);
+  border-bottom: var(--line-hair);
+}
+.hero__copy h1 {
+  max-width: 14ch;
+  margin-bottom: 2rem;
+  font-size: var(--text-display);
+  text-transform: uppercase;
+}
+.hero__copy .lede {
+  max-width: 34rem;
+}
+.hero .button-row {
+  margin-top: 2.2rem;
+}
+.hero__art {
+  min-width: 0;
+  padding: 0.85rem;
+  border: var(--line-hair);
+  background: var(--color-paper-inset);
+  box-shadow: 0 18px 40px rgb(36 15 27 / 8%);
+}
+.hero__art-header,
+.hero__art > p,
+.detail__art-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  line-height: 1.5;
+  text-align: left;
+  text-transform: uppercase;
+}
+.hero__art-header {
+  padding: 0.45rem 0.3rem 0.8rem;
+}
+.hero__art > p {
+  margin: 0;
+  padding: 0.9rem 0.3rem 0.3rem;
+}
+.hero__art > p span {
+  color: var(--color-ochre);
+}
+.fragrance-art {
+  --art-a: #7a503e;
+  --art-b: #baa280;
+  min-height: 23rem;
+  background:
+    linear-gradient(
+      115deg,
+      transparent 42%,
+      rgb(255 255 255 / 28%) 43%,
+      transparent 45%
+    ),
+    radial-gradient(circle at 78% 19%, rgb(255 255 255 / 75%), transparent 31%),
+    linear-gradient(140deg, #e5dfd4 0%, #cfc6b5 57%, #9f9485 100%);
+}
+.fragrance-art::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 5px,
+    rgb(22 22 22 / 2%) 5px 6px
+  );
+  content: '';
+}
+.fragrance-art::after {
+  position: absolute;
+  right: -10%;
+  bottom: -10%;
+  width: 66%;
+  height: 46%;
+  border-radius: 50%;
+  background: rgb(32 26 26 / 13%);
+  filter: blur(20px);
+  content: '';
+  transform: rotate(-17deg);
+}
+.fragrance-art--amber {
+  --art-a: #72483b;
+  --art-b: #b99463;
+}
+.fragrance-art--rose {
+  --art-a: #734557;
+  --art-b: #b88a87;
+}
+.fragrance-art--forest {
+  --art-a: #455d4c;
+  --art-b: #a9a77e;
+}
+.fragrance-art--citrus {
+  --art-a: #936534;
+  --art-b: #d6bd6d;
+}
+.fragrance-art--iris {
+  --art-a: #6d5b77;
+  --art-b: #b4a8bd;
+}
+.fragrance-art__sun {
+  top: 10%;
+  right: 9%;
+  width: 38%;
+  height: auto;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    #e8d7b5,
+    var(--art-b) 60%,
+    transparent 70%
+  );
+  opacity: 0.56;
+  filter: blur(1px);
+}
+.fragrance-art__leaf {
+  width: 22%;
+  height: 48%;
+  border-color: rgb(54 66 48 / 45%);
+  border-width: 1px;
+  background: rgb(93 112 79 / 14%);
+  transform: rotate(-35deg);
+}
+.fragrance-art__leaf--one {
+  left: 7%;
+  bottom: -10%;
+}
+.fragrance-art__leaf--two {
+  right: 10%;
+  bottom: -9%;
+  transform: rotate(25deg) scale(0.75);
+}
+.fragrance-art__bottle {
+  z-index: 1;
+  bottom: 15%;
+  width: 27%;
+  height: 42%;
+  border: 1px solid rgb(255 255 255 / 62%);
+  background: linear-gradient(
+    90deg,
+    rgb(28 20 20 / 35%),
+    var(--art-a) 20% 71%,
+    rgb(250 211 163 / 42%) 93%,
+    rgb(29 22 23 / 45%)
+  );
+  box-shadow:
+    inset 7px 0 8px rgb(255 255 255 / 13%),
+    18px 24px 24px rgb(36 23 20 / 28%);
+}
+.fragrance-art__bottle::before {
+  top: -18%;
+  width: 45%;
+  height: 18%;
+  border: 1px solid #42322c;
+  background: linear-gradient(90deg, #2d2928, #5d4e42, #282423);
+}
+.fragrance-art__bottle::after {
+  inset: 46% 12% auto;
+  height: 25%;
+  border: 0;
+  background: rgb(252 249 244 / 86%);
+  box-shadow: 0 0 0 1px rgb(36 15 27 / 18%);
+}
+.fragrance-art--compact {
+  min-height: 16rem;
+}
+.fragrance-art--compact .fragrance-art__bottle {
+  width: 25%;
+  height: 44%;
+  bottom: 13%;
+}
+.fragrance-art--compact .fragrance-art__sun {
+  width: 39%;
+}
+.perfume-visual,
+.perfume-visual img {
+  background: var(--color-paper-deep);
+}
+.steps,
+.featured {
+  padding-block: var(--space-section);
+}
+.section-heading {
+  max-width: none;
+  margin-bottom: 3.25rem;
+}
+.section-heading h2,
+.dimensions h2 {
+  max-width: 13ch;
+  text-transform: uppercase;
+}
+.step-grid {
+  gap: 0;
+}
+.step-grid li {
+  min-width: 0;
+  padding: 2rem 2rem 2.5rem 0;
+  border-top: 1px solid var(--color-plum);
+}
+.step-grid li + li {
+  padding-left: 2rem;
+  border-left: var(--line-hair);
+}
+.step-grid span,
+.form-section__heading > span {
+  color: var(--color-ochre);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+.step-grid h3 {
+  max-width: 17ch;
+  margin-top: 2.1rem;
+  font-size: 1.75rem;
+}
+.step-grid p {
+  max-width: 28ch;
+}
+.dimensions {
+  color: var(--color-ink);
+  background: var(--color-paper-inset);
+  border-block: var(--line-hair);
+}
+.dimensions .eyebrow,
+.dimensions .folio-label {
+  color: var(--color-olive);
+}
+.dimensions__inner {
+  gap: 4rem;
+}
+.dimension-list {
+  gap: 0;
+}
+.dimension-list article {
+  padding: 1.4rem 0;
+  border-bottom: var(--line-hair);
+}
+.dimension-list article:first-child {
+  border-top: var(--line-hair);
+}
+.dimension-list h3 {
+  color: var(--color-plum);
+  font-size: 1.65rem;
+}
+.dimension-list p {
+  color: var(--color-muted);
+}
+.featured .card-grid {
+  gap: 1rem;
+}
+.perfume-card {
+  display: flex;
+  flex-direction: column;
+  border: var(--line-hair);
+  background: var(--color-paper-inset);
+}
+.perfume-card__visual {
+  overflow: hidden;
+}
+.perfume-card .fragrance-art,
+.perfume-card .perfume-visual {
+  transition: transform 400ms ease;
+}
+.perfume-card:hover .fragrance-art,
+.perfume-card:hover .perfume-visual {
+  transform: scale(1.025);
+}
+.perfume-card__body {
+  flex: 1;
+  padding: clamp(1.2rem, 2.5vw, 2rem);
+}
+.perfume-card .eyebrow {
+  margin-bottom: 0.55rem;
+}
+.perfume-card h2 {
+  font-size: clamp(1.55rem, 2.4vw, 2.2rem);
+  text-transform: uppercase;
+}
+.perfume-card .metadata {
+  margin-bottom: 1rem;
+}
+.metadata {
+  color: var(--color-muted);
+  font-size: 0.76rem;
+}
+.price,
+.detail__price {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: var(--color-plum);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+.price span,
+.detail__price span {
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.tag-list {
+  gap: 0.4rem;
+}
+.tag-list li {
+  padding: 0.35rem 0.55rem;
+  border: 0;
+  border-radius: 0;
+  color: var(--color-olive);
+  background: #e4e7de;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.45;
+  text-transform: uppercase;
+}
+.card-fact {
+  font-size: 0.74rem;
+}
+.card-fact--label,
+.match-reasons h3 {
+  margin: 1.2rem 0 0.55rem;
+  color: var(--color-olive);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.match-reasons {
+  padding: 1rem;
+  border: 0;
+  background: #fff;
+}
+.match-reasons h3 {
+  margin: 0 0 0.55rem;
+}
+.match-reasons ul {
+  color: var(--color-ink);
+}
+.rank {
+  top: 0.75rem;
+  left: 0.75rem;
+  width: auto;
+  height: auto;
+  padding: 0.1rem 0.6rem;
+  border-radius: 0;
+  background: var(--color-paper);
+  color: var(--color-plum);
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+}
+.final-cta {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  margin-bottom: 0;
+  padding: clamp(4rem, 8vw, 8rem)
+    max(1rem, calc((100vw - var(--measure-page)) / 2));
+  overflow: hidden;
+  background: var(--color-plum);
+  text-align: center;
+}
+.final-cta::after {
+  position: absolute;
+  right: -5rem;
+  bottom: -9rem;
+  width: 30rem;
+  height: 30rem;
+  border: 1px solid rgb(255 255 255 / 15%);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 4rem rgb(255 255 255 / 3%),
+    0 0 0 8rem rgb(255 255 255 / 2%);
+  content: '';
+  pointer-events: none;
+}
+.final-cta .folio-label {
+  justify-content: center;
+  color: #dfc98e;
+}
+.final-cta h2 {
+  max-width: 15ch;
+  margin: 0 auto 2rem;
+  color: var(--color-paper);
+}
+.page-intro {
+  padding-block: 5.5rem 3.5rem;
+}
+.page-intro h1 {
+  max-width: 14ch;
+  font-size: clamp(3rem, 5.2vw, 5.5rem);
+  text-transform: uppercase;
+}
+.page-intro--results {
+  position: relative;
+  border-bottom: var(--line-hair);
+}
+.page-intro--results h1 {
+  max-width: 15ch;
+}
+.page-intro--results .lede {
+  max-width: 36rem;
+}
+.page-intro__aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.page-intro__aside .eyebrow {
+  color: var(--color-ochre);
+}
+.discovery-form {
+  padding-bottom: var(--space-section);
+}
+.form-section {
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  padding: clamp(1.5rem, 3vw, 3rem);
+  border: var(--line-hair);
+  background: #fff;
+}
+.form-section__heading {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  padding-bottom: 1.4rem;
+  border-bottom: var(--line-hair);
+}
+.form-section__heading > span {
+  font-size: 2rem;
+  line-height: 1;
+}
+.form-section__heading .eyebrow {
+  margin-bottom: 0.45rem;
+}
+.form-section__heading h2 {
+  margin-bottom: 0.35rem;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+}
+.form-section__heading p:last-child {
+  max-width: 42rem;
+}
+.tag-selector {
+  min-width: 0;
+}
+.tag-selector > label,
+.budget-field > label:first-child,
+.choice-group legend {
+  color: var(--color-plum);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.tag-selector > input,
+.budget-field > input {
+  min-height: 3rem;
+  padding: 0.8rem;
+  border: var(--line-hair);
+  background: var(--color-paper);
+}
+.option-list button,
+.preset-row button {
+  min-height: 2.75rem;
+  border-radius: 0;
+  background: var(--color-paper-inset);
+}
+.selected-tags li {
+  border-radius: 0;
+  background: #e4e7de;
+}
+.selected-tags button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
+.choice-row {
+  gap: 0.4rem;
+}
+.choice span {
+  min-width: 3.5rem;
+  min-height: 2.75rem;
+  display: grid;
+  place-items: center;
+}
+.choice input:checked + span {
+  background: var(--color-plum);
+}
+.advanced-filters {
+  margin-block: 1.5rem;
+  padding: 0 clamp(1.5rem, 3vw, 3rem);
+  border: var(--line-hair);
+  background: var(--color-paper-inset);
+}
+.advanced-filters summary {
+  min-height: 4.5rem;
+  color: var(--color-plum);
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+.advanced-filters[open] summary {
+  border-bottom: var(--line-hair);
+}
+.advanced-filters__body {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.advanced-filters__body > * {
+  min-width: 0;
+}
+.advanced-filters__body > .tag-selector {
+  grid-column: 1 / -1;
+}
+.budget-field {
+  padding: 0 0 1.5rem;
+}
+.check-line input {
+  min-width: 1.2rem;
+  min-height: 1.2rem;
+}
+.form-status {
+  margin: 1rem 0;
+  padding: 1.2rem 1.5rem;
+  border-left: 3px solid #a33c3c;
+  background: #fff4f0;
+}
+.form-status .eyebrow {
+  display: block;
+  color: #8b2929;
+}
+.form-status p {
+  margin: 0;
+}
+.submit-row {
+  flex-wrap: wrap;
+  padding: 1.5rem;
+  border: var(--line-hair);
+  background: #fff;
+}
+.submit-row__action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+.submit-row__activity {
+  color: var(--color-olive);
+  font-size: 0.8rem;
+}
+.submit-row__activity::before {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-right: 0.6rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  content: '';
+  animation: quiet-pulse 1.4s ease-in-out infinite;
+}
+.results-list {
+  display: block;
+  padding-block: 3rem var(--space-section);
+}
+.results-list > .perfume-card {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  margin-bottom: 4rem;
+  background: var(--color-paper-inset);
+}
+.results-list > .perfume-card .perfume-card__visual {
+  min-height: 30rem;
+}
+.results-list > .perfume-card .fragrance-art,
+.results-list > .perfume-card .perfume-visual {
+  height: 100%;
+  min-height: 30rem;
+}
+.results-list > .perfume-card .perfume-card__body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(2rem, 4vw, 4.5rem);
+}
+.results-list > .perfume-card h2 {
+  font-size: clamp(2.2rem, 3.5vw, 4rem);
+}
+.results-list > .perfume-card .text-link {
+  margin-top: auto;
+}
+.results-list__heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1.3rem;
+  border-top: 1px solid var(--color-plum);
+}
+.results-list__heading p {
+  margin: 0;
+  color: var(--color-plum);
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+  text-transform: uppercase;
+}
+.results-list__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.results-list__grid .perfume-card:first-child {
+  grid-column: auto;
+  display: flex;
+  grid-template-columns: none;
+}
+.results-list__grid .perfume-card__visual .fragrance-art {
+  min-height: 17rem;
+}
+.system-state {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: 4rem;
+}
+.system-state__folio,
+.system-state__foot {
+  padding-block: 0.8rem;
+  border-block: var(--line-hair);
+  color: var(--color-muted);
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.system-state__foot {
+  border-top: 0;
+  text-align: right;
+}
+.system-state__panel {
+  display: flex;
+  min-height: 26rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 5vw, 5rem);
+  background: var(--color-paper-inset);
+  text-align: center;
+}
+.system-state__mark {
+  width: 4rem;
+  height: 4rem;
+  display: grid;
+  place-items: center;
+  margin-bottom: 1.5rem;
+}
+.system-state__orbit {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: block;
+  border: 1px solid var(--color-ochre);
+  border-radius: 50%;
+  box-shadow: 0 0 0 0.6rem rgb(163 127 28 / 10%);
+}
+.system-state--error .system-state__orbit {
+  display: grid;
+  place-items: center;
+  border-color: #9b3636;
+  border-radius: 0;
+  color: #9b3636;
+  box-shadow: 0 0 0 0.6rem rgb(155 54 54 / 8%);
+  transform: rotate(45deg);
+}
+.system-state--error .system-state__orbit::after {
+  content: '!';
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  transform: rotate(-45deg);
+}
+.system-state--empty .system-state__orbit::after {
+  position: absolute;
+  inset: 0.5rem;
+  border: 1px solid var(--color-olive);
+  border-radius: 50%;
+  content: '';
+}
+.system-state__orbit.is-loading {
+  animation: quiet-pulse 1.4s ease-in-out infinite;
+}
+.system-state h1 {
+  max-width: 19ch;
+  margin-bottom: 1.1rem;
+  font-size: clamp(2rem, 4vw, 3.7rem);
+}
+.system-state .lede {
+  max-width: 38rem;
+  margin-bottom: 0;
+}
+.system-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4rem;
+  margin-top: 2rem;
+}
+.detail-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-block: 2rem 1rem;
+  border-bottom: var(--line-hair);
+}
+.detail-heading .folio-label {
+  margin: 0;
+}
+.detail {
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: center;
+  padding-block: 2.5rem var(--space-section);
+}
+.detail__art {
+  position: static;
+  padding: 1rem;
+  border: var(--line-hair);
+  background: #fff;
+  box-shadow: 0 15px 32px rgb(36 15 27 / 8%);
+}
+.detail__art .fragrance-art,
+.detail__art .perfume-visual {
+  min-height: 32rem;
+}
+.detail__art-caption {
+  margin: 0;
+  padding: 0.9rem 0 0;
+}
+.detail__content h1 {
+  max-width: 12ch;
+  font-size: clamp(3rem, 5vw, 5.3rem);
+}
+.detail__intro {
+  padding-top: 1.5rem;
+  border-top: var(--line-hair);
+  color: var(--color-muted);
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+.detail__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 2rem;
+}
+.detail__facts div {
+  padding: 0.9rem 0;
+  border-top: var(--line-hair);
+}
+.detail__facts span {
+  display: block;
+  margin-bottom: 0.4rem;
+  color: var(--color-olive);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.detail__facts strong {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+.detail-notes {
+  padding-block: var(--space-section);
+  border-top: 1px solid var(--color-plum);
+}
+.detail-notes__heading {
+  max-width: 34rem;
+  margin: 0 auto 3rem;
+  text-align: center;
+}
+.detail-notes__heading .folio-label {
+  justify-content: center;
+}
+.detail-notes h2 {
+  margin-bottom: 0.7rem;
+  font-size: clamp(2.4rem, 4vw, 4.5rem);
+  text-transform: uppercase;
+}
+.detail-notes__heading > p:last-child {
+  color: var(--color-muted);
+}
+.note-pyramid {
+  display: grid;
+  gap: 0.4rem;
+  max-width: 56rem;
+  margin-inline: auto;
+}
+.note-pyramid__tier {
+  display: grid;
+  grid-template-columns: 3rem minmax(9rem, 0.5fr) minmax(0, 1.5fr);
+  gap: 1rem;
+  align-items: center;
+  min-height: 6rem;
+  margin: 0 !important;
+  padding: 1.3rem 2rem !important;
+  border-left: 2px solid var(--color-ochre);
+  color: var(--color-ink) !important;
+  background: var(--color-paper-inset) !important;
+  text-align: left !important;
+}
+.note-pyramid__tier:nth-child(2) {
+  margin-inline: 3% !important;
+  background: var(--color-paper-deep) !important;
+}
+.note-pyramid__tier:nth-child(3) {
+  margin-inline: 6% !important;
+  background: #e5e5de !important;
+}
+.note-pyramid__index {
+  color: var(--color-ochre);
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+}
+.note-pyramid h3 {
+  margin: 0;
+  color: var(--color-plum);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+.note-pyramid p {
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+.detail-addenda {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3rem;
+  padding-bottom: var(--space-section);
+}
+.detail-section {
+  padding-block: 2rem;
+  border-top: 1px solid var(--color-plum);
+}
+.detail-section h2 {
+  font-size: 2rem;
+}
+.site-footer {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 3rem max(1rem, calc((100vw - var(--measure-page)) / 2));
+  border-top: var(--line-hair);
+  background: var(--color-paper-inset);
+}
+.site-footer .wordmark {
+  font-size: 1.6rem;
+}
+@keyframes quiet-pulse {
+  50% {
+    opacity: 0.4;
+    transform: scale(0.86);
+  }
+}
+@media (min-width: 48rem) {
+  .hero {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  }
+  .page-intro--results {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem 4rem;
+  }
+  .page-intro--results .folio-label,
+  .page-intro--results h1,
+  .page-intro--results .lede {
+    grid-column: 1;
+  }
+  .page-intro__aside {
+    grid-column: 2;
+    grid-row: 2 / span 2;
+    align-self: end;
+  }
+}
+@media (max-width: 69.99rem) {
+  .results-list {
+    display: block;
+  }
+  .results-list > .perfume-card {
+    display: grid;
+  }
+}
+@media (max-width: 47.99rem) {
+  .site-nav {
+    background: var(--color-paper);
+  }
+  .hero {
+    min-height: 0;
+    padding-block: 4.5rem;
+  }
+  .hero__copy h1 {
+    font-size: clamp(3.15rem, 11vw, 5rem);
+  }
+  .hero__art {
+    max-width: 34rem;
+  }
+  .step-grid li,
+  .step-grid li + li {
+    padding: 1.6rem 0;
+    border-left: 0;
+  }
+  .step-grid li + li {
+    border-top: var(--line-hair);
+  }
+  .dimensions__inner {
+    gap: 2rem;
+  }
+  .featured .card-grid {
+    grid-template-columns: 1fr;
+  }
+  .advanced-filters__body {
+    grid-template-columns: 1fr;
+  }
+  .results-list > .perfume-card {
+    grid-template-columns: 1fr;
+  }
+  .results-list > .perfume-card .perfume-card__visual,
+  .results-list > .perfume-card .fragrance-art {
+    min-height: 21rem;
+  }
+  .results-list__grid {
+    grid-template-columns: 1fr;
+  }
+  .detail {
+    grid-template-columns: 1fr;
+  }
+  .detail__art .fragrance-art,
+  .detail__art .perfume-visual {
+    min-height: 25rem;
+  }
+  .detail-addenda {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .note-pyramid__tier {
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.3rem 0.7rem;
+    padding: 1rem !important;
+  }
+  .note-pyramid__tier p {
+    grid-column: 2;
+  }
+}
+@media (max-width: 27rem) {
+  .site-header__inner,
+  .section-shell {
+    width: min(100% - 2rem, var(--container));
+  }
+  .wordmark {
+    font-size: 1.3rem;
+  }
+  .hero__copy h1 {
+    overflow-wrap: anywhere;
+  }
+  .results-list__heading {
+    align-items: start;
+    flex-direction: column;
+  }
+  .form-section {
+    padding: 1.2rem;
+  }
+  .form-section__heading {
+    grid-template-columns: 2rem 1fr;
+  }
+  .advanced-filters {
+    padding-inline: 1.2rem;
+  }
+  .detail__facts {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

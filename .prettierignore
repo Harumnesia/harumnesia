@@ -1,5 +1,6 @@
 node_modules
 dist
+.stitch-reference/
 coverage
 pnpm-lock.yaml
 scripts/audit-dataset/audit-results.json

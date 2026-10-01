@@ -11,7 +11,12 @@ const typescriptRecommended = tseslint.configs.recommended.map((config) => ({
 
 export default tseslint.config(
   {
-    ignores: ['**/coverage/**', '**/dist/**', '**/node_modules/**'],
+    ignores: [
+      '**/coverage/**',
+      '**/dist/**',
+      '**/node_modules/**',
+      '.stitch-reference/**',
+    ],
   },
   {
     ...js.configs.recommended,

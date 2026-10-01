@@ -11,9 +11,9 @@
     ],
     "mainJavaScript": [
       {
-        "path": "assets/index-rEhVpvBg.js",
-        "rawBytes": 295344,
-        "gzipBytes": 90964
+        "path": "assets/index-BJlK2kfq.js",
+        "rawBytes": 297752,
+        "gzipBytes": 91706
       }
     ],
     "workerJavaScript": [
@@ -25,9 +25,9 @@
     ],
     "css": [
       {
-        "path": "assets/index-Dt7IKPzM.css",
-        "rawBytes": 13101,
-        "gzipBytes": 3660
+        "path": "assets/index-D-eLZmA9.css",
+        "rawBytes": 32004,
+        "gzipBytes": 7363
       }
     ],
     "runtimeJson": [
@@ -77,14 +77,14 @@
           "gzipBytes": 350
         },
         {
-          "path": "assets/index-rEhVpvBg.js",
-          "rawBytes": 295344,
-          "gzipBytes": 90964
+          "path": "assets/index-BJlK2kfq.js",
+          "rawBytes": 297752,
+          "gzipBytes": 91706
         },
         {
-          "path": "assets/index-Dt7IKPzM.css",
-          "rawBytes": 13101,
-          "gzipBytes": 3660
+          "path": "assets/index-D-eLZmA9.css",
+          "rawBytes": 32004,
+          "gzipBytes": 7363
         },
         {
           "path": "favicon.svg",
@@ -92,8 +92,8 @@
           "gzipBytes": 194
         }
       ],
-      "rawBytes": 309288,
-      "gzipBytes": 95168
+      "rawBytes": 330599,
+      "gzipBytes": 99613
     },
     "lazyOrRouteTriggered": {
       "files": [
@@ -141,7 +141,7 @@
   "imageManifestSourceBytes": 5163,
   "totalEmitted": {
     "files": 10,
-    "rawBytes": 10151898,
-    "gzipBytes": 1824711
+    "rawBytes": 10173209,
+    "gzipBytes": 1829156
   }
 }

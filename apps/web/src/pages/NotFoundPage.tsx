@@ -1,14 +1,16 @@
 import { Link } from 'react-router-dom';
 
-import { PageTitle } from '../components/PageTitle.js';
+import { SystemState } from '../components/SystemState.js';
 
 export function NotFoundPage() {
   return (
-    <section className="empty-state section-shell section-shell--narrow">
-      <PageTitle title="Page not found" />
-      <p className="eyebrow">404 · Off the trail</p>
-      <h1>This page has faded away.</h1>
-      <p className="lede">Return home or begin a new fragrance discovery.</p>
+    <SystemState
+      title="Page not found"
+      eyebrow="Unknown folio"
+      heading="404 · Off the trail"
+      description="This page has faded away. Return home or begin a new fragrance discovery."
+      tone="empty"
+    >
       <div className="button-row">
         <Link className="button" to="/">
           Return home
@@ -17,6 +19,6 @@ export function NotFoundPage() {
           Begin discovery
         </Link>
       </div>
-    </section>
+    </SystemState>
   );
 }

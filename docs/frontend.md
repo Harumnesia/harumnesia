@@ -13,11 +13,17 @@ perfume imagery. Recommendation state lasts for the current SPA session only.
 
 ## 2. Design direction
 
-The interface uses an editorial fragrance direction: warm paper and plum tones,
-serif display typography, restrained borders, generous spacing, and flat abstract
-fragrance compositions. Copy describes alignment with preferences and avoids AI,
-probability, accuracy, or “perfect match” claims. Shared CSS variables define
-color, type, spacing, radius, borders, container width, and transition tokens.
+Phase 8.5 implements the five final canonical Stitch screens as a contemporary
+curatorial fragrance monograph. Parchment, black-cherry plum, botanical olive,
+restrained ochre, high-contrast editorial type, archival labels, and fine rules
+organize all routes. The landing reads as a numbered folio; discovery uses
+numbered consultation panels; rank 01 is featured above supporting results; and
+the detail note pyramid uses offset Top/Middle/Base tiers. All route states share
+one folio treatment. See [Visual system](./design-system.md) for screen IDs,
+tokens, artwork, typography, responsive behavior, and implementation deviations.
+
+Copy still describes real preference alignment and avoids AI, probability,
+accuracy, and “perfect match” claims. The CSS artwork remains local and abstract.
 
 ## 3. Route map
 

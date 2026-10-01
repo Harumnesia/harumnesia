@@ -57,7 +57,7 @@ export function SiteLayout() {
           <p className="wordmark">Harumnesia</p>
           <p>A thoughtful path to fragrances that feel like you.</p>
         </div>
-        <p>Curated in Indonesia · Fixture-powered preview</p>
+        <p>Curated in Indonesia · An olfactory monograph</p>
       </footer>
     </div>
   );

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChoiceGroup } from '../components/discovery/ChoiceGroup.js';
 import { TagSelector } from '../components/discovery/TagSelector.js';
 import { PageTitle } from '../components/PageTitle.js';
+import { SystemState } from '../components/SystemState.js';
 import { validateDiscoveryForm } from '../features/recommendation/form.js';
 import { loadProductionTaxonomy } from '../features/recommendation/taxonomy.js';
 import { useRecommendationExperience } from '../features/recommendation/useRecommendationExperience.js';
@@ -82,26 +83,27 @@ export function DiscoverPage({
 
   if (taxonomyState.status === 'loading') {
     return (
-      <section className="empty-state section-shell section-shell--narrow">
-        <PageTitle title="Loading discovery" />
-        <p className="eyebrow">Preparing discovery</p>
-        <h1>Loading fragrance vocabulary…</h1>
-        <p className="lede" role="status">
-          Gathering the notes and accords you can explore.
-        </p>
-      </section>
+      <SystemState
+        title="Loading discovery"
+        eyebrow="Preparing discovery"
+        heading="Loading fragrance vocabulary…"
+        description="Gathering the notes and accords you can explore."
+        descriptionRole="status"
+        loading
+      />
     );
   }
 
   if (taxonomyState.status === 'error') {
     return (
-      <section className="empty-state section-shell section-shell--narrow">
-        <PageTitle title="Unable to load discovery" />
-        <p className="eyebrow">Discovery was interrupted</p>
-        <h1>We could not load the fragrance vocabulary.</h1>
-        <p className="lede" role="alert">
-          Please try again before choosing your preferences.
-        </p>
+      <SystemState
+        title="Unable to load discovery"
+        eyebrow="Discovery was interrupted"
+        heading="We could not load the fragrance vocabulary."
+        description="Please try again before choosing your preferences."
+        descriptionRole="alert"
+        tone="error"
+      >
         <button
           className="button"
           onClick={() => {
@@ -112,7 +114,7 @@ export function DiscoverPage({
         >
           Try again
         </button>
-      </section>
+      </SystemState>
     );
   }
 
@@ -122,7 +124,7 @@ export function DiscoverPage({
     <>
       <PageTitle title="Discover your fragrance" />
       <section className="page-intro section-shell section-shell--narrow">
-        <p className="eyebrow">Your scent profile</p>
+        <p className="folio-label">Consultation / 01 — Your scent profile</p>
         <h1>What would you like to feel in a fragrance?</h1>
         <p className="lede">
           Begin with preferences—they guide the ranking without ruling scents
@@ -138,6 +140,7 @@ export function DiscoverPage({
           <div className="form-section__heading">
             <span>01</span>
             <div>
+              <p className="eyebrow">Olfactory affinities & raw notes</p>
               <h2 id="preferences-heading">What draws you in?</h2>
               <p>
                 These are preferences, so nearby discoveries can still appear.
@@ -164,6 +167,7 @@ export function DiscoverPage({
           <div className="form-section__heading">
             <span>02</span>
             <div>
+              <p className="eyebrow">Context & temporal wear</p>
               <h2 id="context-heading">Give it some context.</h2>
               <p>All choices are optional. Pick as many as feel useful.</p>
             </div>
@@ -304,21 +308,29 @@ export function DiscoverPage({
         </details>
 
         {error ? (
-          <p className="form-status" role="alert">
-            {error}
-          </p>
+          <div className="form-status" role="alert">
+            <span className="eyebrow">Consultation interrupted</span>
+            <p>{error}</p>
+          </div>
         ) : null}
         <div className="submit-row">
           <p>Your choices are processed in this browser session.</p>
-          <button
-            className="button"
-            disabled={status === 'submitting'}
-            type="submit"
-          >
-            {status === 'submitting'
-              ? 'Preparing your fragrance recommendations…'
-              : 'Show my recommendations'}
-          </button>
+          <div className="submit-row__action">
+            {status === 'submitting' ? (
+              <span className="submit-row__activity" role="status">
+                Preparing your fragrance recommendations…
+              </span>
+            ) : null}
+            <button
+              className="button"
+              disabled={status === 'submitting'}
+              type="submit"
+            >
+              {status === 'submitting'
+                ? 'Preparing your fragrance recommendations…'
+                : 'Show my recommendations'}
+            </button>
+          </div>
         </div>
       </form>
     </>

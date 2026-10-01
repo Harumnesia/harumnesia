@@ -29,7 +29,7 @@ export function LandingPage() {
       <PageTitle title="Find a fragrance that feels like you" />
       <section className="hero section-shell">
         <div className="hero__copy">
-          <p className="eyebrow">A personal fragrance guide</p>
+          <p className="folio-label">Volume 01 / A personal fragrance guide</p>
           <h1>Find a scent with a story that feels like yours.</h1>
           <p className="lede">
             Follow your instincts through notes, moods, and moments. Harumnesia
@@ -45,14 +45,20 @@ export function LandingPage() {
           </div>
         </div>
         <div className="hero__art">
+          <div className="hero__art-header" aria-hidden="true">
+            <span>Harumnesia / Specimen study</span>
+            <span>01 — 03</span>
+          </div>
           <FragranceArtwork tone="amber" />
-          <p>Notes unfold. Memories return.</p>
+          <p>
+            <span>Fig. 01</span> Notes unfold. Memories return.
+          </p>
         </div>
       </section>
 
       <section className="steps section-shell" id="how-it-works">
         <div className="section-heading">
-          <p className="eyebrow">A quieter way to choose</p>
+          <p className="folio-label">01 / A quieter way to choose</p>
           <h2>Three steps, one considered edit.</h2>
         </div>
         <ol className="step-grid">
@@ -69,7 +75,7 @@ export function LandingPage() {
       <section className="dimensions">
         <div className="section-shell dimensions__inner">
           <div>
-            <p className="eyebrow">More than a note</p>
+            <p className="folio-label">02 / More than a note</p>
             <h2>Preference gives direction. Filters give boundaries.</h2>
           </div>
           <div className="dimension-list">
@@ -92,7 +98,7 @@ export function LandingPage() {
       <section className="featured section-shell">
         <div className="section-heading section-heading--row">
           <div>
-            <p className="eyebrow">From the preview collection</p>
+            <p className="folio-label">03 / From the preview collection</p>
             <h2>A few scents to begin with.</h2>
           </div>
           <Link className="text-link" to="/discover">
@@ -111,7 +117,7 @@ export function LandingPage() {
       </section>
 
       <section className="final-cta section-shell">
-        <p className="eyebrow">Start with what you know</p>
+        <p className="folio-label">A new chapter / Start with what you know</p>
         <h2>Your next signature may begin with a single note.</h2>
         <Link className="button button--light" to="/discover">
           Discover your matches

@@ -230,7 +230,7 @@ describe('frontend routes and states', () => {
   it('handles an unknown application route', () => {
     renderRoute('/somewhere-else');
     expect(
-      screen.getByRole('heading', { name: /page has faded away/i }),
+      screen.getByRole('heading', { name: /404 · off the trail/i }),
     ).not.toBeNull();
     expect(screen.getByRole('link', { name: 'Return home' })).not.toBeNull();
   });
