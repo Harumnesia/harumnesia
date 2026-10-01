@@ -805,16 +805,18 @@ boundary. Record evidence and a GO / NO-GO decision before infrastructure work.
 
 ### Phase 10 — Cloudflare Deployment & Production Release (current)
 
-Phase 10A has established the Git-integrated Cloudflare Pages project and
-verified the `*.pages.dev` deployment against the
-[deployment record](./deployment.md). Routing, caching, MIME, compression,
-assets, lazy worker/runtime loading, and the local and international
-recommendation scenarios passed. The Git-deployed selector hides exact
-`vanilla` behind ten partial matches. The cross-market browser scenario passes
-on a separate Pages preview containing an uncommitted fix; Phase 10A closure
-awaits the reviewed commit and a new Git-triggered production smoke. Phase 10B
-handles the custom domain and production cutover only after Phase 10A closes;
-DNS and the custom domain remain unchanged.
+**Phase 10A — Cloudflare Pages Setup, Preview Deployment, and Verification:
+COMPLETE.** The Git-integrated [production site](https://harumnesia.pages.dev)
+serves commit `d500f13533031ed92bec76aa8bab966574d12c0b`, verified against
+the immutable deployment URL. Direct SPA routes, MIME, Brotli, cache headers,
+taxonomy requests, lazy worker/runtime loading, and recommendation/detail flows
+passed on the production URL. Discover displayed and selected exact `vanilla`;
+the amber/vanilla scenario reached an explainable Top 5. See the
+[deployment record](./deployment.md) for the deployment ID and checks.
+
+**Phase 10B — Custom Domain & Production Cutover: NEXT.** Choose the hostname
+with the domain owner, prepare the cutover and rollback, then verify the final
+domain. DNS and the custom domain remain unchanged after Phase 10A.
 
 ### Phase 10H — Production Verification / Release Hardening (pending)
 
@@ -964,7 +966,7 @@ For the initial version of Harumnesia V2:
 Monorepo                     YES
 React + Vite                 YES
 TypeScript                   YES
-Cloudflare target            YES (deployment pending Phase 10)
+Cloudflare target            YES (Pages production live; custom domain next)
 Static JSON                  YES
 Static perfume assets        YES
 

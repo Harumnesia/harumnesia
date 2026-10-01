@@ -1,10 +1,10 @@
 # Phase 10 deployment record and contract
 
-The [Phase 9 readiness gate](./production-readiness.md) passed before Cloudflare setup. The contract below describes the intended release; this record distinguishes the deployed Git commit from subsequent uncommitted fixes.
+The [Phase 9 readiness gate](./production-readiness.md) passed before Cloudflare setup. This record documents the deployed Git commit, production verification, and hosting contract.
 
 ## Phase 10A execution status (1 October 2026)
 
-**Status: deployed and verified with one UI blocker.** The GitHub-linked Pages project `harumnesia` serves [harumnesia.pages.dev](https://harumnesia.pages.dev) from `Harumnesia/harumnesia`, production branch `main`. The source commit is `29148fb0a829cdc03a87ed92dad72437446ebc17`, whose [remote CI](https://github.com/Harumnesia/harumnesia/actions/runs/36848558457) passed. The current successful deployment is `9b2efa2b-5619-454d-8cbf-dbb2f77d8191` at [its immutable deployment URL](https://9b2efa2b.harumnesia.pages.dev), rebuilt from that same commit with the explicit frozen-install command and a Vite-supported Node 22 version. No custom domain or DNS change has been made.
+**Status: COMPLETE.** The GitHub-linked Pages project `harumnesia` serves [harumnesia.pages.dev](https://harumnesia.pages.dev) from `Harumnesia/harumnesia`, production branch `main`. The production source is commit `d500f13533031ed92bec76aa8bab966574d12c0b` (GitHub CI #14 and Cloudflare Pages checks passed). Cloudflare reports successful Git push deployment `4ec0c4b8-f78c-49b1-ab43-ffa418a90608` at [its immutable deployment URL](https://4ec0c4b8.harumnesia.pages.dev), with `commit_dirty=false`. The project API identifies that deployment as the canonical production deployment. The public URL and immutable URL returned byte-identical HTML and main JS (SHA-256), confirming that the public site serves this release. No custom domain or DNS change has been made. **Next: Phase 10B — Custom Domain & Production Cutover.**
 
 | Setting               | Actual value                                                                                                                                                                            |
 | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -30,21 +30,21 @@ Chrome NetLog on the actual Pages origin recorded these **additional URL request
 | Direct local detail, new document         |         1 |            1 |             0 |
 | Direct international detail, new document |         1 |            1 |             0 |
 
-The local bergamot/day and international woody/bergamot UI scenarios each rendered five results, reasons, and the expected top IDs `local-hrmn-0228` and `international-839942a83512e0bf`. No internal score, MMR, or coverage text appeared. The amber/vanilla scenario is blocked on the **production Git deployment**: typing `vanilla` shows ten earlier partial matches and hides the exact `vanilla` option. A small, uncommitted selector fix prioritizes exact matches; its regression test raises the suite to 114 tests. The local production build and [Pages preview deployment](https://62737402.harumnesia.pages.dev) (`62737402-a1ad-4e8d-8e38-d9eaf783ab89`, branch `phase10a-selector-fix`, `commit_dirty=true`) passed all three UI scenarios, with the same deterministic Top 5 IDs. The preview was uploaded with Wrangler to the existing Git-integrated project, leaving the `main` production deployment unchanged. It returned the correct SPA routes, MIME, Brotli, and cache headers for the new hashed JS. Its Chrome NetLog repeated the lazy pattern in the table: 0/0/0 at landing, four taxonomy requests on Discover, one worker and runtime on first recommendation, no added requests on repeat or result-to-detail, and one worker/runtime on each direct detail. The fix needs review, commit, and a new Git-triggered Pages smoke before Phase 10A can be marked complete.
+On the production URL, Discover displayed the exact `vanilla` option when searched and accepted it as a selected tag. The amber/vanilla, local bergamot/day, and international woody/bergamot UI scenarios each rendered five results with reasons and no internal score, MMR, or coverage text. The first two scenarios kept their expected top IDs, `local-hrmn-0228` and `international-839942a83512e0bf`. The amber/vanilla Top 5 IDs were `international-e8dffb4ecdc18d9d`, `international-935ea2ca10fe8efe`, `international-bbe5e61a308b9452`, `international-e0523c428bd799bb`, and `international-87cd67ab2fac7d98`. A result opened its normal perfume detail; direct local and international details also rendered correctly. The fresh production Chrome NetLog repeated the lazy request pattern in the table, including no extra worker/runtime request for repeat recommendation or result-to-detail navigation.
 
 ### Delivery, performance, and browser checks
 
 | Asset         | HTTP MIME                | Raw build size | Observed Brotli transfer |
 | ------------- | ------------------------ | -------------: | -----------------------: |
 | HTML          | `text/html`              |          582 B |                    289 B |
-| Main JS       | `application/javascript` |      297,752 B |              about 93 KB |
-| CSS           | `text/css`               |       26,772 B |                  6,447 B |
-| Worker JS     | `application/javascript` |      101,388 B |              about 28 KB |
-| Runtime JSON  | `application/json`       |    9,690,284 B |            about 1.65 MB |
+| Main JS       | `application/javascript` |      297,853 B |                 92,928 B |
+| CSS           | `text/css`               |       26,772 B |                  6,484 B |
+| Worker JS     | `application/javascript` |      101,388 B |                 28,257 B |
+| Runtime JSON  | `application/json`       |    9,690,284 B |              1,653,962 B |
 | Taxonomy JSON | `application/json`       |     four files |        128–12,398 B each |
 | Favicon       | `image/svg+xml`          |          261 B |                    169 B |
 
-All representative HTML, JS, CSS, JSON, and SVG responses negotiated `Content-Encoding: br`. Pages returned `Cache-Control: public, max-age=0, must-revalidate` for HTML and static assets. The hashed JS/JSON responses had weak ETags; a conditional JS request returned `304`. This default is safe for releases and keeps HTML revalidated, though it does not give hashed assets a long browser freshness lifetime. No `_headers`, cache rule, or redirect was added. Observed Brotli transfer sizes varied slightly between requests; raw sizes are from the deployed Phase 9 commit's build inventory, not network measurements. The uncommitted preview fix produces main JS `index-DyvQbf7c.js` at 297,853 B raw / 91,739 B gzip and 10,168,078 B total raw across the same ten files; its updated inventory is in the working tree.
+All representative HTML, JS, CSS, JSON, and SVG responses negotiated `Content-Encoding: br` on the production URL. Pages returned `Cache-Control: public, max-age=0, must-revalidate` for HTML and static assets. The hashed JS/JSON responses had weak ETags; a conditional JS request returned `304`. This default keeps HTML revalidated, though it does not give hashed assets a long browser freshness lifetime. No `_headers`, cache rule, or redirect was added. The observed transfer sizes above are from the current production URL; raw sizes are from the committed build inventory. The main JS is `index-DyvQbf7c.js` in both locations.
 
 In one Pages Chrome run, first recommendation measured runtime fetch 143.9 ms, parse 71.0 ms, index 239.6 ms, total initialization 454.6 ms, and recommendation 29.3 ms. Repeating the recommendation took 8.5 ms without another runtime/worker request; result-to-detail lookup took 0.1 ms. Direct local and international detail initialization took 524.5 ms and 363.7 ms respectively, with 1.1 ms and 1.0 ms lookups. These observations are in the range of the [Phase 9 local measurements](./production-readiness.md) and are not pass/fail thresholds.
 
@@ -54,7 +54,7 @@ Browser navigation recorded no external page requests or perfume image hotlinks.
 
 ### Phase 10B handoff, without changing DNS now
 
-First close the selector issue in a reviewed Git commit and verify its new `*.pages.dev` deployment. Then choose the exact production hostname with the domain owner; it has not been specified yet. For a subdomain whose DNS remains outside Cloudflare, the least disruptive path is to add that hostname to this Pages project, then have the DNS owner point its CNAME at `harumnesia.pages.dev` after reviewing existing records and the provider's [custom-domain instructions](https://developers.cloudflare.com/pages/configuration/custom-domains/). An apex hostname requires a separate Cloudflare zone/nameserver decision. The domain owner must approve the hostname, record change, TLS validation, and cutover window. Preserve the previous DNS values and successful Pages deployment ID. If production smoke fails, restore the previous DNS target or roll back to a known-good Pages deployment, then recheck direct routes and asset/cache behavior. No record, nameserver, redirect, or domain association was changed in Phase 10A.
+Phase 10A is closed on the verified Git production deployment. Phase 10B is next: choose the exact production hostname with the domain owner; it has not been specified yet. For a subdomain whose DNS remains outside Cloudflare, add that hostname to this Pages project, then have the DNS owner point its CNAME at `harumnesia.pages.dev` after reviewing existing records and the provider's [custom-domain instructions](https://developers.cloudflare.com/pages/configuration/custom-domains/). An apex hostname requires a separate Cloudflare zone/nameserver decision. The domain owner must approve the hostname, record change, TLS validation, and cutover window. Preserve the previous DNS values and successful Pages deployment ID. If production smoke fails, restore the previous DNS target or roll back to a known-good Pages deployment, then recheck direct routes and asset/cache behavior. No record, nameserver, redirect, or domain association was changed in Phase 10A.
 
 ## Build and hosting
 
@@ -62,7 +62,7 @@ First close the selector issue in a reviewed Git commit and verify its new `*.pa
 | ------------------- | ------------------------------------------------------------------------------ |
 | Hosting target      | Cloudflare Pages static site                                                   |
 | Source repository   | `Harumnesia/harumnesia`                                                        |
-| Production branch   | `main` after review and approved release commit                                |
+| Production branch   | `main`; deployed commit `d500f13533031ed92bec76aa8bab966574d12c0b`             |
 | Package manager     | pnpm `10.30.3`, pinned in `package.json`                                       |
 | Build runtime       | Node.js 22, minimum `22.22.2` for locked Vite; Pages pins `22.23.3`            |
 | Provider build root | Repository root (`.`); the local checkout folder happens to be `harumnesia-v2` |

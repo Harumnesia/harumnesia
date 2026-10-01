@@ -1,6 +1,6 @@
 # Harumnesia V2
 
-Harumnesia V2 is the active perfume discovery and recommendation application from the Coding Camp by DBS Foundation capstone. It is a React, Vite, and TypeScript single-page application in a pnpm monorepo. Phase 9 has prepared a **production candidate**; no Cloudflare deployment or public production URL exists yet.
+Harumnesia V2 is the active perfume discovery and recommendation application from the Coding Camp by DBS Foundation capstone. It is a React, Vite, and TypeScript single-page application in a pnpm monorepo. **Phase 10A is complete:** the production deployment at [harumnesia.pages.dev](https://harumnesia.pages.dev) serves commit `d500f13533031ed92bec76aa8bab966574d12c0b`. **Phase 10B, Custom Domain & Production Cutover, is next.**
 
 ## How it works
 
@@ -19,7 +19,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Build and preview the production candidate:
+Build and preview the production application locally:
 
 ```sh
 pnpm build
@@ -54,6 +54,6 @@ The build uses committed generated data and does not need the V1 repositories. R
 | `scripts` | Offline dataset, asset, and smoke tooling |
 | `docs` | Architecture history, implementation notes, readiness, and deployment contract |
 
-Cloudflare Pages is the intended static hosting target for Phase 10. [Production readiness](docs/production-readiness.md) records the Phase 9 evidence and remaining validation; [deployment contract](docs/deployment.md) specifies the hosting work without creating infrastructure. [V2 plan](docs/v2-plan.md) holds the roadmap.
+Cloudflare Pages hosts the production application. [Production readiness](docs/production-readiness.md) records the Phase 9 gate; [deployment record](docs/deployment.md) contains the Phase 10A production verification and Phase 10B handoff. [V2 plan](docs/v2-plan.md) holds the roadmap. No custom domain or DNS change was made in Phase 10A.
 
 Harumnesia V1 remains historical reference in `Harumnesia/harumnesia-febe-capstone` and `Harumnesia/harumnesia-ml-capstone`. V2 does not deploy their Express, MongoDB, or Python ML services. Their repositories are not changed by V2 development.
