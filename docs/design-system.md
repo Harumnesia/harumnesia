@@ -18,6 +18,8 @@ The screenshot, generated HTML, and screen metadata for each screen were retriev
 
 The shared tokens live in `apps/web/src/index.css`. The important color values are parchment `#fcf9f4`, inset paper `#f6f3ee`, deep plum `#240f1b`, body ink `#161616`, herbal olive `#4a5240`, and restrained ochre `#a37f1c` (Stitch's accessible on-surface ochre). Hairlines use `#d1c3c8`. State errors use a dark red with a light paper fill.
 
+The stylesheet has one authoritative `:root` with `--color-*`, `--font-*`, `--text-*`, `--space-*`, `--measure-*`, `--line-*`, `--motion-*`, and `--layer-*` tokens. Components refer directly to these tokens; the earlier `--paper`, `--plum`, `--serif`, and related aliases have been removed. Shared structural rules and the Direction A+ treatments are consolidated into one selector set, followed by tablet, desktop, narrow-screen, and reduced-motion queries.
+
 Stitch specifies Bodoni Moda for display and Plus Jakarta Sans for body and labels. The application uses a local/system display stack (`Bodoni MT`, Didot, Times New Roman, Georgia) and an Arial/system body stack. This preserves the contrast, narrow display shapes, and tiny tracked folio labels without remote Google Fonts requests or unlicensed binaries. Display sizes use `clamp()`; body copy stays around 15–18 px. Folio labels are 11 px uppercase with wide tracking.
 
 The spacing system uses a 78 rem page measure, 42 rem reading measure, 1–2 rem internal panel rhythm, and a section gap clamped between 4.5 and 8 rem. The responsive gutters are 1 rem on narrow screens and 2 rem from tablet width. These are deliberate abstractions of Stitch's `gutter`, `space-*`, and `margin` values.
@@ -50,13 +52,13 @@ Repository routes, fields, taxonomies, recommendation behavior, worker loading, 
 
 ## Bundle impact
 
-The redesign primarily changes CSS and React markup. These measurements use the Phase 8 inventory and the Phase 8.5 `pnpm build` / `pnpm assets:inventory` output; gzip is the inventory's level-9 measurement.
+The redesign primarily changes CSS and React markup. These measurements compare the Phase 8 inventory with the Phase 8.5 mini-hardening `pnpm build` / `pnpm assets:inventory` output; gzip is the inventory's level-9 measurement.
 
 | Asset                       |       Before raw / gzip |        After raw / gzip | Raw delta |
 | --------------------------- | ----------------------: | ----------------------: | --------: |
 | Main JavaScript             |      295,344 / 90,964 B |      297,752 / 91,706 B |  +2,408 B |
-| Main CSS                    |        13,101 / 3,660 B |        32,004 / 7,363 B | +18,903 B |
+| Main CSS                    |        13,101 / 3,660 B |        26,720 / 6,044 B | +13,619 B |
 | Recommendation worker       |      101,388 / 27,801 B |      101,388 / 27,801 B |       0 B |
 | Recommendation runtime JSON | 9,690,284 / 1,688,965 B | 9,690,284 / 1,688,965 B |       0 B |
 
-The CSS increase pays for five route compositions, responsive rules, artwork, and shared state treatments. Main JavaScript grows by 2.4 kB raw for presentational structure and `SystemState`; the worker and runtime are byte-identical to the baseline. The local reference export is excluded from Git and the production bundle.
+The CSS increase from Phase 8 pays for five route compositions, responsive rules, artwork, and shared state treatments. Consolidation removed 5,284 B raw and 1,319 B gzip from the original Phase 8.5 CSS bundle (32,004 / 7,363 B) without changing the visual output. Main JavaScript grows by 2.4 kB raw for presentational structure and `SystemState`; the worker and runtime are byte-identical to the baseline. The local reference export is excluded from Git and the production bundle.

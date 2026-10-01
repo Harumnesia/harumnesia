@@ -194,15 +194,16 @@ international details.
 
 ## 14. Production build size
 
-Measured with `pnpm build` after production integration:
+Measured with the Phase 8.5 mini-hardening `pnpm build` and `pnpm assets:inventory` (gzip level 9):
 
 | Output                          |         Raw |        Gzip |
 | ------------------------------- | ----------: | ----------: |
-| Main JavaScript                 |   292.18 kB |    90.07 kB |
-| Worker JavaScript               |   101.39 kB |    27.85 kB |
-| Runtime JSON                    | 9,690.28 kB | 1,705.69 kB |
-| Notes taxonomy                  |    49.10 kB |    12.00 kB |
-| Other three taxonomies combined |     1.84 kB |     0.78 kB |
+| Main JavaScript                 |   297,752 B |    91,706 B |
+| Main CSS                        |    26,720 B |     6,044 B |
+| Worker JavaScript               |   101,388 B |    27,801 B |
+| Runtime JSON                    | 9,690,284 B | 1,688,965 B |
+| Notes taxonomy                  |    49,096 B |    11,996 B |
+| Other three taxonomies combined |     1,842 B |       781 B |
 
 The dataset and worker are separate hashed assets. The main JavaScript did not
 absorb the approximately 9.24 MiB raw runtime. Route-level component splitting
