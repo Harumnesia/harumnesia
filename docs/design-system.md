@@ -1,64 +1,94 @@
-# Harumnesia V2 visual system — Phase 8.5
+# Harumnesia V2 editorial visual system
 
-## Direction and sources
+## Direction and references
 
-Direction A+ is a contemporary curatorial fragrance monograph: generous paper space, an editorial serif, precise archival labels, hairline rules, and botanical still life. The final Google Stitch project is **Harumnesia Curatorial Fragrance Monograph Redesign** (`2299997496112519545`). Only these canonical screens informed this implementation:
+The current presentation follows the nine user-supplied references from October
+6, 2026. Warm paper, plum actions, botanical olive, editorial serif headings,
+fine rules, and restrained rounded panels connect the four application routes.
+The earlier Phase 8.5 Stitch implementation established the original tokens and
+CSS artwork; the supplied references now define the visual compositions.
 
-| Screen                                              | ID                                 |
-| --------------------------------------------------- | ---------------------------------- |
-| Harumnesia — Landing Page (Canonical)               | `82f1ccea69b143d49cb52cc07df548eb` |
-| Harumnesia — Discovery Consultation (Canonical)     | `96cb6247632d4f0aa91c9ed279c32d99` |
-| Harumnesia — Curated Results (Canonical)            | `18c3237a97f6446b8c16ec494fb7c7c4` |
-| Harumnesia — Perfume Detail (Canonical)             | `cad68abbdc7b4905a54514631f68d9ed` |
-| Harumnesia — System States & Edge Cases (Canonical) | `ad0f5442478a4d9ebb0b9e3c935866f4` |
+| Route          | Desktop reference                              | Mobile reference                                    |
+| -------------- | ---------------------------------------------- | --------------------------------------------------- |
+| `/`            | `harumnesia_fragrance_discovery_editorial.png` | `Harumnesia Luxury Fragrance Discovery.png`         |
+| `/discover`    | `Harumnesia Fragrance Discovery Dashboard.png` | `Harumnesia Fragrance Discovery Profile.png`        |
+| `/results`     | `Harumnesia Fragrance Match Results.png`       | `Harumnesia Top Fragrance Matches.png`              |
+| `/perfume/:id` | `Luxury Perfume Editorial Landing Page.png`    | `Harumnesia Libre Intense Editorial App Mockup.png` |
 
-The screenshot, generated HTML, and screen metadata for each screen were retrieved before implementation into the local, Git-excluded `.stitch-reference/<screen>/` directory. Stitch project theme metadata and the five HTML exports supplied design values. The exports are reference material, not application code.
+Only `Luxury Plum Perfume Still Life.png` supplies production imagery. None of
+the UI mockups, product photographs, ingredient cutouts, sample scores, or sample
+recommendations are bundled. See [assets](./assets.md) for its derivatives.
 
-## Tokens, type, and spacing
+## Shared foundation
 
-The shared tokens live in `apps/web/src/index.css`. The important color values are parchment `#fcf9f4`, inset paper `#f6f3ee`, deep plum `#240f1b`, body ink `#161616`, herbal olive `#4a5240`, and restrained ochre `#a37f1c` for accents. Phase 9 uses darker `#806117` for small ochre text so it reaches at least 4.5:1 on the paper surfaces. Hairlines use `#d1c3c8`. State errors use a dark red with a light paper fill.
+`apps/web/src/index.css` owns the semantic `--color-*`, `--font-*`, spacing,
+measure, radius, and motion tokens. Paper is `#f6f0e5`, plum is `#240f1b`, olive
+is `#4a5240`, and warm borders are `#d6caba`. The repeating local SVG grain is
+deliberately low opacity. Content is capped at 84 rem with responsive gutters.
 
-The stylesheet has one authoritative `:root` with `--color-*`, `--font-*`, `--text-*`, `--space-*`, `--measure-*`, `--line-*`, `--motion-*`, and `--layer-*` tokens. Components refer directly to these tokens; the earlier `--paper`, `--plum`, `--serif`, and related aliases have been removed. Shared structural rules and the Direction A+ treatments are consolidated into one selector set, followed by tablet, desktop, narrow-screen, and reduced-motion queries.
+The existing system display stack (Bodoni MT, Didot, Times New Roman, Georgia)
+and Arial/system body stack remain. No font binaries or remote font requests
+were added. Headings use sentence case, responsive sizing, and native serif
+italics. Buttons and selection chips use restrained pill shapes; panels use a
+0.75 rem radius. `EditorialIcon` supplies one lightweight SVG line-icon system.
 
-Stitch specifies Bodoni Moda for display and Plus Jakarta Sans for body and labels. The application uses a local/system display stack (`Bodoni MT`, Didot, Times New Roman, Georgia) and an Arial/system body stack. This preserves the contrast, narrow display shapes, and tiny tracked folio labels without remote Google Fonts requests or unlicensed binaries. Display sizes use `clamp()`; body copy stays around 15–18 px. Folio labels are 11 px uppercase with wide tracking.
+The shared header retains its mobile toggle and skip link, adds Escape dismissal
+with focus return, and links to actual discovery and landing sections. Results
+navigation appears only when a nonempty recommendation session exists. Internal
+section navigation preserves session state; route changes begin at the top.
 
-The spacing system uses a 78 rem page measure, 42 rem reading measure, 1–2 rem internal panel rhythm, and a section gap clamped between 4.5 and 8 rem. The responsive gutters are 1 rem on narrow screens and 2 rem from tablet width. These are deliberate abstractions of Stitch's `gutter`, `space-*`, and `margin` values.
+## Route compositions
 
-## Layout and editorial rules
+Landing desktop now reconstructs the supplied reference as a single full-width
+canvas from 64 rem. Its landscape artwork sits behind the header and real copy,
+actions, decorative chips, and truthful statistic. The inset image/two-column
+composition has been removed at desktop widths. The layout is calibrated against
+1672 × 941 reference coordinates in route-scoped `LandingPage.css`. The current
+mobile composition and portrait artwork remain pending their separate visual
+reconstruction. Hero sources remain local, eager/high priority, and responsive.
 
-The header and footer frame every route. The landing page alternates a split hero, three numbered steps, an inset explanation panel, three editorial samples, and a full-width plum closing panel. Thin lines, small volume numbers, uppercase display heads, and short captions create the folio rhythm. Large text and artwork are balanced asymmetrically on desktop and stack naturally on mobile.
+Discovery presents notes, accords, expression, occasion, concentration, market,
+and maximum budget in editorial rows. A short set of suggested notes/accords is
+intersected with the loaded taxonomy; the existing search still reaches the full
+vocabulary and preserves exact-first Enter selection. Suggestions toggle real
+controlled state and expose `aria-pressed`. Advanced strict filters and note
+exclusions remain a native disclosure. Maximum-budget and unknown-price semantics
+are unchanged; no slider or unsupported taxonomy was introduced.
 
-Discovery uses white numbered panels on parchment. Native fieldsets, legends, radios, checkboxes, inputs, and the existing searchable `TagSelector` remain intact. Advanced filters remain an optional `details` disclosure. Buttons are plum rectangular blocks; links are tracked text with an ochre underline; selected chips are muted botanical paper rectangles. All actionable controls target roughly 44 px height.
+`ProfileSummary` reflects live form values on discovery and the submitted form
+on results/detail. `DatasetStat` imports only the existing small generated build
+report and derives its count; it never imports or fetches the production catalog.
+On desktop the discovery rail sits beside the intro and controls. On mobile its
+artwork and summary precede submit/reset actions. Reset clears selections,
+boundaries, budget, validation errors, and search queries.
 
-Results reserve a large split composition for rank 01 and a two-column supporting folio for later ranks. Cards show only actual mapped perfume data and existing deterministic engine reasons. The link to a production detail retains the canonical ID. The landing's sample cards remain explicitly editorial and do not start the recommendation runtime.
+Results use the actual output length in the heading. `RecommendationCard`
+features rank 01 and uses a two-column supporting edit where space permits. All
+cards stack on mobile; reasons move beneath the image/title to preserve reading
+width. `MatchReasons` renders existing engine explanation text. The qualitative
+“Top match” label denotes rank 01, never a calibrated percentage.
 
-The detail page uses a large abstract specimen well and a factual record opposite it. Below, the note pyramid is a full-width stack of three offset horizontal tiers, labeled exactly **Top Notes**, **Middle Notes**, and **Base Notes**. The tiers show listed values only. Accords and occasions are separate addenda when data exists.
+Detail is a dynamic fragrance dossier. Existing direct lookup, cancellation,
+loading, not-found, and retry behavior remain. Available metadata uses a semantic
+description list. `NotesPyramid` omits unavailable stages, and accord chips show
+presence without fabricated strength bars. Explanation rows and submitted
+preferences appear only when that perfume exists in the current session's
+recommendations. A refresh still resolves the perfume and omits personalized
+context. Product visuals retain the approved-ID manifest/CSS fallback boundary.
 
-## Artwork and states
+## Responsive, accessibility, and validation
 
-`PerfumeVisual` remains the only product image boundary. An approved canonical-ID local asset is used if present; otherwise `FragranceArtwork` renders CSS-only bottle, botanical, light, and paper shapes. No commercial photo or Stitch remote image URL is copied or hotlinked. The production image manifest still has zero entries and retains its provenance validation.
+The split hero, discovery rail, results rail, and detail dossier transition at
+64 rem. Supporting result cards use two columns from 48 rem; smaller screens
+stack them. The original semantic labels, fieldsets, legends, native controls,
+alerts, loading announcements, and focus outlines remain. Decorative artwork and
+SVG icons are hidden from assistive technology. Buttons and interactive chips
+target at least 44 px; reduced motion suppresses CTA arrow movement and existing
+loading/hover animations.
 
-`SystemState` gives discovery, results, detail, and 404 states a common folio frame, inset panel, and restrained orbit mark. Loading uses indeterminate pulse motion with a real status announcement. Errors keep alert announcements and retry actions. No progress percentage, diagnostic score, or extra route is introduced.
-
-## Responsive, motion, and accessibility
-
-At 1440 px, the hero, result feature, and detail use split compositions; supporting results use two columns. At 1024 and 768 px, columns adapt around content width. At 375 px, all major compositions stack, input and action rows wrap, note tiers move values below their labels, and navigation uses the existing button. Grid children have a zero minimum width and content wraps to avoid horizontal overflow.
-
-Motion is limited to artwork hover scaling, button and link response, and an indeterminate state pulse. The `prefers-reduced-motion` query removes these effects and preserves readable state text. The original skip link, landmarks, heading structure, labels, fieldsets, legends, native form semantics, focus-visible outlines, status/alert announcements, and keyboard tag selection remain.
-
-## Semantic constraints and deviations
-
-Repository routes, fields, taxonomies, recommendation behavior, worker loading, and asset provenance take precedence over Stitch mock data. The Stitch examples include fictional fragrances, narrative explanations, some unsupported concentration examples, “Heart Notes,” and projection/evaporation claims. Those were not brought into the product. The generated HTML's external fonts, scripts, and perfume photographs were omitted. System states are embedded in existing routes instead of a Stitch specimen route. The desktop screenshot's fixed widths were recomposed for smaller screens and touch use.
-
-## Bundle impact
-
-The redesign primarily changes CSS and React markup. These measurements compare the Phase 8 inventory with the Phase 8.5 mini-hardening `pnpm build` / `pnpm assets:inventory` output; gzip is the inventory's level-9 measurement.
-
-| Asset                       |       Before raw / gzip |        After raw / gzip | Raw delta |
-| --------------------------- | ----------------------: | ----------------------: | --------: |
-| Main JavaScript             |      295,344 / 90,964 B |      297,752 / 91,706 B |  +2,408 B |
-| Main CSS                    |        13,101 / 3,660 B |        26,720 / 6,044 B | +13,619 B |
-| Recommendation worker       |      101,388 / 27,801 B |      101,388 / 27,801 B |       0 B |
-| Recommendation runtime JSON | 9,690,284 / 1,688,965 B | 9,690,284 / 1,688,965 B |       0 B |
-
-The CSS increase from Phase 8 pays for five route compositions, responsive rules, artwork, and shared state treatments. Consolidation removed 5,284 B raw and 1,319 B gzip from the original Phase 8.5 CSS bundle (32,004 / 7,363 B) without changing the visual output. Main JavaScript grows by 2.4 kB raw for presentational structure and `SystemState`; the worker and runtime are byte-identical to the baseline. The local reference export is excluded from Git and the production bundle.
+Visual QA captures all four successful routes at 1440, 1280, 1024, 900, 768, 430,
+390, 375, and 360 px in two refinement passes. Local screenshots and browser
+reports are Git-excluded in `.stitch-reference/ui-review/`. Behavioral tests cover
+CTA routing, taxonomy-backed shortcuts, reset, result count, detail navigation,
+session explanations, sparse note stages, and existing recovery states. The
+recommendation package, worker, data, and request mapping remain unchanged.

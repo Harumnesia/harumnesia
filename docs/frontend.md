@@ -13,17 +13,17 @@ perfume imagery. Recommendation state lasts for the current SPA session only.
 
 ## 2. Design direction
 
-Phase 8.5 implements the five final canonical Stitch screens as a contemporary
-curatorial fragrance monograph. Parchment, black-cherry plum, botanical olive,
-restrained ochre, high-contrast editorial type, archival labels, and fine rules
-organize all routes. The landing reads as a numbered folio; discovery uses
-numbered consultation panels; rank 01 is featured above supporting results; and
-the detail note pyramid uses offset Top/Middle/Base tiers. All route states share
-one folio treatment. See [Visual system](./design-system.md) for screen IDs,
-tokens, artwork, typography, responsive behavior, and implementation deviations.
+The October 2026 editorial implementation follows the supplied desktop/mobile
+references across landing, discovery, results, and detail. Warm paper, deep plum,
+botanical olive, serif headings, fine borders, and compact pills connect the
+routes. Discovery uses editorial filter rows and a live profile rail. Rank 01
+is featured above supporting recommendations, and detail includes actual
+session explanations when available. See [Visual system](./design-system.md)
+for references, tokens, responsive compositions, and semantic constraints.
 
-Copy still describes real preference alignment and avoids AI, probability,
-accuracy, and “perfect match” claims. The CSS artwork remains local and abstract.
+Copy describes real preference alignment and avoids probability, accuracy, and
+“perfect match” claims. Product CSS artwork remains local and abstract; landing
+and discovery also use the supplied decorative brand still life.
 
 ## 3. Route map
 
@@ -45,9 +45,12 @@ application.
 - `TagSelector` supplies controlled note/accord selection, bounded in-memory
   filtering, Enter-key selection, and removable selections.
 - `ChoiceGroup` supplies semantic multi-select fieldsets for canonical choices.
-- `PerfumeCard` renders display-safe metadata, key notes, optional accords and
-  occasions, deterministic reasons, detail navigation, and delegates imagery to
-  `PerfumeVisual`.
+- `PerfumeCard` retains the existing explicitly labelled landing editorial samples.
+- `RecommendationCard` renders real ranked results, optional metadata, and
+  `MatchReasons`, with canonical detail links and `PerfumeVisual` artwork.
+- `ProfileSummary` reflects live/submitted preferences; `DatasetStat` derives the
+  current count from small generated metadata without loading the catalog.
+- `NotesPyramid` renders only available stages in a reusable editorial layout.
 - `PerfumeVisual` resolves a canonical ID against the rights-cleared local asset
   manifest, renders responsive sources when available, and otherwise delegates
   to `FragranceArtwork`.
@@ -59,9 +62,9 @@ application.
 ## 5. Recommendation form UX
 
 The primary form asks for notes, accords, expression, occasion, and concentration.
-All are optional and presented as preferences. A native `details` disclosure keeps
-firm market, budget, expression, occasion, concentration, and exclusion controls
-out of the initial mobile experience. Budget is an IDR integer with optional
+All are optional and presented as preferences. Market and maximum budget are
+visible alongside the preference rows; a native `details` disclosure retains
+strict expression, occasion, concentration, and exclusion controls. Budget is an IDR integer with optional
 presets and clear handling for fragrances whose price is not listed.
 
 The note and accord controls use asynchronously loaded generated taxonomies.
@@ -71,7 +74,7 @@ states prevent a taxonomy failure from crashing or silently substituting fixture
 values.
 
 `TagSelector` accepts a larger taxonomy without rendering it into the DOM. An
-empty query shows no suggestions. A non-empty query performs case-insensitive
+empty query shows only an optional small taxonomy-checked shortcut set. A non-empty query performs case-insensitive
 substring matching, excludes selected values, and renders at most ten matches.
 When additional matches exist, the UI asks the user to keep typing.
 
@@ -137,12 +140,11 @@ dependency.
 
 ## 10. Responsive strategy
 
-The layout is mobile-first at 320 px and uses content-driven enhancements at 768
-px and 1120 px. At approximately 375 px controls wrap and advanced filters stay
-collapsed; at 768/1024 px navigation, cards, detail, and footer gain multi-column
-layouts; at 1440 px containers cap at 76 rem and result hierarchy expands without
-over-wide text. Grid children use `minmax(0, 1fr)` and wrapping controls to avoid
-horizontal page overflow.
+The layout is mobile-first at 320 px, with navigation and supporting-card
+enhancements at 768 px and split page compositions at 1024 px. Narrow screens
+stack results, widen reason rows, and place discovery artwork/profile before
+submission. Containers cap at 84 rem. Grid children use `minmax(0, 1fr)` and
+wrapping controls to avoid horizontal overflow.
 
 ## 11. Accessibility considerations
 

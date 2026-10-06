@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom';
 
 import { PageTitle } from '../components/PageTitle.js';
-import { FragranceArtwork } from '../components/perfume/FragranceArtwork.js';
+import { DatasetStat } from '../components/editorial/DatasetStat.js';
+import { LandingArtwork } from '../components/editorial/LandingArtwork.js';
+import { EditorialIcon } from '../components/editorial/EditorialIcon.js';
 import { PerfumeCard } from '../components/perfume/PerfumeCard.js';
 import { MOCK_RECOMMENDATIONS } from '../fixtures/perfumes.js';
+import './LandingPage.css';
 
 const STEPS = [
   [
@@ -27,33 +30,43 @@ export function LandingPage() {
   return (
     <>
       <PageTitle title="Find a fragrance that feels like you" />
-      <section className="hero section-shell">
+      <section className="hero hero--canvas section-shell">
         <div className="hero__copy">
-          <p className="folio-label">Volume 01 / A personal fragrance guide</p>
-          <h1>Find a scent with a story that feels like yours.</h1>
+          <p className="folio-label">Scents for a more you</p>
+          <h1>
+            <span>Find a fragrance</span>{' '}
+            <span>
+              that feels like <em>you.</em>
+            </span>
+          </h1>
           <p className="lede">
-            Follow your instincts through notes, moods, and moments. Harumnesia
-            turns them into a considered edit of fragrances worth meeting.
+            <span>An explainable perfume discovery experience</span>{' '}
+            <span>guided by notes, accords, and occasion.</span>
           </p>
           <div className="button-row">
             <Link className="button" to="/discover">
-              Begin discovery
+              Discover your scent <EditorialIcon name="arrow" />
             </Link>
-            <a className="text-link" href="#how-it-works">
-              See how it works <span aria-hidden="true">↓</span>
+            <a className="button button--outline" href="#featured-fragrances">
+              Explore fragrances
             </a>
           </div>
+          <ul
+            className="preference-chips hero__chips"
+            aria-label="Scent directions to explore"
+          >
+            {['Vanilla', 'Amber', 'Bergamot', 'Woody', 'Iris'].map((scent) => (
+              <li key={scent}>
+                <EditorialIcon name="note" />
+                <span>{scent}</span>
+              </li>
+            ))}
+          </ul>
         </div>
         <div className="hero__art">
-          <div className="hero__art-header" aria-hidden="true">
-            <span>Harumnesia / Specimen study</span>
-            <span>01 — 03</span>
-          </div>
-          <FragranceArtwork tone="amber" />
-          <p>
-            <span>Fig. 01</span> Notes unfold. Memories return.
-          </p>
+          <LandingArtwork />
         </div>
+        <DatasetStat />
       </section>
 
       <section className="steps section-shell" id="how-it-works">
@@ -72,7 +85,7 @@ export function LandingPage() {
         </ol>
       </section>
 
-      <section className="dimensions">
+      <section className="dimensions" id="scent-notes">
         <div className="section-shell dimensions__inner">
           <div>
             <p className="folio-label">02 / More than a note</p>
@@ -95,7 +108,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="featured section-shell">
+      <section className="featured section-shell" id="featured-fragrances">
         <div className="section-heading section-heading--row">
           <div>
             <p className="folio-label">03 / From the preview collection</p>

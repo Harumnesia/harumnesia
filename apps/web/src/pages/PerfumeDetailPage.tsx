@@ -4,6 +4,9 @@ import { Link, useParams } from 'react-router-dom';
 import { PageTitle } from '../components/PageTitle.js';
 import { SystemState } from '../components/SystemState.js';
 import { PerfumeVisual } from '../components/perfume/PerfumeVisual.js';
+import { NotesPyramid } from '../components/perfume/NotesPyramid.js';
+import { MatchReasons } from '../components/perfume/MatchReasons.js';
+import { ProfileSummary } from '../components/editorial/ProfileSummary.js';
 import type { PerfumeDetailViewModel } from '../features/recommendation/types.js';
 import { useRecommendationExperience } from '../features/recommendation/useRecommendationExperience.js';
 
@@ -13,30 +16,8 @@ type DetailState =
   | { status: 'not-found' }
   | { status: 'error' };
 
-function NotePyramid({ notes }: Pick<PerfumeDetailViewModel, 'notes'>) {
-  const layers = [
-    ['Top', notes.top],
-    ['Middle', notes.middle],
-    ['Base', notes.base],
-  ] as const;
-
-  return (
-    <div className="note-pyramid">
-      {layers.map(([label, values]) => (
-        <div className="note-pyramid__tier" key={label}>
-          <span className="note-pyramid__index" aria-hidden="true">
-            {label === 'Top' ? '01' : label === 'Middle' ? '02' : '03'}
-          </span>
-          <h3>{label} Notes</h3>
-          <p>{values.length > 0 ? values.join(' · ') : 'Not listed'}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function PerfumeDetailLookup({ id }: { id: string | undefined }) {
-  const { getPerfume } = useRecommendationExperience();
+  const { getPerfume, results, lastForm } = useRecommendationExperience();
   const [retryCount, setRetryCount] = useState(0);
   const [state, setState] = useState<DetailState>(
     id ? { status: 'loading' } : { status: 'not-found' },
@@ -124,110 +105,137 @@ function PerfumeDetailLookup({ id }: { id: string | undefined }) {
   }
 
   const { perfume } = state;
+  const recommendation = results?.find((result) => result.id === perfume.id);
+  const hasNotes = Object.values(perfume.notes).some(
+    (stage) => stage.length > 0,
+  );
 
   return (
     <>
       <PageTitle title={perfume.name} />
-      <div className="detail-heading section-shell">
-        <Link className="text-link" to="/results">
-          <span aria-hidden="true">←</span> Back to recommendations
+      <div className="dossier-heading section-shell">
+        <span className="folio-label">Perfume detail</span>
+        <Link
+          className="text-link"
+          to={results?.length ? '/results' : '/discover'}
+        >
+          <span aria-hidden="true">←</span>{' '}
+          {results?.length ? 'Back to recommendations' : 'Discover your scent'}
         </Link>
-        <span className="folio-label">
-          Fragrance monograph / {perfume.marketLabel}
-        </span>
       </div>
-      <article className="detail section-shell">
-        <div className="detail__art">
+      <article className="dossier section-shell">
+        <div className="dossier__art">
           <PerfumeVisual
             perfumeId={perfume.id}
             perfumeName={perfume.name}
             sizes="(min-width: 48rem) 38vw, 100vw"
             tone={perfume.visualTone}
           />
-          <p className="detail__art-caption">
-            Fig. 01 / Abstract fragrance study
+          <p className="dossier__art-caption">
+            A visual study / Fragrance record
           </p>
         </div>
-        <div className="detail__content">
-          <p className="eyebrow">
-            <span>{perfume.brand}</span> / Fragrance record
-          </p>
-          <h1>{perfume.name}</h1>
-          <p className="metadata">
-            {perfume.marketLabel} · {perfume.genderLabel}
-            {perfume.concentration ? ` · ${perfume.concentration}` : ''}
-          </p>
-          {perfume.priceLabel ? (
-            <p className="detail__price">
-              <span>Listed price</span>
-              {perfume.priceLabel}
-            </p>
-          ) : null}
-          <p className="detail__intro">
+        <div className="dossier__intro">
+          <div className="dossier__title">
+            <h1>{perfume.name}</h1>
+            {recommendation ? (
+              <span className="match-label">
+                {recommendation.rank === 1
+                  ? 'Top match'
+                  : `Recommendation ${String(recommendation.rank).padStart(2, '0')}`}
+              </span>
+            ) : null}
+          </div>
+          <p className="dossier__brand">{perfume.brand}</p>
+          <p className="lede">
             Explore the listed notes, accords, and occasions that define this
             fragrance record.
           </p>
-          <div className="detail__facts">
+          {perfume.accords.length > 0 ? (
+            <ul className="tag-list" aria-label="Fragrance accords">
+              {perfume.accords.slice(0, 5).map((accord) => (
+                <li key={accord}>{accord}</li>
+              ))}
+            </ul>
+          ) : null}
+          <dl className="dossier__facts">
             <div>
-              <span>Market</span>
-              <strong>{perfume.marketLabel}</strong>
+              <dt>Market</dt>
+              <dd>{perfume.marketLabel}</dd>
             </div>
             <div>
-              <span>Expression</span>
-              <strong>{perfume.genderLabel}</strong>
+              <dt>Expression</dt>
+              <dd>{perfume.genderLabel}</dd>
             </div>
             {perfume.concentration ? (
               <div>
-                <span>Concentration</span>
-                <strong>{perfume.concentration}</strong>
+                <dt>Concentration</dt>
+                <dd>{perfume.concentration}</dd>
               </div>
             ) : null}
+            {perfume.occasions.length > 0 ? (
+              <div>
+                <dt>Occasions</dt>
+                <dd>{perfume.occasions.join(' · ')}</dd>
+              </div>
+            ) : null}
+            {perfume.priceLabel ? (
+              <div>
+                <dt>Listed price</dt>
+                <dd>{perfume.priceLabel}</dd>
+              </div>
+            ) : null}
+          </dl>
+        </div>
+        {recommendation && recommendation.reasons.length > 0 ? (
+          <div className="dossier__reasons">
+            <MatchReasons
+              reasons={recommendation.reasons}
+              title="Why Harumnesia recommends this"
+            />
+            <ProfileSummary form={lastForm} />
           </div>
-        </div>
+        ) : null}
+        {hasNotes ? (
+          <section aria-labelledby="notes-heading" className="dossier__notes">
+            <div className="dossier__section-heading">
+              <h2 id="notes-heading">The note pyramid</h2>
+              <p>The fragrance journey</p>
+            </div>
+            <NotesPyramid notes={perfume.notes} />
+          </section>
+        ) : null}
+        {perfume.accords.length > 0 || perfume.occasions.length > 0 ? (
+          <div className="dossier__character">
+            {perfume.accords.length > 0 ? (
+              <section
+                aria-labelledby="accords-heading"
+                className="dossier__section"
+              >
+                <h2 id="accords-heading">Accords & character</h2>
+                <ul className="tag-list">
+                  {perfume.accords.map((accord) => (
+                    <li key={accord}>{accord}</li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+            {perfume.occasions.length > 0 ? (
+              <section
+                aria-labelledby="occasions-heading"
+                className="dossier__section"
+              >
+                <h2 id="occasions-heading">Occasions</h2>
+                <ul className="tag-list">
+                  {perfume.occasions.map((occasion) => (
+                    <li key={occasion}>{occasion}</li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+          </div>
+        ) : null}
       </article>
-      <section
-        aria-labelledby="notes-heading"
-        className="detail-notes section-shell"
-      >
-        <div className="detail-notes__heading">
-          <p className="folio-label">02 / Composition</p>
-          <h2 id="notes-heading">The note pyramid</h2>
-          <p>Top, middle, and base notes as listed for this fragrance.</p>
-        </div>
-        <NotePyramid notes={perfume.notes} />
-      </section>
-      {perfume.accords.length > 0 || perfume.occasions.length > 0 ? (
-        <div className="detail-addenda section-shell">
-          {perfume.accords.length > 0 ? (
-            <section
-              aria-labelledby="accords-heading"
-              className="detail-section"
-            >
-              <p className="eyebrow">Character</p>
-              <h2 id="accords-heading">Main accords</h2>
-              <ul className="tag-list">
-                {perfume.accords.map((accord) => (
-                  <li key={accord}>{accord}</li>
-                ))}
-              </ul>
-            </section>
-          ) : null}
-          {perfume.occasions.length > 0 ? (
-            <section
-              aria-labelledby="occasions-heading"
-              className="detail-section"
-            >
-              <p className="eyebrow">Context</p>
-              <h2 id="occasions-heading">Occasions</h2>
-              <ul className="tag-list">
-                {perfume.occasions.map((occasion) => (
-                  <li key={occasion}>{occasion}</li>
-                ))}
-              </ul>
-            </section>
-          ) : null}
-        </div>
-      ) : null}
     </>
   );
 }

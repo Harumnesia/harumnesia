@@ -8,12 +8,14 @@ export function TagSelector({
   options,
   selected,
   onChange,
+  suggestions = [],
 }: {
   label: string;
   hint: string;
   options: readonly string[];
   selected: readonly string[];
   onChange(values: string[]): void;
+  suggestions?: readonly string[];
 }) {
   const inputId = useId();
   const hintId = useId();
@@ -46,6 +48,27 @@ export function TagSelector({
       <p className="field-hint" id={hintId}>
         {hint}
       </p>
+      {suggestions.length > 0 ? (
+        <div className="scent-options" aria-label={`Suggested ${label}`}>
+          {suggestions
+            .filter((value) => options.includes(value))
+            .map((value) => (
+              <button
+                aria-pressed={selected.includes(value)}
+                key={value}
+                onClick={() =>
+                  selected.includes(value)
+                    ? onChange(selected.filter((item) => item !== value))
+                    : add(value)
+                }
+                type="button"
+              >
+                <span aria-hidden="true" className="scent-options__mark" />
+                {value}
+              </button>
+            ))}
+        </div>
+      ) : null}
       {selected.length > 0 ? (
         <ul className="selected-tags" aria-label={`Selected ${label}`}>
           {selected.map((value) => (

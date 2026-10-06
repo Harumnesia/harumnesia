@@ -212,3 +212,53 @@ SPA route fallback, and immutable caching for hashed build assets. Public
 canonical-ID image paths need an intentional cache policy because their names are
 not content-hashed. No Cloudflare configuration, cache rule, redirect/header
 file, or deployment workflow is implemented yet. See [deployment contract](./deployment.md).
+
+## 17. Editorial still life — October 2026
+
+The user supplied `Luxury Plum Perfume Still Life.png` as the usable production
+artwork for the editorial UI implementation. Its 1086 × 1448 RGB source is
+2,298,725 bytes and remains outside the repository. Offline Pillow conversion
+uses Lanczos resizing and WebP quality 84 / method 6, without changing content,
+upscaling, or carrying source metadata into the derivatives.
+
+| Production file in `apps/web/public/assets/editorial/` | Dimensions  |   Bytes |
+| ------------------------------------------------------ | ----------- | ------: |
+| `harumnesia-still-life-540.webp`                       | 540 × 720   |  65,896 |
+| `harumnesia-still-life-810.webp`                       | 810 × 1080  | 119,046 |
+| `harumnesia-still-life-1086.webp`                      | 1086 × 1448 | 175,650 |
+
+`EditorialArtwork` uses local responsive sources, intrinsic dimensions, and
+empty alt text. Landing delivery is eager/high priority; discovery/results
+placements are lazy. The largest derivative is 92.4% smaller than the source PNG.
+The small local `paper-grain.svg` supplies subtle repeating texture.
+
+The eight page mockups are reference-only and are not bundled. The still life
+is decorative brand artwork, never a photograph of a recommended product.
+`PerfumeVisual`, the zero-entry product manifest, and product-photo provenance
+rules remain unchanged. No image processor dependency or external image/font
+request was added to the app.
+
+## 18. Desktop landing canvas reconstruction
+
+The strict desktop reconstruction replaces the inset hero photo with a continuous
+1672 × 941 scene, positioned behind the shared header and real HTML content.
+The portrait alone cannot reproduce the landscape reference through cropping.
+A landscape variant was created with the built-in image generation/editing tool:
+the supplied portrait is the material/identity source, and the landing mockup is
+used only as the composition reference. No UI screenshot, interface text, or
+cropped UI element is embedded in the production artwork.
+
+The corrected output retains the decorative Harumnesia bottle identity and
+places the still life to the right of the content. The original portrait and its
+existing derivatives are preserved. Desktop-only responsive derivatives are:
+
+| File in `apps/web/public/assets/editorial/` | Dimensions |   Bytes |
+| ------------------------------------------- | ---------- | ------: |
+| `harumnesia-landing-canvas-1254.webp`       | 1254 × 706 | 113,448 |
+| `harumnesia-landing-canvas-1672.webp`       | 1672 × 941 | 177,916 |
+
+`LandingArtwork` selects these variants only from 64 rem; smaller screens retain
+the portrait. No product visual or other route uses the generated canvas.
+`LandingPage.css` scopes its composition and header overrides to the landing
+route at desktop widths. Local prompts and reference/comparison captures live
+in the Git-excluded `.stitch-reference/landing-reconstruction/` directory.

@@ -4,6 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { ChoiceGroup } from '../components/discovery/ChoiceGroup.js';
 import { TagSelector } from '../components/discovery/TagSelector.js';
 import { PageTitle } from '../components/PageTitle.js';
+import { DatasetStat } from '../components/editorial/DatasetStat.js';
+import { EditorialArtwork } from '../components/editorial/EditorialArtwork.js';
+import { EditorialIcon } from '../components/editorial/EditorialIcon.js';
+import { ProfileSummary } from '../components/editorial/ProfileSummary.js';
 import { SystemState } from '../components/SystemState.js';
 import { validateDiscoveryForm } from '../features/recommendation/form.js';
 import { loadProductionTaxonomy } from '../features/recommendation/taxonomy.js';
@@ -47,6 +51,7 @@ export function DiscoverPage({
     lastForm === INITIAL_DISCOVERY_FORM ? cloneInitialForm() : lastForm,
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [resetVersion, setResetVersion] = useState(0);
   const [taxonomyRetry, setTaxonomyRetry] = useState(0);
   const [taxonomyState, setTaxonomyState] = useState<TaxonomyState>({
     status: 'loading',
@@ -123,216 +128,300 @@ export function DiscoverPage({
   return (
     <>
       <PageTitle title="Discover your fragrance" />
-      <section className="page-intro section-shell section-shell--narrow">
-        <p className="folio-label">Consultation / 01 — Your scent profile</p>
-        <h1>What would you like to feel in a fragrance?</h1>
-        <p className="lede">
-          Begin with preferences—they guide the ranking without ruling scents
-          out. Use advanced filters only for firm boundaries.
-        </p>
-      </section>
-
-      <form
-        className="discovery-form section-shell section-shell--narrow"
-        onSubmit={handleSubmit}
-      >
-        <section className="form-section" aria-labelledby="preferences-heading">
-          <div className="form-section__heading">
-            <span>01</span>
-            <div>
-              <p className="eyebrow">Olfactory affinities & raw notes</p>
-              <h2 id="preferences-heading">What draws you in?</h2>
-              <p>
-                These are preferences, so nearby discoveries can still appear.
-              </p>
-            </div>
-          </div>
-          <TagSelector
-            hint="Try a material you already love, such as bergamot or sandalwood."
-            label="Preferred notes"
-            onChange={(values) => update('preferredNotes', values)}
-            options={taxonomy.notes}
-            selected={form.preferredNotes}
-          />
-          <TagSelector
-            hint="Accords describe an overall impression, such as fresh or woody."
-            label="Preferred accords"
-            onChange={(values) => update('preferredAccords', values)}
-            options={taxonomy.accords}
-            selected={form.preferredAccords}
-          />
+      <div className="discovery-layout section-shell">
+        <section className="editorial-intro discovery-intro">
+          <p className="folio-label">Discover your scent</p>
+          <h1>
+            Build your fragrance <em>profile.</em>
+          </h1>
+          <p className="lede">
+            Begin with the notes, accords, and occasions you enjoy. Your
+            preferences guide the edit; market, budget, and advanced filters set
+            its boundaries.
+          </p>
         </section>
 
-        <section className="form-section" aria-labelledby="context-heading">
-          <div className="form-section__heading">
-            <span>02</span>
-            <div>
-              <p className="eyebrow">Context & temporal wear</p>
-              <h2 id="context-heading">Give it some context.</h2>
-              <p>All choices are optional. Pick as many as feel useful.</p>
-            </div>
-          </div>
-          <ChoiceGroup
-            choices={taxonomy.genders}
-            legend="Preferred expression"
-            onChange={(values) =>
-              update(
-                'preferredGenders',
-                values as DiscoveryFormState['preferredGenders'],
-              )
-            }
-            selected={form.preferredGenders}
-          />
-          <ChoiceGroup
-            choices={taxonomy.occasions}
-            legend="Preferred occasion"
-            onChange={(values) => update('preferredOccasions', values)}
-            selected={form.preferredOccasions}
-          />
-          <ChoiceGroup
-            choices={taxonomy.concentrations}
-            legend="Preferred concentration"
-            onChange={(values) => update('preferredConcentrations', values)}
-            selected={form.preferredConcentrations}
-          />
-        </section>
-
-        <details className="advanced-filters">
-          <summary>
-            <span>Advanced filters</span>
-            <small>Set firm boundaries</small>
-          </summary>
-          <div className="advanced-filters__body">
-            <fieldset className="choice-group">
-              <legend>Market</legend>
-              <div className="choice-row">
-                {(
-                  [
-                    ['all', 'All markets'],
-                    ['local', 'Local'],
-                    ['international', 'International'],
-                  ] as const
-                ).map(([value, label]) => (
-                  <label className="choice" key={value}>
-                    <input
-                      checked={form.market === value}
-                      name="market"
-                      onChange={() => update('market', value as MarketChoice)}
-                      type="radio"
-                    />
-                    <span>{label}</span>
-                  </label>
-                ))}
+        <form className="discovery-form" onSubmit={handleSubmit}>
+          <div
+            className="discovery-fields"
+            id="profile-preferences"
+            tabIndex={-1}
+          >
+            <div className="filter-row">
+              <div className="filter-row__heading">
+                <h2>Notes</h2>
+                <p>Choose the materials you love, or are curious about.</p>
               </div>
-            </fieldset>
-
-            <div className="budget-field">
-              <label htmlFor="max-budget">Maximum budget (IDR)</label>
-              <p className="field-hint">
-                Budget filtering applies where price information is available.
-                Leave blank if price is not a firm limit.
-              </p>
-              <input
-                aria-describedby={
-                  errors.maxBudget ? 'max-budget-error' : undefined
-                }
-                aria-invalid={Boolean(errors.maxBudget)}
-                id="max-budget"
-                inputMode="numeric"
-                min="1"
-                onChange={(event) => update('maxBudget', event.target.value)}
-                placeholder="e.g. 500000"
-                step="1"
-                type="number"
-                value={form.maxBudget}
+              <TagSelector
+                key={`notes-${resetVersion}`}
+                hint="Try a material you already love, such as bergamot or sandalwood."
+                label="Preferred notes"
+                onChange={(values) => update('preferredNotes', values)}
+                options={taxonomy.notes}
+                selected={form.preferredNotes}
+                suggestions={[
+                  'vanilla',
+                  'bergamot',
+                  'jasmine',
+                  'rose',
+                  'iris',
+                  'sandalwood',
+                  'cedar',
+                  'patchouli',
+                  'musk',
+                ]}
               />
-              {errors.maxBudget ? (
-                <p className="field-error" id="max-budget-error" role="alert">
-                  {errors.maxBudget}
-                </p>
-              ) : null}
-              <div className="preset-row" aria-label="Budget presets">
-                {[250_000, 500_000, 1_000_000].map((amount) => (
-                  <button
-                    key={amount}
-                    onClick={() => update('maxBudget', String(amount))}
-                    type="button"
-                  >
-                    {new Intl.NumberFormat('id-ID').format(amount)}
-                  </button>
-                ))}
+            </div>
+            <div className="filter-row">
+              <div className="filter-row__heading">
+                <h2>Accords</h2>
+                <p>The overall impressions that match your taste.</p>
               </div>
-              <label className="check-line">
-                <input
-                  checked={form.includeUnpriced}
-                  onChange={(event) =>
-                    update('includeUnpriced', event.target.checked)
-                  }
-                  type="checkbox"
-                />
-                Include fragrances whose price is not listed
-              </label>
+              <TagSelector
+                key={`accords-${resetVersion}`}
+                hint="Accords describe an overall impression, such as fresh or woody."
+                label="Preferred accords"
+                onChange={(values) => update('preferredAccords', values)}
+                options={taxonomy.accords}
+                selected={form.preferredAccords}
+                suggestions={[
+                  'amber',
+                  'woody',
+                  'citrus',
+                  'floral',
+                  'powdery',
+                  'fresh spicy',
+                  'green',
+                  'sweet',
+                  'aromatic',
+                ]}
+              />
             </div>
 
-            <ChoiceGroup
-              choices={taxonomy.genders}
-              legend="Only these expressions"
-              onChange={(values) =>
-                update(
-                  'strictGenders',
-                  values as DiscoveryFormState['strictGenders'],
-                )
-              }
-              selected={form.strictGenders}
-            />
-            <ChoiceGroup
-              choices={taxonomy.occasions}
-              legend="Only these occasions"
-              onChange={(values) => update('strictOccasions', values)}
-              selected={form.strictOccasions}
-            />
-            <ChoiceGroup
-              choices={taxonomy.concentrations}
-              legend="Only these concentrations"
-              onChange={(values) => update('strictConcentrations', values)}
-              selected={form.strictConcentrations}
-            />
-            <TagSelector
-              hint="Any fragrance containing these notes will be excluded."
-              label="Excluded notes"
-              onChange={(values) => update('excludedNotes', values)}
-              options={taxonomy.notes}
-              selected={form.excludedNotes}
-            />
-          </div>
-        </details>
+            <div className="filter-row">
+              <div className="filter-row__heading">
+                <h2>Expression</h2>
+                <p>Choose a preference, or keep it open.</p>
+              </div>
+              <ChoiceGroup
+                choices={taxonomy.genders}
+                legend="Preferred expression"
+                onChange={(values) =>
+                  update(
+                    'preferredGenders',
+                    values as DiscoveryFormState['preferredGenders'],
+                  )
+                }
+                selected={form.preferredGenders}
+              />
+            </div>
+            <div className="filter-row">
+              <div className="filter-row__heading">
+                <h2>Occasion</h2>
+                <p>When would you like to wear it?</p>
+              </div>
+              <ChoiceGroup
+                choices={taxonomy.occasions}
+                legend="Preferred occasion"
+                onChange={(values) => update('preferredOccasions', values)}
+                selected={form.preferredOccasions}
+              />
+            </div>
+            <div className="filter-row">
+              <div className="filter-row__heading">
+                <h2>Concentration</h2>
+                <p>Choose your preferred concentration.</p>
+              </div>
+              <ChoiceGroup
+                choices={taxonomy.concentrations}
+                legend="Preferred concentration"
+                onChange={(values) => update('preferredConcentrations', values)}
+                selected={form.preferredConcentrations}
+              />
+            </div>
 
-        {error ? (
-          <div className="form-status" role="alert">
-            <span className="eyebrow">Consultation interrupted</span>
-            <p>{error}</p>
+            <div className="filter-row">
+              <div className="filter-row__heading">
+                <h2>Market & budget</h2>
+                <p>Where should we look, and what is your limit?</p>
+              </div>
+              <div className="market-budget">
+                <fieldset className="choice-group">
+                  <legend>Market</legend>
+                  <div className="choice-row">
+                    {(
+                      [
+                        ['all', 'All markets'],
+                        ['local', 'Local'],
+                        ['international', 'International'],
+                      ] as const
+                    ).map(([value, label]) => (
+                      <label className="choice" key={value}>
+                        <input
+                          checked={form.market === value}
+                          name="market"
+                          onChange={() =>
+                            update('market', value as MarketChoice)
+                          }
+                          type="radio"
+                        />
+                        <span>{label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+
+                <div className="budget-field">
+                  <label htmlFor="max-budget">Maximum budget (IDR)</label>
+                  <p className="field-hint">
+                    Budget filtering applies where price information is
+                    available. Leave blank if price is not a firm limit.
+                  </p>
+                  <input
+                    aria-describedby={
+                      errors.maxBudget ? 'max-budget-error' : undefined
+                    }
+                    aria-invalid={Boolean(errors.maxBudget)}
+                    id="max-budget"
+                    inputMode="numeric"
+                    min="1"
+                    onChange={(event) =>
+                      update('maxBudget', event.target.value)
+                    }
+                    placeholder="e.g. 500000"
+                    step="1"
+                    type="number"
+                    value={form.maxBudget}
+                  />
+                  {errors.maxBudget ? (
+                    <p
+                      className="field-error"
+                      id="max-budget-error"
+                      role="alert"
+                    >
+                      {errors.maxBudget}
+                    </p>
+                  ) : null}
+                  <div className="preset-row" aria-label="Budget presets">
+                    {[250_000, 500_000, 1_000_000].map((amount) => (
+                      <button
+                        key={amount}
+                        onClick={() => update('maxBudget', String(amount))}
+                        type="button"
+                      >
+                        {new Intl.NumberFormat('id-ID').format(amount)}
+                      </button>
+                    ))}
+                  </div>
+                  <label className="check-line">
+                    <input
+                      checked={form.includeUnpriced}
+                      onChange={(event) =>
+                        update('includeUnpriced', event.target.checked)
+                      }
+                      type="checkbox"
+                    />
+                    Include fragrances whose price is not listed
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <details className="advanced-filters">
+              <summary>
+                <span>Advanced filters</span>
+                <small>Exclusions & firm boundaries</small>
+              </summary>
+              <div className="advanced-filters__body">
+                <ChoiceGroup
+                  choices={taxonomy.genders}
+                  legend="Only these expressions"
+                  onChange={(values) =>
+                    update(
+                      'strictGenders',
+                      values as DiscoveryFormState['strictGenders'],
+                    )
+                  }
+                  selected={form.strictGenders}
+                />
+                <ChoiceGroup
+                  choices={taxonomy.occasions}
+                  legend="Only these occasions"
+                  onChange={(values) => update('strictOccasions', values)}
+                  selected={form.strictOccasions}
+                />
+                <ChoiceGroup
+                  choices={taxonomy.concentrations}
+                  legend="Only these concentrations"
+                  onChange={(values) => update('strictConcentrations', values)}
+                  selected={form.strictConcentrations}
+                />
+                <TagSelector
+                  key={`exclusions-${resetVersion}`}
+                  hint="Any fragrance containing these notes will be excluded."
+                  label="Excluded notes"
+                  onChange={(values) => update('excludedNotes', values)}
+                  options={taxonomy.notes}
+                  selected={form.excludedNotes}
+                />
+              </div>
+            </details>
           </div>
-        ) : null}
-        <div className="submit-row">
-          <p>Your choices are processed in this browser session.</p>
-          <div className="submit-row__action">
-            {status === 'submitting' ? (
-              <span className="submit-row__activity" role="status">
-                Preparing your fragrance recommendations…
-              </span>
+          <aside
+            className="editorial-rail discovery-rail"
+            aria-label="Your discovery profile"
+          >
+            <EditorialArtwork />
+            <ProfileSummary form={form} editing />
+            <DatasetStat />
+            <p className="editorial-statement">
+              A more personal way to discover fragrance.
+            </p>
+          </aside>
+          <div className="discovery-end">
+            {error ? (
+              <div className="form-status" role="alert">
+                <span className="eyebrow">Consultation interrupted</span>
+                <p>{error}</p>
+              </div>
             ) : null}
-            <button
-              className="button"
-              disabled={status === 'submitting'}
-              type="submit"
-            >
-              {status === 'submitting'
-                ? 'Preparing your fragrance recommendations…'
-                : 'Show my recommendations'}
-            </button>
+            <div className="discovery-actions">
+              <div className="submit-row__action">
+                {status === 'submitting' ? (
+                  <span className="submit-row__activity" role="status">
+                    Preparing your fragrance recommendations…
+                  </span>
+                ) : null}
+                <button
+                  className="button"
+                  disabled={status === 'submitting'}
+                  type="submit"
+                >
+                  {status === 'submitting'
+                    ? 'Preparing your fragrance recommendations…'
+                    : 'Show my recommendations'}
+                  {status !== 'submitting' ? (
+                    <EditorialIcon name="arrow" />
+                  ) : null}
+                </button>
+                <button
+                  className="button button--outline"
+                  disabled={status === 'submitting'}
+                  type="button"
+                  onClick={() => {
+                    setForm(cloneInitialForm());
+                    setErrors({});
+                    setResetVersion((version) => version + 1);
+                  }}
+                >
+                  Reset filters
+                </button>
+              </div>
+              <p>Your choices are processed in this browser session.</p>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </>
   );
 }

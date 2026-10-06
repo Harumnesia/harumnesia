@@ -14,8 +14,10 @@ const LARGE_TAXONOMY = Array.from(
 
 function TagSelectorHarness({
   options = LARGE_TAXONOMY,
+  suggestions = [],
 }: {
   options?: string[];
+  suggestions?: string[];
 }) {
   const [selected, setSelected] = useState<string[]>([]);
   return (
@@ -25,6 +27,7 @@ function TagSelectorHarness({
       onChange={setSelected}
       options={options}
       selected={selected}
+      suggestions={suggestions}
     />
   );
 }
@@ -32,6 +35,26 @@ function TagSelectorHarness({
 afterEach(cleanup);
 
 describe('TagSelector production taxonomy behavior', () => {
+  it('offers only taxonomy-backed shortcuts and toggles their actual selections', async () => {
+    const user = userEvent.setup();
+    render(
+      <TagSelectorHarness suggestions={['note-2499', 'unsupported-note']} />,
+    );
+    expect(
+      screen.queryByRole('button', { name: 'unsupported-note' }),
+    ).toBeNull();
+    const shortcut = screen.getByRole('button', { name: 'note-2499' });
+    await user.click(shortcut);
+    expect(shortcut.getAttribute('aria-pressed')).toBe('true');
+    expect(
+      screen.getByRole('button', { name: 'Remove note-2499' }),
+    ).not.toBeNull();
+    await user.click(shortcut);
+    expect(shortcut.getAttribute('aria-pressed')).toBe('false');
+    expect(
+      screen.queryByRole('button', { name: 'Remove note-2499' }),
+    ).toBeNull();
+  });
   it('renders no large suggestion list until the user types', async () => {
     const user = userEvent.setup();
     render(<TagSelectorHarness />);

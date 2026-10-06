@@ -1,22 +1,49 @@
-import { useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { EditorialIcon } from '../editorial/EditorialIcon.js';
+import { useRecommendationExperience } from '../../features/recommendation/useRecommendationExperience.js';
 
 export function SiteLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  const { results } = useRecommendationExperience();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      document.getElementById(location.hash.slice(1))?.scrollIntoView();
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  }, [location.pathname, location.hash, location.key]);
 
   return (
-    <div className="site-shell">
+    <div
+      className={
+        location.pathname === '/'
+          ? 'site-shell site-shell--landing'
+          : 'site-shell'
+      }
+    >
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
-      <header className="site-header">
+      <header
+        className="site-header"
+        onKeyDown={(event) => {
+          if (event.key === 'Escape' && menuOpen) {
+            setMenuOpen(false);
+            menuButton.current?.focus();
+          }
+        }}
+      >
         <div className="site-header__inner">
           <NavLink
             className="wordmark"
             to="/"
             onClick={() => setMenuOpen(false)}
           >
-            Harumnesia
+            <EditorialIcon name="leaf" /> Harumnesia
           </NavLink>
           <button
             aria-controls="primary-navigation"
@@ -24,8 +51,9 @@ export function SiteLayout() {
             className="menu-toggle"
             onClick={() => setMenuOpen((open) => !open)}
             type="button"
+            ref={menuButton}
           >
-            <span aria-hidden="true">{menuOpen ? 'Close' : 'Menu'}</span>
+            <EditorialIcon name={menuOpen ? 'close' : 'menu'} />
             <span className="sr-only">Toggle navigation</span>
           </button>
           <nav
@@ -33,19 +61,20 @@ export function SiteLayout() {
             className={menuOpen ? 'site-nav site-nav--open' : 'site-nav'}
             id="primary-navigation"
           >
-            <NavLink to="/" onClick={() => setMenuOpen(false)}>
-              Home
-            </NavLink>
             <NavLink to="/discover" onClick={() => setMenuOpen(false)}>
               Discover
             </NavLink>
-            <NavLink
-              className="button button--small"
-              to="/discover"
-              onClick={() => setMenuOpen(false)}
-            >
-              Find your scent
-            </NavLink>
+            {results && results.length > 0 ? (
+              <NavLink to="/results" onClick={() => setMenuOpen(false)}>
+                Results
+              </NavLink>
+            ) : null}
+            <Link to="/#scent-notes" onClick={() => setMenuOpen(false)}>
+              Notes
+            </Link>
+            <Link to="/#how-it-works" onClick={() => setMenuOpen(false)}>
+              About
+            </Link>
           </nav>
         </div>
       </header>

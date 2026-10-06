@@ -2,11 +2,17 @@ import { Link } from 'react-router-dom';
 
 import { PageTitle } from '../components/PageTitle.js';
 import { SystemState } from '../components/SystemState.js';
-import { PerfumeCard } from '../components/perfume/PerfumeCard.js';
+import { RecommendationCard } from '../components/perfume/RecommendationCard.js';
+import { DatasetStat } from '../components/editorial/DatasetStat.js';
+import { EditorialArtwork } from '../components/editorial/EditorialArtwork.js';
+import {
+  ProfileSummary,
+  PreferenceSummary,
+} from '../components/editorial/ProfileSummary.js';
 import { useRecommendationExperience } from '../features/recommendation/useRecommendationExperience.js';
 
 export function ResultsPage() {
-  const { results } = useRecommendationExperience();
+  const { results, lastForm } = useRecommendationExperience();
 
   if (results === null) {
     return (
@@ -43,42 +49,53 @@ export function ResultsPage() {
   return (
     <>
       <PageTitle title="Your fragrance edit" />
-      <section className="page-intro page-intro--results section-shell">
-        <p className="folio-label">Harumnesia / Your considered edit</p>
-        <h1>{results.length} fragrances, chosen with intention.</h1>
-        <p className="lede">
-          Each match reflects a different part of your scent profile. The
-          reasons below explain the connection—without exposing technical
-          scores.
-        </p>
-        <div className="page-intro__aside">
-          <span className="eyebrow">The curated {results.length}</span>
-          <Link className="text-link" to="/discover">
-            <span aria-hidden="true">←</span> Refine your choices
-          </Link>
-        </div>
-      </section>
-      <section
-        className="results-list section-shell"
-        aria-label="Recommended fragrances"
-      >
-        <PerfumeCard perfume={results[0]!} showReasons />
-        {results.length > 1 ? (
-          <div className="results-list__supporting">
-            <div className="results-list__heading">
-              <span className="folio-label">
-                02 — {String(results.length).padStart(2, '0')}
-              </span>
-              <p>Supporting folio repertoire</p>
-            </div>
-            <div className="results-list__grid">
+      <div className="results-layout section-shell">
+        <section className="editorial-intro results-intro">
+          <p className="folio-label">Your matches</p>
+          <h1>
+            Top {results.length}{' '}
+            {results.length === 1 ? 'fragrance' : 'fragrances'}{' '}
+            <em className="editorial-nowrap">for you.</em>
+          </h1>
+          <p className="lede">
+            An edit based on your preferences, with a different scent to explore
+            in every match. Each recommendation includes reasons so you can
+            understand the connection.
+          </p>
+          <div className="results-preferences">
+            <PreferenceSummary form={lastForm} />
+            <Link className="text-link" to="/discover">
+              <span aria-hidden="true">←</span> Refine your choices
+            </Link>
+          </div>
+        </section>
+        <section
+          className="recommendation-list"
+          aria-label="Recommended fragrances"
+        >
+          <RecommendationCard perfume={results[0]!} />
+          {results.length > 1 ? (
+            <div className="recommendation-list__grid">
               {results.slice(1).map((perfume) => (
-                <PerfumeCard key={perfume.id} perfume={perfume} showReasons />
+                <RecommendationCard key={perfume.id} perfume={perfume} />
               ))}
             </div>
+          ) : null}
+        </section>
+        <aside
+          className="editorial-rail results-rail"
+          aria-label="Your recommendation profile"
+        >
+          <ProfileSummary form={lastForm} />
+          <DatasetStat />
+          <div className="results-rail__art">
+            <EditorialArtwork />
           </div>
-        ) : null}
-      </section>
+          <p className="editorial-statement">
+            Curated by notes, accords, and you.
+          </p>
+        </aside>
+      </div>
     </>
   );
 }
