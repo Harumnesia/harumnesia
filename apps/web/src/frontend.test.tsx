@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { act, cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
@@ -326,6 +326,52 @@ describe('frontend routes and states', () => {
       screen.getByRole('heading', { name: 'The note pyramid' }),
     ).not.toBeNull();
     expect(screen.getByText('bergamot · citrus')).not.toBeNull();
+  });
+
+  it('keeps direct-detail reading order and notes across responsive layout changes', async () => {
+    let notifyLayoutChange: (() => void) | undefined;
+    const query = {
+      matches: true,
+      addEventListener: vi.fn((_type: string, listener: () => void) => {
+        notifyLayoutChange = listener;
+      }),
+      removeEventListener: vi.fn(),
+    };
+    vi.stubGlobal('matchMedia', () => query);
+    try {
+      const { container, unmount } = renderRoute('/perfume/fixture-senja-ubud');
+      await screen.findByRole('heading', { name: 'Senja di Ubud', level: 1 });
+      const headings = screen
+        .getAllByRole('heading')
+        .map((node) => node.textContent);
+      expect(headings.indexOf('The note pyramid')).toBeGreaterThan(
+        headings.indexOf('Senja di Ubud'),
+      );
+      expect(headings.indexOf('Occasions')).toBeGreaterThan(
+        headings.indexOf('The note pyramid'),
+      );
+      expect(
+        screen.queryByRole('heading', { name: 'Accords & character' }),
+      ).toBeNull();
+      const notes = container.querySelector('.dossier__notes')?.textContent;
+      act(() => {
+        query.matches = false;
+        notifyLayoutChange?.();
+      });
+      expect(container.querySelectorAll('.dossier__notes')).toHaveLength(1);
+      expect(container.querySelector('.dossier__notes')?.textContent).toBe(
+        notes,
+      );
+      expect(
+        screen.queryByRole('heading', {
+          name: 'Why Harumnesia recommends this',
+        }),
+      ).toBeNull();
+      unmount();
+      expect(query.removeEventListener).toHaveBeenCalled();
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it('omits unavailable detail metadata instead of showing broken values', async () => {

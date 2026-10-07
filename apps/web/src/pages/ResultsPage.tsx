@@ -88,6 +88,9 @@ export function ResultsPage() {
         >
           <ProfileSummary form={lastForm} />
           <DatasetStat />
+          <Link className="button results-mobile-refine" to="/discover">
+            Refine search or edit preferences <span aria-hidden="true">→</span>
+          </Link>
           <div className="results-rail__art">
             <EditorialArtwork />
           </div>

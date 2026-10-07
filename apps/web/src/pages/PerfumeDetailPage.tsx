@@ -5,6 +5,7 @@ import { PageTitle } from '../components/PageTitle.js';
 import { SystemState } from '../components/SystemState.js';
 import { PerfumeVisual } from '../components/perfume/PerfumeVisual.js';
 import { NotesPyramid } from '../components/perfume/NotesPyramid.js';
+import { DossierLayout } from '../components/perfume/DossierLayout.js';
 import { MatchReasons } from '../components/perfume/MatchReasons.js';
 import { ProfileSummary } from '../components/editorial/ProfileSummary.js';
 import { EditorialIcon } from '../components/editorial/EditorialIcon.js';
@@ -137,102 +138,107 @@ function PerfumeDetailLookup({ id }: { id: string | undefined }) {
       <article
         className={`dossier section-shell${isSparse ? ' dossier--sparse' : ''}`}
       >
-        <div className="dossier__visual-column">
-          <div className="dossier__art">
-            <PerfumeVisual
-              perfumeId={perfume.id}
-              perfumeName={perfume.name}
-              sizes="(min-width: 48rem) 38vw, 100vw"
-              tone={perfume.visualTone}
-            />
-            <div className="dossier__art-caption">
-              {recommendation ? (
-                <span className="match-label">
-                  {recommendation.rank === 1
-                    ? 'Top match'
-                    : `Recommendation ${String(recommendation.rank).padStart(2, '0')}`}
+        <DossierLayout
+          sparse={isSparse}
+          artwork={
+            <div className="dossier__art">
+              <PerfumeVisual
+                perfumeId={perfume.id}
+                perfumeName={perfume.name}
+                sizes="(min-width: 48rem) 38vw, 100vw"
+                tone={perfume.visualTone}
+              />
+              <div className="dossier__art-caption">
+                {recommendation ? (
+                  <span className="match-label">
+                    {recommendation.rank === 1
+                      ? 'Top match'
+                      : `Recommendation ${String(recommendation.rank).padStart(2, '0')}`}
+                  </span>
+                ) : null}
+                <span>
+                  {recommendation
+                    ? 'From your fragrance edit'
+                    : 'A visual study / Fragrance record'}
                 </span>
-              ) : null}
-              <span>
-                {recommendation
-                  ? 'From your fragrance edit'
-                  : 'A visual study / Fragrance record'}
-              </span>
-            </div>
-          </div>
-          {!isSparse ? notesSection : null}
-        </div>
-        <div className="dossier__content-column">
-          <div className="dossier__intro">
-            <div className="dossier__title">
-              <h1>{perfume.name}</h1>
-            </div>
-            <p className="dossier__brand">{perfume.brand}</p>
-            <p className="lede">
-              Explore the listed notes, accords, and occasions that define this
-              fragrance record.
-            </p>
-            {perfume.accords.length > 0 ? (
-              <ul className="tag-list" aria-label="Fragrance accords">
-                {perfume.accords.slice(0, 5).map((accord) => (
-                  <li key={accord}>{accord}</li>
-                ))}
-              </ul>
-            ) : null}
-            <dl className="dossier__facts">
-              <div>
-                <dt>
-                  <EditorialIcon name="globe" />
-                  Market
-                </dt>
-                <dd>{perfume.marketLabel}</dd>
               </div>
-              <div>
-                <dt>
-                  <EditorialIcon name="leaf" />
-                  Expression
-                </dt>
-                <dd>{perfume.genderLabel}</dd>
+            </div>
+          }
+          notes={notesSection}
+          intro={
+            <div className="dossier__intro">
+              <div className="dossier__title">
+                <h1>{perfume.name}</h1>
               </div>
-              {perfume.concentration ? (
+              <p className="dossier__brand">{perfume.brand}</p>
+              <p className="lede">
+                Explore the listed notes, accords, and occasions that define
+                this fragrance record.
+              </p>
+              {perfume.accords.length > 0 ? (
+                <ul className="tag-list" aria-label="Fragrance accords">
+                  {perfume.accords.slice(0, 5).map((accord) => (
+                    <li key={accord}>{accord}</li>
+                  ))}
+                </ul>
+              ) : null}
+              <dl className="dossier__facts">
                 <div>
                   <dt>
-                    <EditorialIcon name="bottle" />
-                    Concentration
+                    <EditorialIcon name="globe" />
+                    Market
                   </dt>
-                  <dd>{perfume.concentration}</dd>
+                  <dd>{perfume.marketLabel}</dd>
                 </div>
-              ) : null}
-              {perfume.occasions.length > 0 ? (
                 <div>
                   <dt>
-                    <EditorialIcon name="moon" />
-                    Occasions
+                    <EditorialIcon name="leaf" />
+                    Expression
                   </dt>
-                  <dd>{perfume.occasions.join(' · ')}</dd>
+                  <dd>{perfume.genderLabel}</dd>
                 </div>
-              ) : null}
-              {perfume.priceLabel ? (
-                <div>
-                  <dt>
-                    <EditorialIcon name="layers" />
-                    Listed price
-                  </dt>
-                  <dd>{perfume.priceLabel}</dd>
-                </div>
-              ) : null}
-            </dl>
-          </div>
-          <div className="dossier__lower">
-            {recommendation && recommendation.reasons.length > 0 ? (
+                {perfume.concentration ? (
+                  <div>
+                    <dt>
+                      <EditorialIcon name="bottle" />
+                      Concentration
+                    </dt>
+                    <dd>{perfume.concentration}</dd>
+                  </div>
+                ) : null}
+                {perfume.occasions.length > 0 ? (
+                  <div>
+                    <dt>
+                      <EditorialIcon name="moon" />
+                      Occasions
+                    </dt>
+                    <dd>{perfume.occasions.join(' · ')}</dd>
+                  </div>
+                ) : null}
+                {perfume.priceLabel ? (
+                  <div>
+                    <dt>
+                      <EditorialIcon name="layers" />
+                      Listed price
+                    </dt>
+                    <dd>{perfume.priceLabel}</dd>
+                  </div>
+                ) : null}
+              </dl>
+            </div>
+          }
+          reasons={
+            recommendation && recommendation.reasons.length > 0 ? (
               <div className="dossier__reasons">
                 <MatchReasons
                   reasons={recommendation.reasons}
                   title="Why Harumnesia recommends this"
                 />
               </div>
-            ) : null}
-            {perfume.accords.length > 0 ||
+            ) : null
+          }
+          character={
+            perfume.accords.length > 0 ||
             perfume.occasions.length > 0 ||
             recommendation ? (
               <div className="dossier__character">
@@ -269,10 +275,9 @@ function PerfumeDetailLookup({ id }: { id: string | undefined }) {
                   />
                 ) : null}
               </div>
-            ) : null}
-          </div>
-          {isSparse ? notesSection : null}
-        </div>
+            ) : null
+          }
+        />
       </article>
     </>
   );
