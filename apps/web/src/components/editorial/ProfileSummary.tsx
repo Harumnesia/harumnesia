@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useId } from 'react';
 
 import type { DiscoveryFormState } from '../../features/recommendation/types.js';
 import { EditorialIcon, type EditorialIconName } from './EditorialIcon.js';
@@ -73,17 +74,17 @@ export function PreferenceSummary({ form }: { form: DiscoveryFormState }) {
 export function ProfileSummary({
   form,
   editing = false,
+  title = 'Your scent profile',
 }: {
   form: DiscoveryFormState;
   editing?: boolean;
+  title?: string;
 }) {
+  const titleId = useId();
   return (
-    <section
-      className="profile-summary"
-      aria-labelledby="profile-summary-title"
-    >
+    <section className="profile-summary" aria-labelledby={titleId}>
       <div className="profile-summary__heading">
-        <h2 id="profile-summary-title">Your scent profile</h2>
+        <h2 id={titleId}>{title}</h2>
         {editing ? (
           <a className="text-link" href="#profile-preferences">
             <EditorialIcon name="edit" /> Edit selections

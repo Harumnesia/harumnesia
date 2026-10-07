@@ -71,51 +71,59 @@ describe('frontend routes and states', () => {
     expect(document.activeElement).toBe(toggle);
   });
 
-  it('reflects live selections and resets preferences and firm boundaries', async () => {
-    const user = userEvent.setup();
-    renderRoute('/discover');
-    const noteOptions = await screen.findByLabelText(
-      'Suggested Preferred notes',
-    );
-    await user.click(
-      within(noteOptions).getByRole('button', { name: 'vanilla' }),
-    );
-    const profile = screen.getByRole('region', { name: 'Your scent profile' });
-    expect(within(profile).getByText('vanilla')).not.toBeNull();
-    await user.click(screen.getByLabelText('Local'));
-    await user.type(screen.getByLabelText('Maximum budget (IDR)'), '500000');
-    await user.click(screen.getByText('Advanced filters'));
-    const exclusions = screen.getByLabelText('Excluded notes').parentElement;
-    if (!exclusions) throw new Error('Missing exclusion selector');
-    await user.type(within(exclusions).getByRole('textbox'), 'amb{Enter}');
-    await user.type(screen.getByLabelText('Preferred notes'), 'rose');
-    await user.click(
-      within(
-        screen.getByRole('group', { name: 'Only these concentrations' }),
-      ).getByLabelText('EDP'),
-    );
-    expect(within(profile).getByText(/Excluded notes: amber/)).not.toBeNull();
-    await user.click(screen.getByRole('button', { name: 'Reset filters' }));
-    expect(screen.queryByRole('button', { name: 'Remove vanilla' })).toBeNull();
-    expect(screen.queryByRole('button', { name: 'Remove amber' })).toBeNull();
-    expect(
-      (screen.getByLabelText('Preferred notes') as HTMLInputElement).value,
-    ).toBe('');
-    expect(
-      (
+  it.each(['Reset filters', 'Start over'])(
+    'reflects live selections and resets preferences and firm boundaries with %s',
+    async (resetAction) => {
+      const user = userEvent.setup();
+      renderRoute('/discover');
+      const noteOptions = await screen.findByLabelText(
+        'Suggested Preferred notes',
+      );
+      await user.click(
+        within(noteOptions).getByRole('button', { name: 'vanilla' }),
+      );
+      const profile = screen.getByRole('region', {
+        name: 'Your scent profile',
+      });
+      expect(within(profile).getByText('vanilla')).not.toBeNull();
+      await user.click(screen.getByLabelText('Local'));
+      await user.type(screen.getByLabelText('Maximum budget (IDR)'), '500000');
+      await user.click(screen.getByText('Advanced options'));
+      const exclusions = screen.getByLabelText('Excluded notes').parentElement;
+      if (!exclusions) throw new Error('Missing exclusion selector');
+      await user.type(within(exclusions).getByRole('textbox'), 'amb{Enter}');
+      await user.type(screen.getByLabelText('Preferred notes'), 'rose');
+      await user.click(
         within(
           screen.getByRole('group', { name: 'Only these concentrations' }),
-        ).getByLabelText('EDP') as HTMLInputElement
-      ).checked,
-    ).toBe(false);
-    expect(
-      (screen.getByLabelText('Maximum budget (IDR)') as HTMLInputElement).value,
-    ).toBe('');
-    expect(
-      (screen.getByLabelText('All markets') as HTMLInputElement).checked,
-    ).toBe(true);
-    expect(within(profile).getByText('Local + International')).not.toBeNull();
-  });
+        ).getByLabelText('EDP'),
+      );
+      expect(within(profile).getByText(/Excluded notes: amber/)).not.toBeNull();
+      await user.click(screen.getByRole('button', { name: resetAction }));
+      expect(
+        screen.queryByRole('button', { name: 'Remove vanilla' }),
+      ).toBeNull();
+      expect(screen.queryByRole('button', { name: 'Remove amber' })).toBeNull();
+      expect(
+        (screen.getByLabelText('Preferred notes') as HTMLInputElement).value,
+      ).toBe('');
+      expect(
+        (
+          within(
+            screen.getByRole('group', { name: 'Only these concentrations' }),
+          ).getByLabelText('EDP') as HTMLInputElement
+        ).checked,
+      ).toBe(false);
+      expect(
+        (screen.getByLabelText('Maximum budget (IDR)') as HTMLInputElement)
+          .value,
+      ).toBe('');
+      expect((screen.getByLabelText('Both') as HTMLInputElement).checked).toBe(
+        true,
+      );
+      expect(within(profile).getByText('Local + International')).not.toBeNull();
+    },
+  );
 
   it('shows real reasons on a recommended detail and retains editing selections', async () => {
     const user = userEvent.setup();
@@ -150,6 +158,34 @@ describe('frontend routes and states', () => {
     ).not.toBeNull();
   });
 
+  it.each([
+    ['Preferred expression', 'Men'],
+    ['Preferred concentration', 'EDP'],
+  ])(
+    'clears %s with Any without adding a request value',
+    async (legend, choice) => {
+      const user = userEvent.setup();
+      const recommend = vi.fn(
+        mockRecommendationService.recommend.bind(mockRecommendationService),
+      );
+      renderRoute('/discover', {
+        recommend,
+        getPerfume: (id) => mockRecommendationService.getPerfume(id),
+      });
+      const group = await screen.findByRole('group', { name: legend });
+      await user.click(within(group).getByLabelText(choice));
+      await user.click(within(group).getByLabelText('Any'));
+      expect(
+        (within(group).getByLabelText(choice) as HTMLInputElement).checked,
+      ).toBe(false);
+      await user.click(
+        screen.getByRole('button', { name: 'Show my recommendations' }),
+      );
+      await screen.findByRole('heading', { name: 'Top 5 fragrances for you.' });
+      expect(recommend).toHaveBeenCalledWith({ limit: 5 });
+    },
+  );
+
   it('renders a semantic, labelled discovery form', async () => {
     renderRoute('/discover');
     expect(
@@ -158,7 +194,7 @@ describe('frontend routes and states', () => {
       }),
     ).not.toBeNull();
     expect(screen.getByLabelText('Preferred notes')).not.toBeNull();
-    expect(screen.getByText('Advanced filters')).not.toBeNull();
+    expect(screen.getByText('Advanced options')).not.toBeNull();
   });
 
   it('adds and removes controlled note selections', async () => {

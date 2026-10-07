@@ -5,11 +5,13 @@ export function ChoiceGroup({
   choices,
   selected,
   onChange,
+  allowAny = false,
 }: {
   legend: string;
   choices: readonly (string | Choice)[];
   selected: readonly string[];
   onChange(values: string[]): void;
+  allowAny?: boolean;
 }) {
   function toggle(value: string) {
     onChange(
@@ -37,6 +39,16 @@ export function ChoiceGroup({
             </label>
           );
         })}
+        {allowAny ? (
+          <label className="choice">
+            <input
+              checked={selected.length === 0}
+              onChange={() => onChange([])}
+              type="checkbox"
+            />
+            <span>Any</span>
+          </label>
+        ) : null}
       </div>
     </fieldset>
   );

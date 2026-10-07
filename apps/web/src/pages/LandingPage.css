@@ -18,7 +18,8 @@
     font-size: clamp(1.2rem, 1.68vw, 2rem);
     font-weight: 400;
     letter-spacing: 0.16em;
-    gap: 2vw;
+    padding-left: 0.8vw;
+    gap: 1.2vw;
   }
 
   .site-shell--landing .site-header .wordmark .editorial-icon {
@@ -27,11 +28,11 @@
   }
 
   .site-shell--landing .site-nav {
-    gap: 1.8vw;
+    gap: 2.6vw;
     justify-self: start;
   }
 
-  .site-shell--landing .site-nav > a {
+  .site-shell--landing .site-nav > a:not(.button) {
     font-size: clamp(1rem, 1.24vw, 1.4rem);
     padding: 0.7vw;
   }
@@ -94,9 +95,13 @@
 
   .site-shell--landing .hero--canvas .hero__copy h1 {
     margin: 0;
-    font-size: clamp(3.75rem, 5.74vw, 7.2rem);
+    font-size: clamp(3.75rem, 6.2vw, 7.5rem);
     letter-spacing: -0.035em;
-    line-height: 0.96;
+    line-height: 0.91;
+  }
+
+  .site-shell--landing .hero--canvas .hero__copy h1 > span:last-child {
+    letter-spacing: -0.02em;
   }
 
   .site-shell--landing .hero--canvas .hero__copy .lede {
@@ -120,6 +125,7 @@
   }
 
   .site-shell--landing .hero--canvas .button {
+    min-width: 17.7vw;
     min-height: max(2.75rem, 3.8vw);
     padding: 0.7vw 2.25vw;
     font-size: clamp(1rem, 1.32vw, 1.6rem);
@@ -127,6 +133,7 @@
   }
 
   .site-shell--landing .hero--canvas .button--outline {
+    min-width: 15.8vw;
     padding-inline: 2.6vw;
   }
 
@@ -142,6 +149,7 @@
 
   .site-shell--landing .hero--canvas .hero__chips li {
     min-height: 3.2vw;
+    min-width: 7.4vw;
     padding: 0.4vw 1.15vw;
     gap: 0.6vw;
     border-color: rgb(92 85 84 / 24%);
@@ -149,8 +157,8 @@
   }
 
   .site-shell--landing .hero--canvas .hero__chips .editorial-icon {
-    width: 1.3vw;
-    height: 1.3vw;
+    width: 1.8vw;
+    height: 1.8vw;
   }
 
   .site-shell--landing .hero--canvas > .dataset-stat {

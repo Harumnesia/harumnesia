@@ -6,8 +6,11 @@ import { useRecommendationExperience } from '../../features/recommendation/useRe
 export function SiteLayout() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
-  const { results } = useRecommendationExperience();
+  const { results, status } = useRecommendationExperience();
   const location = useLocation();
+  const isLanding = location.pathname === '/';
+  const isDiscovery = location.pathname === '/discover';
+  const isDetail = location.pathname.startsWith('/perfume/');
 
   useEffect(() => {
     if (location.hash) {
@@ -20,9 +23,9 @@ export function SiteLayout() {
   return (
     <div
       className={
-        location.pathname === '/'
+        isLanding
           ? 'site-shell site-shell--landing'
-          : 'site-shell'
+          : 'site-shell site-shell--editorial'
       }
     >
       <a className="skip-link" href="#main-content">
@@ -64,18 +67,46 @@ export function SiteLayout() {
             <NavLink to="/discover" onClick={() => setMenuOpen(false)}>
               Discover
             </NavLink>
-            {results && results.length > 0 ? (
+            {!isLanding || (results && results.length > 0) ? (
               <NavLink to="/results" onClick={() => setMenuOpen(false)}>
                 Results
               </NavLink>
             ) : null}
-            <Link to="/#scent-notes" onClick={() => setMenuOpen(false)}>
+            <Link
+              className="site-nav__notes"
+              to="/#scent-notes"
+              onClick={() => setMenuOpen(false)}
+            >
               Notes
             </Link>
             <Link to="/#how-it-works" onClick={() => setMenuOpen(false)}>
               About
             </Link>
           </nav>
+          {!isLanding ? (
+            isDiscovery ? (
+              <button
+                className="site-header__action"
+                disabled={status === 'submitting'}
+                form="discovery-form"
+                type="reset"
+              >
+                <EditorialIcon name="reset" /> Start over
+              </button>
+            ) : (
+              <Link
+                className="site-header__action"
+                to={isDetail && results?.length ? '/results' : '/discover'}
+              >
+                <EditorialIcon name={isDetail ? 'arrow' : 'reset'} />
+                {isDetail && results?.length
+                  ? 'Back to results'
+                  : isDetail
+                    ? 'Discover your scent'
+                    : 'Refine search'}
+              </Link>
+            )
+          ) : null}
         </div>
       </header>
       <main id="main-content">

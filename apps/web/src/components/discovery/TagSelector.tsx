@@ -1,4 +1,5 @@
 import { useId, useMemo, useState } from 'react';
+import { EditorialIcon } from '../editorial/EditorialIcon.js';
 
 export const MAX_VISIBLE_OPTIONS = 10;
 
@@ -9,6 +10,7 @@ export function TagSelector({
   selected,
   onChange,
   suggestions = [],
+  compact = false,
 }: {
   label: string;
   hint: string;
@@ -16,6 +18,7 @@ export function TagSelector({
   selected: readonly string[];
   onChange(values: string[]): void;
   suggestions?: readonly string[];
+  compact?: boolean;
 }) {
   const inputId = useId();
   const hintId = useId();
@@ -43,7 +46,7 @@ export function TagSelector({
   }
 
   return (
-    <div className="tag-selector">
+    <div className={`tag-selector${compact ? ' tag-selector--compact' : ''}`}>
       <label htmlFor={inputId}>{label}</label>
       <p className="field-hint" id={hintId}>
         {hint}
@@ -63,7 +66,11 @@ export function TagSelector({
                 }
                 type="button"
               >
-                <span aria-hidden="true" className="scent-options__mark" />
+                <EditorialIcon
+                  name={
+                    label.toLowerCase().includes('accord') ? 'leaf' : 'note'
+                  }
+                />
                 {value}
               </button>
             ))}
@@ -72,7 +79,7 @@ export function TagSelector({
       {selected.length > 0 ? (
         <ul className="selected-tags" aria-label={`Selected ${label}`}>
           {selected.map((value) => (
-            <li key={value}>
+            <li key={value} data-suggested={suggestions.includes(value)}>
               <span>{value}</span>
               <button
                 aria-label={`Remove ${value}`}
@@ -98,7 +105,11 @@ export function TagSelector({
             add(visibleOptions[0]);
           }
         }}
-        placeholder="Type to filter, then press Enter"
+        placeholder={
+          compact
+            ? `Search all ${label.toLowerCase().includes('accord') ? 'accords' : 'notes'}…`
+            : 'Type to filter, then press Enter'
+        }
         value={query}
       />
       {visibleOptions.length > 0 ? (

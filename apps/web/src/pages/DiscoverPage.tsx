@@ -86,6 +86,13 @@ export function DiscoverPage({
     if (await submit(form)) navigate('/results');
   }
 
+  function handleReset(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setForm(cloneInitialForm());
+    setErrors({});
+    setResetVersion((version) => version + 1);
+  }
+
   if (taxonomyState.status === 'loading') {
     return (
       <SystemState
@@ -141,7 +148,12 @@ export function DiscoverPage({
           </p>
         </section>
 
-        <form className="discovery-form" onSubmit={handleSubmit}>
+        <form
+          className="discovery-form"
+          id="discovery-form"
+          onSubmit={handleSubmit}
+          onReset={handleReset}
+        >
           <div
             className="discovery-fields"
             id="profile-preferences"
@@ -153,6 +165,7 @@ export function DiscoverPage({
                 <p>Choose the materials you love, or are curious about.</p>
               </div>
               <TagSelector
+                compact
                 key={`notes-${resetVersion}`}
                 hint="Try a material you already love, such as bergamot or sandalwood."
                 label="Preferred notes"
@@ -178,6 +191,7 @@ export function DiscoverPage({
                 <p>The overall impressions that match your taste.</p>
               </div>
               <TagSelector
+                compact
                 key={`accords-${resetVersion}`}
                 hint="Accords describe an overall impression, such as fresh or woody."
                 label="Preferred accords"
@@ -200,11 +214,15 @@ export function DiscoverPage({
 
             <div className="filter-row">
               <div className="filter-row__heading">
-                <h2>Expression</h2>
+                <h2>Gender</h2>
                 <p>Choose a preference, or keep it open.</p>
               </div>
               <ChoiceGroup
-                choices={taxonomy.genders}
+                allowAny
+                choices={[...taxonomy.genders].sort(
+                  (a, b) =>
+                    Number(b.value === 'unisex') - Number(a.value === 'unisex'),
+                )}
                 legend="Preferred expression"
                 onChange={(values) =>
                   update(
@@ -233,7 +251,10 @@ export function DiscoverPage({
                 <p>Choose your preferred concentration.</p>
               </div>
               <ChoiceGroup
-                choices={taxonomy.concentrations}
+                allowAny
+                choices={[...taxonomy.concentrations].sort(
+                  (a, b) => Number(b === 'EDT') - Number(a === 'EDT'),
+                )}
                 legend="Preferred concentration"
                 onChange={(values) => update('preferredConcentrations', values)}
                 selected={form.preferredConcentrations}
@@ -251,9 +272,9 @@ export function DiscoverPage({
                   <div className="choice-row">
                     {(
                       [
-                        ['all', 'All markets'],
                         ['local', 'Local'],
                         ['international', 'International'],
+                        ['all', 'Both'],
                       ] as const
                     ).map(([value, label]) => (
                       <label className="choice" key={value}>
@@ -273,10 +294,6 @@ export function DiscoverPage({
 
                 <div className="budget-field">
                   <label htmlFor="max-budget">Maximum budget (IDR)</label>
-                  <p className="field-hint">
-                    Budget filtering applies where price information is
-                    available. Leave blank if price is not a firm limit.
-                  </p>
                   <input
                     aria-describedby={
                       errors.maxBudget ? 'max-budget-error' : undefined
@@ -313,6 +330,17 @@ export function DiscoverPage({
                       </button>
                     ))}
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <details className="advanced-filters">
+              <summary>
+                <span>Advanced options</span>
+                <small>Exclude notes and set firm boundaries</small>
+              </summary>
+              <div className="advanced-filters__body">
+                <div className="price-policy">
                   <label className="check-line">
                     <input
                       checked={form.includeUnpriced}
@@ -323,16 +351,12 @@ export function DiscoverPage({
                     />
                     Include fragrances whose price is not listed
                   </label>
+                  <p className="field-hint">
+                    Budget filtering applies where price information is
+                    available. Leave the maximum budget blank if price is not a
+                    firm limit.
+                  </p>
                 </div>
-              </div>
-            </div>
-
-            <details className="advanced-filters">
-              <summary>
-                <span>Advanced filters</span>
-                <small>Exclusions & firm boundaries</small>
-              </summary>
-              <div className="advanced-filters__body">
                 <ChoiceGroup
                   choices={taxonomy.genders}
                   legend="Only these expressions"
@@ -407,12 +431,7 @@ export function DiscoverPage({
                 <button
                   className="button button--outline"
                   disabled={status === 'submitting'}
-                  type="button"
-                  onClick={() => {
-                    setForm(cloneInitialForm());
-                    setErrors({});
-                    setResetVersion((version) => version + 1);
-                  }}
+                  type="reset"
                 >
                   Reset filters
                 </button>
