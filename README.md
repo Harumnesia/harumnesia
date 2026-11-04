@@ -6,7 +6,7 @@ Harumnesia V2 is the active perfume discovery and recommendation application fro
 
 The validated catalog contains **25,127 perfumes**: 1,064 local and 24,063 international records. Offline scripts generate the canonical `data/perfumes.json`, the smaller recommendation projection `data/runtime/recommendation.json`, and taxonomy files. The browser loads taxonomy on `/discover` and loads the recommendation runtime only when a recommendation or perfume detail is requested.
 
-Preferences pass through hard filtering, cosine similarity, weighted scoring, MMR diversification, ranking, and an explainable Top 5. The framework-independent `@harumnesia/recommender` runs in a dedicated Web Worker. The worker builds its index once per page session and returns only result or detail data to React. There is no production backend, database, account system, or persistent recommendation history. Opening `/results` directly shows a no-session state.
+Preferences pass through hard filtering, cosine similarity, weighted scoring, MMR diversification, ranking, and an explainable Top 5. The framework-independent `@harumnesia/recommender` runs in a dedicated Web Worker. The worker builds its index once per page session and returns only result or detail data to React. A separate read-only REST API (`apps/api`, live at [api.harumnesia.web.id](https://api.harumnesia.web.id/api/v1/health)) serves the same dataset from Cloudflare D1; the web app does not call it yet, and there is no account system or persistent recommendation history. Opening `/results` directly shows a no-session state.
 
 Perfume images use a canonical-ID local asset manifest. Its approved count is currently zero; the UI uses local CSS artwork and does not hotlink source image URLs. Dataset provenance and reuse limitations are documented in [Dataset](docs/dataset.md) and [Assets](docs/assets.md).
 
@@ -48,6 +48,7 @@ The build uses committed generated data and does not need the V1 repositories. R
 | Path | Purpose |
 | --- | --- |
 | `apps/web` | SPA, routes, forms, UI, worker, and presentation assets |
+| `apps/api` | Read-only Cloudflare Workers + D1 REST API (`@harumnesia/api`, deployed via wrangler) |
 | `packages/recommender` | Browser-compatible recommendation engine |
 | `packages/shared` | Schemas, types, and shared contracts |
 | `data` | Validated canonical, runtime, and taxonomy JSON |
