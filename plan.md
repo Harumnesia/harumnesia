@@ -48,10 +48,15 @@
 |      3 | **UX-03 Clarify Soft vs Strict Preferences**     |
 |      4 | **UX-04 Clarify Unknown Price Behavior**         |
 |      5 | **DOC-02 Define Product Positioning**            |
-|      6 | **REC-01 Human Review Baseline Recommendations** |
-|      7 | **SIM-01 Seed Perfume Search**                   |
-|      8 | **SIM-02 Seed Profile Mapping**                  |
-|      9 | **SIM-03 Find Similar Mode**                     |
-|     10 | **SIM-04 Indonesian Alternatives Mode**          |
-|     11 | **IMG-02 Local Product Images**                  |
-|     12 | **STATE-01/02 Persistence + Shareable Results**  |
+|      6 | **BE-06 Backend ADR**                            |
+|      7 | **BE-04 FE-API Integration (Hybrid)**            |
+|      8 | **REC-01 Human Review Baseline Recommendations** |
+|      9 | **SIM-01 Seed Perfume Search**                   |
+|     10 | **SIM-02 Seed Profile Mapping**                  |
+|     11 | **SIM-03 Find Similar Mode**                     |
+|     12 | **SIM-04 Indonesian Alternatives Mode**          |
+|     13 | **IMG-02 Local Product Images**                  |
+|     14 | **STATE-01/02 Persistence + Shareable Results**  |
+|     15 | **BE-05 WAF Rate Limiting**                      |
+|     16 | **BE-07 D1 Backups**                             |
+|     17 | **BE-08 FTS5 for `/search`** (kondisional)       |
