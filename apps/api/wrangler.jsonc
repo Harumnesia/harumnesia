@@ -1,0 +1,15 @@
+{
+  "name": "harumnesia-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-07",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "harumnesia",
+      "database_id": "25f90834-93a0-4dfc-8aed-3d6a584ebc5b",
+    },
+  ],
+  "vars": {
+    "ALLOWED_ORIGINS": "https://harumnesia.web.id,https://www.harumnesia.web.id,https://harumnesia.pages.dev,http://localhost:5173,http://127.0.0.1:5173",
+  },
+}

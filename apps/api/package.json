@@ -1,0 +1,17 @@
+{
+  "name": "@harumnesia/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8799",
+    "db:local": "wrangler d1 execute harumnesia --local --file=schema.sql",
+    "db:seed": "node scripts/apply-seed.mjs",
+    "seed:generate": "python scripts/seed.py",
+    "smoke": "node scripts/smoke.mjs",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.148.0"
+  }
+}
