@@ -1,23 +1,101 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "values": [
-    "EDP",
-    "EDT"
-  ],
-  "rawValues": [
+    "EDC",
     "EDP",
     "EDT",
-    "XDP"
+    "EXTRAIT",
+    "PARFUM"
   ],
-  "sourceMappings": {
-    "EDC": "EDC",
+  "formats": [
+    "ATTAR",
+    "BODY MIST",
+    "BODY SPRAY",
+    "DEO PARFUM",
+    "FRAGRANT MIST",
+    "HAIR MIST",
+    "PERFUME OIL",
+    "PERFUMED GEL"
+  ],
+  "brandDesignations": [
+    "ABSOLU DE PARFUM",
+    "COLOGNE ABSOLUE",
+    "ELIXIR",
+    "ESPRIT DE PARFUM",
+    "ESSENCE DE PARFUM",
+    "LE PARFUM",
+    "PARFUM COLOGNE",
+    "PARFUM INTENSE",
+    "SECRET DE PARFUM"
+  ],
+  "groups": {
+    "concentration": [
+      "EDC",
+      "EDP",
+      "EDT",
+      "EXTRAIT",
+      "PARFUM"
+    ],
+    "brandDesignation": [
+      "ABSOLU DE PARFUM",
+      "COLOGNE ABSOLUE",
+      "ELIXIR",
+      "ESPRIT DE PARFUM",
+      "ESSENCE DE PARFUM",
+      "LE PARFUM",
+      "PARFUM COLOGNE",
+      "PARFUM INTENSE",
+      "SECRET DE PARFUM"
+    ],
+    "format": [
+      "ATTAR",
+      "BODY MIST",
+      "BODY SPRAY",
+      "DEO PARFUM",
+      "FRAGRANT MIST",
+      "HAIR MIST",
+      "PERFUME OIL",
+      "PERFUMED GEL"
+    ]
+  },
+  "canonicalMap": {
+    "PARFUM": "PARFUM",
+    "EAU DE TOILETTE": "EDT",
+    "EAU DE PARFUM": "EDP",
     "EDP": "EDP",
     "EDT": "EDT",
-    "EXTRAIT": "Extrait",
-    "EXTRAIT DE PARFUM": "Extrait",
-    "PARFUM": "Parfum"
-  },
-  "unresolvedRawValues": [
-    "XDP"
-  ]
+    "EXTRAIT": "EXTRAIT",
+    "EDC": "EDC",
+    "PARFUM COLOGNE": "PARFUM COLOGNE",
+    "PARFUM INTENSE": "PARFUM INTENSE",
+    "EAU DE COLOGNE": "EDC",
+    "EXTRAIT DE PARFUM": "EXTRAIT",
+    "LE PARFUM": "LE PARFUM",
+    "ABSOLU DE PARFUM": "ABSOLU DE PARFUM",
+    "EAU DE PARFUM LÉGÈRE": "EDP",
+    "EAU DE PARFUM INTENSE": "EDP",
+    "EXTRAIT BOTTLE LABEL": "EXTRAIT",
+    "ESPRIT DE PARFUM": "ESPRIT DE PARFUM",
+    "EAU DE TOILETTE INTENSE": "EDT",
+    "PARFUM FIN": "PARFUM",
+    "PERFUME OIL": "PERFUME OIL",
+    "PURE PERFUME": "PARFUM",
+    "SECRET DE PARFUM": "SECRET DE PARFUM",
+    "EXTRAIT DE PARFUM 25%": "EXTRAIT",
+    "HAIR MIST": "HAIR MIST",
+    "COLOGNE ABSOLUE": "COLOGNE ABSOLUE",
+    "ESSENCE DE PARFUM": "ESSENCE DE PARFUM",
+    "CONCENTRATED PERFUME OIL": "ATTAR",
+    "ELIXIR": "ELIXIR",
+    "ELIXIR DE PARFUM": "ELIXIR",
+    "ELIXIR / PERFUME EXTRACT": "ELIXIR",
+    "ELIXIR PARFUM": "ELIXIR",
+    "ATTAR": "ATTAR",
+    "BODY MIST": "BODY MIST",
+    "BODY SPRAY": "BODY SPRAY",
+    "PERFUMED GEL / EAU DE SOIN": "PERFUMED GEL",
+    "FRAGRANT MIST": "FRAGRANT MIST",
+    "DEO PARFUM": "DEO PARFUM",
+    "PERFUMED GEL": "PERFUMED GEL"
+  }
 }

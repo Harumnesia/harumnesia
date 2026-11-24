@@ -33,7 +33,13 @@ describe('production discovery taxonomy', () => {
       'women',
       'unisex',
     ]);
-    expect(taxonomy.concentrations).toEqual(['EDP', 'EDT']);
+    expect(taxonomy.concentrations).toEqual([
+      'EDC',
+      'EDP',
+      'EDT',
+      'EXTRAIT',
+      'PARFUM',
+    ]);
     expect(taxonomy.concentrations).not.toContain('XDP');
     expect(taxonomy.occasions).toEqual(['day', 'night', 'versatile']);
   });
