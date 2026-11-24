@@ -192,12 +192,12 @@ export function scoreCandidate(
     apply('occasion', matchedOccasions.length > 0 ? 1 : 0);
   }
 
-  if (preferences.concentrations && candidate.perfume.concentration !== null) {
+  if (preferences.concentrations && candidate.canonicalConcentration !== null) {
     const isMatch = preferences.concentrations.has(
-      candidate.perfume.concentration,
+      candidate.canonicalConcentration,
     );
     if (isMatch) {
-      matchedConcentration = candidate.perfume.concentration;
+      matchedConcentration = candidate.canonicalConcentration;
     }
     apply('concentration', isMatch ? 1 : 0);
   }
