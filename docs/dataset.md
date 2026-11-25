@@ -96,7 +96,7 @@ Generated taxonomy files are:
 - `data/taxonomy/notes.json`: 2.505 normalized observed note terms and the explicit note alias map.
 - `data/taxonomy/accords.json`: 84 normalized observed accord terms.
 - `data/taxonomy/genders.json`: canonical enum and source mappings.
-- `data/taxonomy/concentrations.json`: observed normalized/raw values, safe mappings, and unresolved raw values.
+- `data/taxonomy/concentrations.json`: audited `schemaVersion: 2` taxonomy (`values`, `formats`, `brandDesignations`, `groups`, `canonicalMap`). The build pipeline preserves this artifact verbatim and fails before writing any output when it is missing, still `schemaVersion: 1`, or incompatible with the generated concentration values.
 
 ## 4. Entity-stable canonical ID algorithm
 

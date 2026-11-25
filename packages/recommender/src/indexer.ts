@@ -8,17 +8,25 @@ import {
   createSparseVector,
   type SparseVector,
 } from './similarity.js';
+import {
+  getCanonicalConcentration,
+  normalizeConcentrationKey,
+} from './concentration.js';
 
 export type IndexedPerfume = {
   perfume: RecommendationPerfume;
   notes: SparseVector;
   accords: SparseVector;
+  /** Nilai kanonik uppercase untuk filter/scoring; null bila label tidak dikenal. */
+  canonicalConcentration: string | null;
 };
 
 export type RecommenderIndex = {
   candidates: readonly IndexedPerfume[];
   notesIdf: ReadonlyMap<string, number>;
   accordsIdf: ReadonlyMap<string, number>;
+  /** Label mentah yang tidak ada di canonical map — untuk audit, bukan filter. */
+  unmappedConcentrations: readonly string[];
 };
 
 export function flattenNotes(perfume: RecommendationPerfume): Set<string> {
@@ -43,11 +51,26 @@ export function createRecommenderIndex(
   const notesIdf = computeIdf(validated.length, noteSets);
   const accordsIdf = computeIdf(validated.length, accordSets);
 
-  const candidates = validated.map((perfume, index) => ({
-    perfume,
-    notes: createSparseVector(noteSets[index] ?? [], notesIdf),
-    accords: createSparseVector(accordSets[index] ?? [], accordsIdf),
-  }));
+  const unmapped = new Set<string>();
+  const candidates = validated.map((perfume, index) => {
+    const canonicalConcentration = getCanonicalConcentration(
+      perfume.concentration,
+    );
+    if (perfume.concentration !== null && canonicalConcentration === null) {
+      unmapped.add(normalizeConcentrationKey(perfume.concentration));
+    }
+    return {
+      perfume,
+      notes: createSparseVector(noteSets[index] ?? [], notesIdf),
+      accords: createSparseVector(accordSets[index] ?? [], accordsIdf),
+      canonicalConcentration,
+    };
+  });
 
-  return { candidates, notesIdf, accordsIdf };
+  return {
+    candidates,
+    notesIdf,
+    accordsIdf,
+    unmappedConcentrations: [...unmapped].sort(),
+  };
 }

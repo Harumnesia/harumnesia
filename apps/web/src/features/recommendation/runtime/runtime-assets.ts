@@ -1,4 +1,4 @@
-import runtimeDataUrl from '../../../../../../data/runtime/recommendation.json?url&no-inline';
+import runtimeDataUrl from '../../../../../../data/runtime/recommendation.enriched.json?url&no-inline';
 import accordsTaxonomyUrl from '../../../../../../data/taxonomy/accords.json?url&no-inline';
 import concentrationsTaxonomyUrl from '../../../../../../data/taxonomy/concentrations.json?url&no-inline';
 import gendersTaxonomyUrl from '../../../../../../data/taxonomy/genders.json?url&no-inline';

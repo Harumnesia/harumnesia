@@ -59,11 +59,11 @@ export function filterCandidates(
     }
 
     if (filters.concentrations && concentrations.size > 0) {
-      if (perfume.concentration === null) {
+      if (candidate.canonicalConcentration === null) {
         if (filters.concentrations.unknownPolicy === 'exclude') {
           return false;
         }
-      } else if (!concentrations.has(perfume.concentration)) {
+      } else if (!concentrations.has(candidate.canonicalConcentration)) {
         return false;
       }
     }
