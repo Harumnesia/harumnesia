@@ -8,7 +8,10 @@ import {
   createSparseVector,
   type SparseVector,
 } from './similarity.js';
-import { getCanonicalConcentration, normalizeConcentrationKey } from './concentration.js';
+import {
+  getCanonicalConcentration,
+  normalizeConcentrationKey,
+} from './concentration.js';
 
 export type IndexedPerfume = {
   perfume: RecommendationPerfume;
@@ -50,7 +53,9 @@ export function createRecommenderIndex(
 
   const unmapped = new Set<string>();
   const candidates = validated.map((perfume, index) => {
-    const canonicalConcentration = getCanonicalConcentration(perfume.concentration);
+    const canonicalConcentration = getCanonicalConcentration(
+      perfume.concentration,
+    );
     if (perfume.concentration !== null && canonicalConcentration === null) {
       unmapped.add(normalizeConcentrationKey(perfume.concentration));
     }

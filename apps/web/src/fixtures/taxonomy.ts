@@ -25,7 +25,13 @@ export const ACCORD_OPTIONS = [
 
 export const OCCASION_OPTIONS = ['day', 'night', 'versatile'] as const;
 
-export const CONCENTRATION_OPTIONS = ['EDP', 'EDT'] as const;
+export const CONCENTRATION_OPTIONS = [
+  'EDC',
+  'EDP',
+  'EDT',
+  'EXTRAIT',
+  'PARFUM',
+] as const;
 
 export const GENDER_OPTIONS = [
   { value: 'men', label: 'Men' },

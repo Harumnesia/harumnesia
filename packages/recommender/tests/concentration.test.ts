@@ -97,7 +97,9 @@ describe('concentration canonicalization', () => {
   });
 
   it('round-trips every canonical value through the filter', () => {
-    const canonicals = [...new Set(Object.values(DEFAULT_CONCENTRATION_CANONICAL_MAP))]
+    const canonicals = [
+      ...new Set(Object.values(DEFAULT_CONCENTRATION_CANONICAL_MAP)),
+    ]
       .filter((code) => code !== 'NONSTANDARD')
       .sort();
     const dataset = canonicals.map((code, index) => perfume(`p${index}`, code));
@@ -105,7 +107,9 @@ describe('concentration canonicalization', () => {
 
     for (const [position, code] of canonicals.entries()) {
       const parsed = RecommendationRequestSchema.parse({
-        filters: { concentrations: { values: [code], unknownPolicy: 'exclude' } },
+        filters: {
+          concentrations: { values: [code], unknownPolicy: 'exclude' },
+        },
       });
       const ids = filterCandidates(index.candidates, parsed.filters).map(
         (candidate) => candidate.perfume.id,

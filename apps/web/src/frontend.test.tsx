@@ -197,6 +197,123 @@ describe('frontend routes and states', () => {
     expect(screen.getByText('Advanced options')).not.toBeNull();
   });
 
+  it('renders the five standard concentration tiers in both groups', async () => {
+    const user = userEvent.setup();
+    renderRoute('/discover');
+    const preferred = await screen.findByRole('group', {
+      name: 'Preferred concentration',
+    });
+    for (const tier of ['EDC', 'EDP', 'EDT', 'EXTRAIT', 'PARFUM']) {
+      expect(within(preferred).getByLabelText(tier), tier).not.toBeNull();
+    }
+
+    await user.click(screen.getByText('Advanced options'));
+    const strict = screen.getByRole('group', {
+      name: 'Only these concentrations',
+    });
+    for (const tier of ['EDC', 'EDP', 'EDT', 'EXTRAIT', 'PARFUM']) {
+      expect(within(strict).getByLabelText(tier), tier).not.toBeNull();
+    }
+  });
+
+  it('combines preferred tiers with OR and keeps strict selection independent', async () => {
+    const user = userEvent.setup();
+    const recommend = vi.fn(
+      mockRecommendationService.recommend.bind(mockRecommendationService),
+    );
+    renderRoute('/discover', {
+      recommend,
+      getPerfume: (id) => mockRecommendationService.getPerfume(id),
+    });
+
+    const preferred = await screen.findByRole('group', {
+      name: 'Preferred concentration',
+    });
+    await user.click(within(preferred).getByLabelText('EDP'));
+    await user.click(within(preferred).getByLabelText('EXTRAIT'));
+
+    await user.click(screen.getByText('Advanced options'));
+    const strict = screen.getByRole('group', {
+      name: 'Only these concentrations',
+    });
+    await user.click(within(strict).getByLabelText('EDT'));
+
+    expect(
+      (within(strict).getByLabelText('EDP') as HTMLInputElement).checked,
+    ).toBe(false);
+    expect(
+      (within(preferred).getByLabelText('EDP') as HTMLInputElement).checked,
+    ).toBe(true);
+
+    await user.click(within(preferred).getByLabelText('EXTRAIT'));
+    expect(
+      (within(preferred).getByLabelText('EXTRAIT') as HTMLInputElement).checked,
+    ).toBe(false);
+    expect(
+      (within(preferred).getByLabelText('EDP') as HTMLInputElement).checked,
+    ).toBe(true);
+    expect(
+      (within(strict).getByLabelText('EDT') as HTMLInputElement).checked,
+    ).toBe(true);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Show my recommendations' }),
+    );
+    await screen.findByRole('heading', { name: 'Top 5 fragrances for you.' });
+    expect(recommend).toHaveBeenCalledWith({
+      preferences: { concentrations: ['EDP'] },
+      filters: {
+        concentrations: { values: ['EDT'], unknownPolicy: 'exclude' },
+      },
+      limit: 5,
+    });
+  });
+
+  it('clears only the concentration group whose Any is selected', async () => {
+    const user = userEvent.setup();
+    const recommend = vi.fn(
+      mockRecommendationService.recommend.bind(mockRecommendationService),
+    );
+    renderRoute('/discover', {
+      recommend,
+      getPerfume: (id) => mockRecommendationService.getPerfume(id),
+    });
+
+    const preferred = await screen.findByRole('group', {
+      name: 'Preferred concentration',
+    });
+    await user.click(within(preferred).getByLabelText('EDP'));
+    await user.click(within(preferred).getByLabelText('EXTRAIT'));
+
+    await user.click(screen.getByText('Advanced options'));
+    const strict = screen.getByRole('group', {
+      name: 'Only these concentrations',
+    });
+    await user.click(within(strict).getByLabelText('EXTRAIT'));
+
+    await user.click(within(preferred).getByLabelText('Any'));
+    expect(
+      (within(preferred).getByLabelText('EDP') as HTMLInputElement).checked,
+    ).toBe(false);
+    expect(
+      (within(preferred).getByLabelText('EXTRAIT') as HTMLInputElement).checked,
+    ).toBe(false);
+    expect(
+      (within(strict).getByLabelText('EXTRAIT') as HTMLInputElement).checked,
+    ).toBe(true);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Show my recommendations' }),
+    );
+    await screen.findByRole('heading', { name: 'Top 5 fragrances for you.' });
+    expect(recommend).toHaveBeenCalledWith({
+      filters: {
+        concentrations: { values: ['EXTRAIT'], unknownPolicy: 'exclude' },
+      },
+      limit: 5,
+    });
+  });
+
   it('adds and removes controlled note selections', async () => {
     const user = userEvent.setup();
     renderRoute('/discover');
