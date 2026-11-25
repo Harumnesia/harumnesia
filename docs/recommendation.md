@@ -11,10 +11,11 @@ tidak termasuk scope ini.
 ## 2. Runtime dataset
 
 Caller harus memuat dan memberikan `RecommendationPerfume[]` kepada
-`createRecommender()`. Satu-satunya artifact runtime V2 adalah
-`data/runtime/recommendation.json`; `data/perfumes.json` bukan input runtime
-recommender. Package tidak membaca filesystem, network, database, atau
-environment variable.
+`createRecommender()`. Artifact runtime yang dipakai aplikasi web V2 adalah
+`data/runtime/recommendation.enriched.json`; `data/runtime/recommendation.json`
+tetap disimpan sebagai proyeksi baseline historis (dipakai skrip evaluasi/smoke
+lama), dan `data/perfumes.json` bukan input runtime recommender. Package tidak
+membaca filesystem, network, database, atau environment variable.
 
 ```ts
 import { createRecommender } from '@harumnesia/recommender';

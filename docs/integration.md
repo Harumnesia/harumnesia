@@ -27,15 +27,28 @@ the UI asked for.
 
 ## 3. Runtime asset strategy
 
-`data/runtime/recommendation.json` is referenced with Vite's `?url&no-inline`
-asset handling. The production build emits one hashed JSON asset rather than
-embedding or copying it into JavaScript. The source artifact remains unchanged.
+`data/runtime/recommendation.enriched.json` is referenced with Vite's
+`?url&no-inline` asset handling. The production build emits one hashed JSON asset
+rather than embedding or copying it into JavaScript. The source artifact remains
+unchanged.
+
+Three dataset layers are distinct:
+
+| Artifact                                    | Role                                                                                              |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `data/perfumes.json`                        | canonical source dataset (not a runtime input)                                                    |
+| `data/runtime/recommendation.enriched.json` | runtime projection currently loaded by the web app                                                |
+| `data/runtime/recommendation.json`          | previous runtime projection, kept as historical baseline for evaluation and smoke reproducibility |
+
+The enriched projection adds audited concentration labels plus derived accords
+(local market) and derived occasions (international market); those derived fields
+are inference, not per-product verification.
 
 The measured build emitted:
 
-| Asset                          | Raw bytes | Gzip bytes |
-| ------------------------------ | --------: | ---------: |
-| `recommendation-DrxAxm9e.json` | 9,690,284 |  1,705,687 |
+| Asset                            |  Raw bytes | Gzip bytes |
+| -------------------------------- | ---------: | ---------: |
+| `recommendation.enriched-*.json` | 16,426,835 |  1,968,820 |
 
 The filename hash may change when source content or the build tool changes.
 
