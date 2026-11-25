@@ -5,6 +5,7 @@ import {
   RecommendationDatasetSchema,
 } from '@harumnesia/shared';
 
+import { normalizeConcentrationKey } from '../../../packages/recommender/src/concentration.js';
 import {
   createNoteQualityReport,
   createTaxonomyDocuments,
@@ -61,6 +62,148 @@ function requireDeepEqual(
   }
 }
 
+function requireStringArray(value: unknown, artifactName: string): string[] {
+  if (
+    !Array.isArray(value) ||
+    value.some((entry) => typeof entry !== 'string' || entry.length === 0)
+  ) {
+    throw new Error(`${artifactName} must be an array of non-empty strings.`);
+  }
+  const entries = value as string[];
+  if (new Set(entries).size !== entries.length) {
+    throw new Error(`${artifactName} must not contain duplicate values.`);
+  }
+  return entries;
+}
+
+function validateCanonicalMap(
+  canonicalMap: Record<string, unknown>,
+  groups: ReadonlySet<string>,
+  artifactName: string,
+): Set<string> {
+  const targets = new Set<string>();
+  for (const [key, value] of Object.entries(canonicalMap)) {
+    if (typeof value !== 'string' || value.length === 0) {
+      throw new Error(
+        `${artifactName}.canonicalMap["${key}"] must be a non-empty string target.`,
+      );
+    }
+    const normalizedKey = normalizeConcentrationKey(key);
+    if (normalizedKey.length === 0) {
+      throw new Error(
+        `${artifactName}.canonicalMap must not contain an empty or whitespace-only key.`,
+      );
+    }
+    if (normalizedKey !== key) {
+      throw new Error(
+        `${artifactName}.canonicalMap key "${key}" is not normalized; expected "${normalizedKey}".`,
+      );
+    }
+    if (!groups.has(value)) {
+      throw new Error(
+        `${artifactName}.canonicalMap target ${value} is missing from the taxonomy groups.`,
+      );
+    }
+    targets.add(value);
+  }
+  return targets;
+}
+
+function validateGroupMembership(
+  groupsField: unknown,
+  expected: Record<string, readonly string[]>,
+  artifactName: string,
+): void {
+  const groups = requireObject(groupsField, `${artifactName}.groups`);
+  const keys = Object.keys(groups).sort();
+  const expectedKeys = Object.keys(expected).sort();
+  if (!isDeepStrictEqual(keys, expectedKeys)) {
+    throw new Error(
+      `${artifactName}.groups must define exactly ${expectedKeys.join(', ')}.`,
+    );
+  }
+  for (const [groupName, members] of Object.entries(expected)) {
+    const actual = requireStringArray(
+      groups[groupName],
+      `${artifactName}.groups.${groupName}`,
+    );
+    if (!isDeepStrictEqual(actual, [...members])) {
+      throw new Error(
+        `${artifactName}.groups.${groupName} does not match the taxonomy array for that group.`,
+      );
+    }
+  }
+}
+
+/**
+ * The concentration artifact is an audited document (schemaVersion 2), not a
+ * projection derived from the source CSV. Keep the structural invariants strict
+ * and verify that every value the source pipeline produces is still represented.
+ */
+export function validateConcentrationTaxonomy(
+  actualText: string,
+  generated: { values: string[] },
+  artifactName: string,
+): void {
+  const artifact = requireObject(
+    parseJson(actualText, artifactName),
+    artifactName,
+  );
+  if (artifact.schemaVersion !== 2) {
+    throw new Error(`${artifactName} schemaVersion must be 2.`);
+  }
+  const values = requireStringArray(artifact.values, `${artifactName}.values`);
+  const formats = requireStringArray(
+    artifact.formats,
+    `${artifactName}.formats`,
+  );
+  const brandDesignations = requireStringArray(
+    artifact.brandDesignations,
+    `${artifactName}.brandDesignations`,
+  );
+  const canonicalMap = requireObject(
+    artifact.canonicalMap,
+    `${artifactName}.canonicalMap`,
+  );
+
+  const groupList = [...values, ...formats, ...brandDesignations];
+  if (new Set(groupList).size !== groupList.length) {
+    throw new Error(
+      `${artifactName} taxonomy groups must not share or repeat values.`,
+    );
+  }
+  const groups = new Set(groupList);
+  const targets = validateCanonicalMap(canonicalMap, groups, artifactName);
+  for (const group of groups) {
+    if (!targets.has(group)) {
+      throw new Error(
+        `${artifactName} group ${group} has no canonical mapping target.`,
+      );
+    }
+  }
+  validateGroupMembership(
+    artifact.groups,
+    {
+      concentration: values,
+      format: formats,
+      brandDesignation: brandDesignations,
+    },
+    artifactName,
+  );
+  for (const generatedValue of generated.values) {
+    if (!groups.has(generatedValue)) {
+      throw new Error(
+        `${artifactName} is missing source-derived concentration value ${generatedValue}.`,
+      );
+    }
+    if (!targets.has(generatedValue)) {
+      throw new Error(
+        `${artifactName} source-derived value ${generatedValue} has no canonical alias in canonicalMap.`,
+      );
+    }
+  }
+}
+
 export function validateArtifactBundle(
   bundle: ArtifactBundleText,
   options: ValidationOptions = {},
@@ -94,10 +237,10 @@ export function validateArtifactBundle(
     taxonomies.genders,
     'Gender taxonomy values or source mappings drifted from canonical constants.',
   );
-  requireDeepEqual(
-    parseJson(bundle.concentrations, 'data/taxonomy/concentrations.json'),
+  validateConcentrationTaxonomy(
+    bundle.concentrations,
     taxonomies.concentrations,
-    'Concentration taxonomy values or metadata drifted from canonical data and source constants.',
+    'data/taxonomy/concentrations.json',
   );
 
   const expectedQualityReport = createNoteQualityReport(canonical);

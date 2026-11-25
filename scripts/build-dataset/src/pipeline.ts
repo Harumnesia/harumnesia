@@ -16,6 +16,7 @@ import {
   type CsvRecord,
 } from './csv.js';
 import { analyzeDataset, assertDatasetIntegrity } from './integrity.js';
+import { resolveConcentrationArtifact } from './concentration-artifact.js';
 import {
   INTERNATIONAL_DATASET_NAME,
   INTERNATIONAL_HEADERS,
@@ -207,6 +208,12 @@ export async function buildDataset(): Promise<{
     noteQualityReport: noteQualityJson,
   };
 
+  const concentrationArtifact = await resolveConcentrationArtifact(
+    OUTPUT_PATHS.concentrations,
+    { text: outputs.concentrations, values: taxonomies.concentrations.values },
+  );
+  outputs.concentrations = concentrationArtifact.text;
+
   const report = {
     schemaVersion: 1,
     sources: {
@@ -237,6 +244,12 @@ export async function buildDataset(): Promise<{
     },
     integrity: analyzeDataset(records),
     historicalCrossCheck: await historicalCrossCheck(records),
+    concentrationsTaxonomy: {
+      path: 'data/taxonomy/concentrations.json',
+      schemaVersion: 2,
+      preserved: concentrationArtifact.preserved,
+      generatedValues: taxonomies.concentrations.values,
+    },
   };
   const bundle: ArtifactBundleText = {
     ...outputs,
@@ -262,7 +275,16 @@ export async function buildDataset(): Promise<{
     writeFile(OUTPUT_PATHS.notes, outputs.notes, 'utf8'),
     writeFile(OUTPUT_PATHS.accords, outputs.accords, 'utf8'),
     writeFile(OUTPUT_PATHS.genders, outputs.genders, 'utf8'),
-    writeFile(OUTPUT_PATHS.concentrations, outputs.concentrations, 'utf8'),
+    // The audited schemaVersion 2 concentrations artifact is preserved verbatim.
+    ...(concentrationArtifact.preserved
+      ? []
+      : [
+          writeFile(
+            OUTPUT_PATHS.concentrations,
+            outputs.concentrations,
+            'utf8',
+          ),
+        ]),
     writeFile(OUTPUT_PATHS.report, bundle.buildReport, 'utf8'),
     writeFile(
       OUTPUT_PATHS.noteQualityReport,
