@@ -2,6 +2,8 @@
 // BE-03: total dari meta ('stats') — tanpa COUNT(*) per request; /brands dari tabel `brand`
 //        materialized; /search tanpa hitung total (has_more); header keamanan + cache.
 // Rate limit belum di sini (butuh KV/DO) — langkah tersendiri.
+import { corsHeaders } from './cors.js';
+
 const MAX_LIMIT = 100;
 const DEFAULT_LIMIT = 50;
 const JSON_HEADERS = { 'content-type': 'application/json; charset=utf-8' };
@@ -54,21 +56,6 @@ function respond(body, status, cors, extra = {}) {
     status,
     headers: { ...JSON_HEADERS, ...SECURITY_HEADERS, ...cors, ...extra },
   });
-}
-
-function corsHeaders(req, env) {
-  const allowed = String(env.ALLOWED_ORIGINS || '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
-  const origin = req.headers.get('Origin') || '';
-  const ok = allowed.includes(origin);
-  return {
-    'access-control-allow-origin': ok ? origin : allowed[0] || '*',
-    'access-control-allow-methods': 'GET,OPTIONS',
-    'access-control-max-age': '86400',
-    vary: 'Origin',
-  };
 }
 
 const num = (v, def, max) => {
