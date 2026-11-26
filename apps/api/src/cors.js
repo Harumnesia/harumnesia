@@ -32,6 +32,9 @@ export function isPreviewOrigin(origin) {
     return false;
   }
 
+  // Only accept the canonical serialization a browser sends in `Origin`.
+  if (url.origin !== origin) return false;
+
   if (url.protocol !== 'https:') return false;
   if (url.port !== '') return false;
   if (url.username !== '' || url.password !== '') return false;
